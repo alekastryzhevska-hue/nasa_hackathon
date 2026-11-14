@@ -1,0 +1,102 @@
+// Developer test panel: sliders that override metric values, to check when each card
+// turns yellow or red. Not part of the astronaut's UI; hidden behind a toggle button.
+//
+// Daily metrics: the slider value replaces the last 5 days, because some rules need
+// several days in a row (e.g. "under 6 h of sleep for 3 nights").
+
+import { useState } from 'react'
+
+export interface Overrides {
+  heartRate?: number
+  bpSys?: number
+  bpDia?: number
+  sleep?: number
+  mood?: number
+  radiation?: number
+}
+
+export const OVERRIDE_DAYS = 5
+
+export function applyOverride(values: number[], value: number | undefined) {
+  if (value === undefined) return values
+  return [...values.slice(0, -OVERRIDE_DAYS), ...Array(OVERRIDE_DAYS).fill(value)]
+}
+
+interface SliderDef {
+  key: keyof Overrides
+  label: string
+  min: number
+  max: number
+  step: number
+  unit: string
+  hint: string
+}
+
+const SLIDERS: SliderDef[] = [
+  { key: 'heartRate', label: 'Resting heart rate', min: 30, max: 130, step: 1, unit: 'bpm', hint: '🟡 > norm +15 % · 🔴 > 100 or < 40' },
+  { key: 'bpSys', label: 'Blood pressure, upper', min: 80, max: 190, step: 1, unit: 'mmHg', hint: '🟡 ≥ 130 or < 90 · 🔴 ≥ 160' },
+  { key: 'bpDia', label: 'Blood pressure, lower', min: 45, max: 120, step: 1, unit: 'mmHg', hint: '🟡 ≥ 85 or < 60 · 🔴 ≥ 100' },
+  { key: 'sleep', label: 'Sleep', min: 2, max: 10, step: 0.1, unit: 'h', hint: '🟡 < 6 · 🔴 < 5 (or < 4 one night)' },
+  { key: 'mood', label: 'Mood', min: 1, max: 5, step: 1, unit: '1–5', hint: '🟡 ≤ 2 · 🔴 = 1' },
+  { key: 'radiation', label: 'Radiation (live)', min: 0, max: 40, step: 0.1, unit: 'mSv/day', hint: '🟡 ≥ 3.6 (2×) · 🔴 ≥ 18 (10×) → alarm' },
+]
+
+interface Props {
+  overrides: Overrides
+  current: Required<Overrides>
+  onChange: (o: Overrides) => void
+}
+
+export function TestPanel({ overrides, current, onChange }: Props) {
+  const [open, setOpen] = useState(false)
+
+  if (!open)
+    return (
+      <button className="test-toggle" onClick={() => setOpen(true)}>
+        🧪 Test panel
+      </button>
+    )
+
+  return (
+    <aside className="test-panel">
+      <header>
+        <strong>Test panel</strong>
+        <span className="muted small">Daily values apply to the last {OVERRIDE_DAYS} days</span>
+        <button className="ghost" onClick={() => setOpen(false)}>Close</button>
+      </header>
+
+      {SLIDERS.map((s) => {
+        const value = overrides[s.key] ?? current[s.key]
+        const active = overrides[s.key] !== undefined
+        return (
+          <div key={s.key} className={`test-row${active ? ' active' : ''}`}>
+            <div className="test-label">
+              <span>{s.label}</span>
+              <strong>
+                {s.step < 1 ? value.toFixed(1) : Math.round(value)} {s.unit}
+              </strong>
+            </div>
+            <input
+              type="range"
+              min={s.min}
+              max={s.max}
+              step={s.step}
+              value={value}
+              onChange={(e) => onChange({ ...overrides, [s.key]: Number(e.target.value) })}
+            />
+            <div className="test-hint">
+              {s.hint}
+              {active && (
+                <button className="link" onClick={() => onChange({ ...overrides, [s.key]: undefined })}>
+                  reset
+                </button>
+              )}
+            </div>
+          </div>
+        )
+      })}
+
+      <button className="ghost" onClick={() => onChange({})}>Reset all</button>
+    </aside>
+  )
+}

@@ -77,3 +77,15 @@ button { font: inherit; cursor: pointer; border-radius: 8px; padding: 10px 14px;
 .live { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ecf8e; animation: blink 1s ease-in-out infinite; }
 @keyframes blink { 50% { opacity: 0.25; } }
+
+/* Developer test panel */
+.test-toggle { position: fixed; right: 16px; bottom: 16px; background: #2a3350; color: var(--text); border: 1px solid var(--line); z-index: 5; }
+.test-panel { position: fixed; right: 16px; bottom: 16px; width: min(340px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; background: #10162a; border: 1px solid #7aa2ff; border-radius: 12px; padding: 14px; z-index: 5; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.5); }
+.test-panel header { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; justify-content: space-between; }
+.test-panel header .muted { flex-basis: 100%; order: 3; }
+.test-row { display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 8px; }
+.test-row.active { background: rgba(122, 162, 255, 0.12); }
+.test-label { display: flex; justify-content: space-between; font-size: 14px; }
+.test-row input[type=range] { width: 100%; }
+.test-hint { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.link { background: none; border: none; color: #7aa2ff; padding: 0; font-size: 12px; }
