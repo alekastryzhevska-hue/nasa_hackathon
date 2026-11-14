@@ -1,0 +1,75 @@
+/* Temporary plain styling. The final look comes from the designer's mockups. */
+
+:root {
+  --bg: #0b1020;
+  --panel: #151b2e;
+  --line: #2a3350;
+  --text: #e8ecf5;
+  --muted: #8d97b5;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); }
+h1, h2 { margin: 0; }
+
+.app { max-width: 1200px; margin: 0 auto; padding: 24px 16px 40px; }
+.muted { color: var(--muted); font-size: 14px; }
+.small { font-size: 12px; margin-top: 4px; }
+
+.topbar { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.topbar h1 { font-size: 28px; }
+.profile { display: flex; flex-direction: column; gap: 4px; }
+select { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 15px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.card.status-green { border-top-color: #3ecf8e; }
+.card.status-yellow { border-top-color: #f5c542; }
+.card.status-red { border-top-color: #ff5c5c; }
+.card-head { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.card h2 { font-size: 18px; }
+.zone { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.pill { color: #0b1020; font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.value { font-size: 34px; font-weight: 700; }
+.unit { font-size: 16px; color: var(--muted); font-weight: 400; }
+.reason { color: var(--muted); font-size: 14px; }
+.sparkline { width: 100%; height: 56px; }
+.sparkline .baseline { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; }
+.legend { color: var(--muted); font-size: 12px; }
+.advice { margin: 4px 0 0; font-size: 14px; line-height: 1.45; }
+details { font-size: 13px; color: var(--muted); }
+details p { margin: 6px 0; line-height: 1.4; }
+summary { cursor: pointer; }
+
+.radiation-bar { margin-top: 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; grid-template-columns: minmax(220px, 1fr) 2fr auto; gap: 20px; align-items: center; }
+.rad-live { display: flex; gap: 10px; align-items: center; }
+.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.budget-label { font-size: 14px; margin-bottom: 8px; }
+.track { position: relative; height: 14px; background: #0f1426; border: 1px solid var(--line); border-radius: 999px; display: flex; overflow: visible; }
+.seg.prev { background: #5b6b9a; border-radius: 999px 0 0 999px; }
+.seg.cur { background: #7aa2ff; }
+.forecast { position: absolute; top: -4px; bottom: -4px; border-left: 2px dashed var(--text); }
+
+button { font: inherit; cursor: pointer; border-radius: 8px; padding: 10px 14px; }
+.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.primary { background: #ff5c5c; color: #fff; border: none; font-weight: 700; }
+.big { font-size: 18px; padding: 14px 20px; width: 100%; }
+
+.disclaimer { color: var(--muted); font-size: 12px; margin-top: 16px; }
+
+.alarm { position: fixed; inset: 0; background: rgba(120, 0, 0, 0.85); display: grid; place-items: center; padding: 16px; animation: pulse 1.2s ease-in-out infinite alternate; }
+@keyframes pulse { from { background: rgba(120, 0, 0, 0.85); } to { background: rgba(170, 10, 10, 0.92); } }
+.alarm-box { background: var(--panel); border: 2px solid #ff5c5c; border-radius: 16px; padding: 24px; max-width: 460px; width: 100%; }
+.alarm-box h1 { color: #ff5c5c; font-size: 28px; margin-bottom: 8px; }
+.alarm-rate { font-size: 18px; font-weight: 700; }
+.checklist { padding-left: 20px; line-height: 2; }
+.checklist input { margin-right: 8px; }
+.ok { color: #3ecf8e; }
+
+@media (max-width: 720px) {
+  .radiation-bar { grid-template-columns: 1fr; }
+}
