@@ -40,6 +40,9 @@ export default function App() {
   const [eventActive, setEventActive] = useState(false)
   const [waterAdded, setWaterAdded] = useState(0)
   const [checkIn, setCheckIn] = useState<number | null>(null)
+  // Yellow layers the astronaut has already opened: their ripple stops. Keyed by status,
+  // so a layer that gets worse (or a new problem) ripples again. Red always ripples.
+  const [seen, setSeen] = useState<Set<string>>(new Set())
 
   const astronaut = ASTRONAUTS.find((a) => a.id === astronautId)!
   const readings = useMemo(() => generateReadings(astronaut), [astronaut])
@@ -96,6 +99,15 @@ export default function App() {
   const layer = LAYERS[layerIndex]
   const summary = summaries[layerIndex]
   const nextLayer = LAYERS[(layerIndex + 1) % LAYERS.length]
+  const seenKey = (id: LayerId, status: string) => `${astronautId}:${id}:${status}`
+  const currentKey = seenKey(layerId, summary.status)
+  useEffect(() => {
+    if (!seen.has(currentKey)) setSeen((s) => new Set(s).add(currentKey))
+  }, [currentKey, seen])
+  const ripples = (i: number) => {
+    const st = summaries[i].status
+    return st === 'red' || (st === 'yellow' && !seen.has(seenKey(LAYERS[i].id, st)))
+  }
   const worstMetric = summary.metrics[0]
 
   const waterToday = daily('water').at(-1)!
@@ -163,7 +175,9 @@ export default function App() {
               <nav className="layer-tabs">
                 {LAYERS.map((l, i) => (
                   <button key={l.id} className={l.id === layerId ? 'on' : ''} onClick={() => setLayerId(l.id)}>
-                    {summaries[i].status !== 'green' && <span className={`tab-dot ${summaries[i].status}`} />}
+                    {summaries[i].status !== 'green' && (
+                      <span className={`tab-dot ${summaries[i].status}${ripples(i) ? ' ripple' : ''}`} />
+                    )}
                     {l.name}
                   </button>
                 ))}

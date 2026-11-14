@@ -170,6 +170,40 @@ function Head({ regions }: { regions: Props['regions'] }) {
   )
 }
 
+// Where ripples start for each region (both sides for paired limbs and organs).
+const ANCHORS: Record<Region, [number, number][]> = {
+  head: [[150, 60]],
+  eyes: [[150, 60]],
+  heart: [[156, 186]],
+  lungs: [[130, 168], [170, 168]],
+  kidneys: [[128, 258], [172, 258]],
+  stomach: [[165, 232]],
+  spine: [[150, 200]],
+  arms: [[85, 228], [215, 228]],
+  legs: [[127, 424], [173, 424]],
+  'blood-vessels': [[150, 240]],
+  'whole-body': [[150, 300]],
+}
+
+// "Drop in water" rings from parts that need attention. Yellow ripples a few times,
+// red keeps going. Hidden when the system asks for reduced motion (see CSS).
+function Ripples({ regions }: { regions: Props['regions'] }) {
+  return (
+    <g pointerEvents="none">
+      {(Object.keys(regions) as Region[])
+        .filter((r) => regions[r] !== 'green')
+        .flatMap((r) =>
+          ANCHORS[r].map(([x, y], i) => (
+            <g key={`${r}${i}`} className={`svg-ripple ${regions[r]}`} stroke={COLOR[regions[r]!]}>
+              <circle cx={x} cy={y} r={10} />
+              <circle cx={x} cy={y} r={10} />
+            </g>
+          )),
+        )}
+    </g>
+  )
+}
+
 export function BodyFigure({ layer, regions, fillPercent = 0 }: Props) {
   const fillY = 540 - (540 - 32) * (Math.min(100, fillPercent) / 100)
   return (
@@ -206,6 +240,8 @@ export function BodyFigure({ layer, regions, fillPercent = 0 }: Props) {
       {(layer === 'organs' || layer === 'hydration') && <Organs regions={regions} />}
       {layer === 'circulation' && <Circulation regions={regions} />}
       {(layer === 'sleep' || layer === 'emotions') && <Head regions={regions} />}
+
+      <Ripples regions={regions} />
     </svg>
   )
 }

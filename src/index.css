@@ -75,9 +75,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .layer-tabs { align-self: flex-start; display: flex; flex-wrap: wrap; gap: 2px; background: #0a1322; border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
 .layer-tabs button { background: none; border: none; color: var(--muted); padding: 9px 18px; border-radius: 999px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .layer-tabs button.on { background: #1a2740; color: var(--text); box-shadow: inset 0 0 0 1px #2a3b5a; }
-.tab-dot { width: 8px; height: 8px; border-radius: 50%; }
-.tab-dot.yellow { background: var(--orange); }
-.tab-dot.red { background: var(--red); }
+.tab-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; }
+.tab-dot.yellow { background: var(--orange); color: var(--orange); }
+.tab-dot.red { background: var(--red); color: var(--red); }
+
+/* Ripple: rings spread out and fade, like a drop falling into water. */
+.tab-dot.ripple::before,
+.tab-dot.ripple::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid currentColor; animation: ripple 2.4s ease-out infinite; }
+.tab-dot.ripple::after { animation-delay: 1.2s; }
+.tab-dot.red.ripple::before,
+.tab-dot.red.ripple::after { animation-duration: 1.4s; }
+.tab-dot.red.ripple::after { animation-delay: 0.7s; }
+@keyframes ripple { from { transform: scale(1); opacity: 0.9; } to { transform: scale(4.5); opacity: 0; } }
+
+.svg-ripple circle { fill: none; stroke-width: 2; transform-box: fill-box; transform-origin: center; opacity: 0; animation: ripple-svg 2.4s ease-out 3; }
+.svg-ripple circle + circle { animation-delay: 1.2s; }
+.svg-ripple.red circle { animation-duration: 1.4s; animation-iteration-count: infinite; }
+.svg-ripple.red circle + circle { animation-delay: 0.7s; }
+@keyframes ripple-svg { from { transform: scale(0.6); opacity: 0.9; } to { transform: scale(3.2); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-dot.ripple::before, .tab-dot.ripple::after, .svg-ripple, .live-dot, .alarm { animation: none !important; }
+  .svg-ripple { display: none; }
+}
 
 /* Stage: info column + figure */
 .stage { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 24px; align-items: start; }
