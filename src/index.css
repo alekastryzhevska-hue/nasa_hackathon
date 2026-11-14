@@ -173,6 +173,35 @@ summary { cursor: pointer; }
 .test-hint { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
 .link { background: none; border: none; color: var(--holo); padding: 0; font-size: 12px; }
 
+/* Wide screens: the dashboard fits one screen, like the mockup. Only the metric list
+   scrolls inside its column; the radiation panel always stays visible at the bottom. */
+@media (min-width: 1101px) {
+  .app { height: 100vh; overflow: hidden; }
+  .layout { min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .left, .right { min-height: 0; }
+  .plan { flex: 1; min-height: 0; overflow: auto; }
+  .stage { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .stage-info { min-height: 0; max-height: 100%; overflow: auto; padding-right: 4px; scrollbar-width: thin; }
+  .stage-figure { min-height: 0; height: 100%; }
+  .body-figure { height: 100%; width: auto; max-width: 100%; }
+  .radiation { flex: none; margin-top: 0; padding: 16px 22px; }
+  .disclaimer { padding: 0 24px 8px; }
+}
+
+/* Short screens (13-inch laptops): tighter spacing. */
+@media (min-width: 1101px) and (max-height: 860px) {
+  .topbar { padding: 8px 20px; }
+  .layout { padding: 12px; gap: 12px; }
+  .left, .right { gap: 12px; }
+  .panel { padding: 16px 18px; }
+  .big { font-size: 32px; }
+  .status-title { font-size: 26px; }
+  .status-card hr { margin: 12px 0; }
+  .status-advice { margin-bottom: 14px; }
+  .task { padding: 10px 0; }
+  .radiation h2 { margin-bottom: 6px; }
+}
+
 /* Narrow screens */
 @media (max-width: 1100px) {
   .layout { grid-template-columns: 1fr; }
