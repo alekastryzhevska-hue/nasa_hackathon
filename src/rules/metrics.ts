@@ -19,7 +19,12 @@ export interface MetricRule {
   howToMeasure: string
   why: string
   advice: Record<Status, string>
-  evaluate: (values: number[], astronaut: Astronaut, mission: Mission) => Evaluation
+  // values2: second number of two-part metrics (diastolic blood pressure).
+  evaluate: (values: number[], astronaut: Astronaut, mission: Mission, values2: number[]) => Evaluation
+  // How often the screen value changes; 'live' metrics stream continuously.
+  live?: string
+  // Label for the daily value used for the status, when the big number is live.
+  dailyLabel?: string
 }
 
 const last = (values: number[], n: number) => values.slice(-n)
@@ -49,12 +54,14 @@ export const RULES: Record<MetricId, MetricRule> = {
   },
   heartRate: {
     id: 'heartRate',
-    name: 'Resting heart rate',
+    name: 'Heart rate',
     unit: 'bpm',
     bodyZone: 'Chest',
-    source: 'Wristband, automatic',
-    frequency: 'Every morning',
-    howToMeasure: 'Measured automatically in the morning while lying down, before getting up.',
+    source: 'Wristband / smart shirt, automatic',
+    frequency: 'Live, every second; status uses the morning resting value',
+    live: 'Live heart rate',
+    dailyLabel: 'Resting, this morning',
+    howToMeasure: 'Wear the wristband. The status uses your resting pulse, measured in the morning while lying down.',
     why: 'An early sign of heart problems, stress, overtraining or infection. Without gravity the heart and blood flow change.',
     advice: {
       green: 'Heart rate is close to your pre-flight norm.',
@@ -67,6 +74,34 @@ export const RULES: Record<MetricId, MetricRule> = {
       if (last(v, 3).every((x) => x > a.baseline.heartRate * 1.15))
         return { status: 'yellow', reason: `Over 15% above your norm (${a.baseline.heartRate} bpm) for 3 days` }
       return { status: 'green', reason: 'Close to your pre-flight norm' }
+    },
+  },
+  bloodPressure: {
+    id: 'bloodPressure',
+    name: 'Blood pressure',
+    unit: 'mmHg',
+    bodyZone: 'Chest',
+    source: 'Wristband estimate (live) + morning cuff measurement',
+    frequency: 'Wristband estimate every 30 min (sped up in the demo); cuff every morning',
+    live: 'Wristband estimate',
+    dailyLabel: 'Cuff, this morning',
+    howToMeasure: 'Morning cuff: seated, after 5 min of rest, arm at heart level. The wristband estimate runs on its own.',
+    why: 'Without gravity, blood shifts towards the head and blood-pressure regulation changes; this affects the heart and vessels.',
+    advice: {
+      green: 'Blood pressure is within the normal range.',
+      yellow: 'Less salt and caffeine, rest, measure again with the cuff.',
+      red: 'Rest, measure again in 5 min, tell the flight surgeon.',
+    },
+    evaluate: (sys, _a, _m, dia) => {
+      const s = sys[sys.length - 1]
+      const d = dia[dia.length - 1]
+      if (s >= 160 || d >= 100) return { status: 'red', reason: 'Cuff reading 160/100 or higher' }
+      const high = (i: number) => sys[i] >= 130 || dia[i] >= 85
+      const n = sys.length
+      if (n >= 3 && high(n - 1) && high(n - 2) && high(n - 3))
+        return { status: 'yellow', reason: '130/85 or higher for 3 mornings' }
+      if (s < 90 || d < 60) return { status: 'yellow', reason: 'Below 90/60' }
+      return { status: 'green', reason: 'Within normal range (cuff, this morning)' }
     },
   },
   mood: {
@@ -96,7 +131,8 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'mSv/day',
     bodyZone: 'Whole body',
     source: 'Ship sensors via onboard network; backup: personal dosimeter',
-    frequency: 'Continuous',
+    frequency: 'Live, every few seconds',
+    live: 'Ship sensor',
     howToMeasure: 'Nothing to do: ship sensors send data automatically.',
     why: 'Accumulated dose raises long-term risk of cancer, cataracts and heart disease. A solar particle event is dangerous right away.',
     advice: {
@@ -113,10 +149,14 @@ export const RULES: Record<MetricId, MetricRule> = {
   },
 }
 
-export const METRIC_ORDER: MetricId[] = ['radiation', 'sleep', 'heartRate', 'mood']
+export const METRIC_ORDER: MetricId[] = ['radiation', 'heartRate', 'bloodPressure', 'sleep', 'mood']
 
 export function valuesFor(readings: Reading[], metric: MetricId) {
   return readings.filter((r) => r.metric === metric).map((r) => r.value)
+}
+
+export function values2For(readings: Reading[], metric: MetricId) {
+  return readings.filter((r) => r.metric === metric).map((r) => r.value2 ?? 0)
 }
 
 // Lifetime career limit, mSv (NASA standard; to verify).

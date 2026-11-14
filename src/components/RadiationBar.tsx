@@ -9,7 +9,7 @@ interface Props {
   mission: Mission
   missionDose: number
   currentRate: number
-  minutesSinceUpdate: number
+  secondsSinceUpdate: number
   onSimulateEvent: () => void
 }
 
@@ -21,7 +21,7 @@ export function RadiationBar(p: Props) {
   const used = previous + p.missionDose
   const forecastPct = pct(forecastAtEnd)
   const budgetStatus = forecastPct >= 100 ? 'red' : forecastPct >= 80 ? 'yellow' : 'green'
-  const stale = p.minutesSinceUpdate > 30
+  const stale = p.secondsSinceUpdate > 30 * 60
 
   return (
     <section className="radiation-bar">
@@ -31,8 +31,8 @@ export function RadiationBar(p: Props) {
           <strong>Radiation {p.currentRate.toFixed(2)} mSv/day</strong>
           <div className="muted">
             {stale
-              ? `Ship sensor silent for ${p.minutesSinceUpdate} min — connect your personal dosimeter`
-              : `Ship sensor · updated ${p.minutesSinceUpdate} min ago`}
+              ? `Ship sensor silent for ${Math.round(p.secondsSinceUpdate / 60)} min — connect your personal dosimeter`
+              : `Ship sensor · updated ${p.secondsSinceUpdate} s ago`}
           </div>
         </div>
       </div>

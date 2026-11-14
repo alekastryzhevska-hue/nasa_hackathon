@@ -33,14 +33,20 @@ Always show a word next to the color, not color alone.
 | **Today's checklist** | Tasks for today and a progress bar | Daily routine + tasks the app adds when something is off | Tick tasks that can't tick themselves | Today |
 | **Sleep** | Hours slept, 14-day chart, sleep debt for the week, "battery" 0–100 % | Wristband, automatic | Nothing; read the advice | Partly |
 | **Mood** | Mood 1–5, chart, overload level | Daily check-in (slider + word chips) | Do the check-in | Partly |
-| **Heart & blood** | Resting pulse, blood pressure, oxygen | Smart shirt / wristband, automatic | Nothing; read the advice | Pulse only |
+| **Heart & blood** | **Live** pulse (every second) and blood pressure estimate; color from the morning resting pulse and morning cuff reading; oxygen later | Wristband / smart shirt (live) + morning cuff | Nothing; read the advice | Pulse + pressure ✅ |
 | **Bones** | Estimated bone loss (always labelled "estimate") | Urine calcium test + training minutes | Do the weekly urine test | Today |
 | **Muscles** | Training minutes, grip strength, weekly thigh scan | Exercise machine (automatic) + manual entry | Enter grip strength | Today |
 | **Water** | Liters today, body "fills up" from feet to head | Manual "+250 ml" button | Add water | Today |
 | **Organs** | Eyes, lungs, kidneys, stomach: temperature, blood sugar, tests | Thermometer, glucometer, test strips | Enter test results | Sunday or later |
-| **Radiation bar** (bottom) | Current level, "updated 2 min ago", lifetime limit bar with forecast | Ship sensors, automatic; personal dosimeter as backup | Nothing, unless the sensor goes silent | ✅ |
+| **Radiation bar** (bottom) | **Live** level, "updated 3 s ago", lifetime limit bar with forecast | Ship sensors, automatic; personal dosimeter as backup | Nothing, unless the sensor goes silent | ✅ |
 | **Radiation alarm** (full screen) | Red alarm, checklist, then "waiting", then "all clear" | Triggered automatically by a radiation spike | Follow the checklist | ✅ |
 | **Exercise page** | Today's exercise plan with photos | Fixed plan, adjusted by health status | Start training | Later |
+
+**Live vs. daily values.** Pulse, blood pressure and radiation change on screen while
+you watch (show a small "live" dot and "updated N s ago"). Their color comes from a
+calmer daily value, so a workout doesn't turn the screen red. Sleep, mood and tests
+change once a day or less. Full list: "Update frequency" in
+[docs/health-rules.md](docs/health-rules.md).
 
 Every metric (sleep, pulse, etc.) shows the same things: **value · color · why this
 color · chart vs. the astronaut's own pre-flight norm · what to do · "about this metric"**.

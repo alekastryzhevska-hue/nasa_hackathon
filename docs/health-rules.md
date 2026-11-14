@@ -18,11 +18,11 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 
 | Metric | Unit | Device | Transfer | How often | Normal | 🟡 Yellow | 🔴 Red |
 |---|---|---|---|---|---|---|---|
-| Radiation | mSv/day | Ship sensor; backup: personal dosimeter | Auto | Continuous | Background for the environment (Mars transit ≈ 1.8) | ≥ 2× normal, or no data > 30 min, or flare forecast | ≥ 10× normal |
+| Radiation | mSv/day | Ship sensor; backup: personal dosimeter | Auto | Live, about every minute | Background for the environment (Mars transit ≈ 1.8) | ≥ 2× normal, or no data > 30 min, or flare forecast | ≥ 10× normal |
 | Sleep | hours | Wristband | Auto | Every night | 7–9 h | < 6 h for 3 nights | < 5 h for 5 nights, or < 4 h in one night |
 | Mood | scale 1–5 | Check-in in the app | Manual | Daily | 4–5 | ≤ 2 for 2 days | ≤ 2 for 5 days, or 1 |
-| Resting heart rate | bpm | Wristband / smart shirt | Auto | Every morning | 50–80, or own norm ± 10 % | > 15 % above own norm for 3 days | > 100 or < 40, or chest pain / shortness of breath |
-| Blood pressure | mmHg | Cuff monitor | Auto | Every morning | < 130/85 | ≥ 130/85 for 3 days, or < 90/60 | ≥ 160/100, or headache / blurred vision |
+| Resting heart rate | bpm | Wristband / smart shirt | Auto | Live every 1 s; status uses the morning resting value | 50–80, or own norm ± 10 % | > 15 % above own norm for 3 days | > 100 or < 40, or chest pain / shortness of breath |
+| Blood pressure | mmHg | Wristband estimate + cuff | Auto | Wristband estimate ~every 30 min; cuff every morning (status uses the cuff) | < 130/85 | ≥ 130/85 for 3 days, or < 90/60 | ≥ 160/100, or headache / blurred vision |
 | Body temperature | °C | Thermometer | Auto | Every morning and when unwell | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
 | Bones (urine calcium) | mg/day | Urine analyzer | Auto | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
 | Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Training auto; grip manual | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
@@ -31,6 +31,17 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 | Saliva cortisol | own norm | Rapid saliva test *(device in development)* | Manual | Weekly, morning | Own norm | > 50 % above own norm | ≥ 2× own norm two weeks in a row |
 
 ---
+
+## Update frequency on screen
+
+| Updates | Metrics |
+|---|---|
+| Live (seconds) | Heart rate (1 s), radiation (sensor ~1 min) |
+| Every ~30 min | Blood pressure estimate from the wristband |
+| Once a day | Sleep, mood, resting heart rate, cuff blood pressure, temperature, water |
+| Weekly | Urine calcium, grip strength, blood sugar, urine strip, saliva cortisol |
+
+In the demo, live intervals are sped up (blood pressure every 15 s, radiation every 5 s).
 
 ## Details per metric
 
@@ -55,12 +66,16 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 - 🔴 **What to do:** book a private session with the psychologist on Earth.
 
 ### Resting heart rate
-- **How to measure:** in the morning, lying down, before getting up.
+- **How to measure:** wear the wristband; the screen shows live heart rate every second.
+  The **status uses the resting value** measured in the morning, lying down, so exercise
+  does not trigger false alarms.
 - 🟡 **What to do:** sleep, drink water, reduce training load.
 - 🔴 **What to do:** stop physical activity, lie down, tell the crew and the flight surgeon.
 
 ### Blood pressure
-- **How to measure:** seated, after 5 min of rest, arm at heart level.
+- **How to measure:** the wristband gives a cuffless estimate about every 30 minutes
+  (less accurate, shown as a trend). Every morning a cuff measurement: seated, after 5 min
+  of rest, arm at heart level. **The status uses the cuff value.**
 - 🟡 **What to do:** less salt and caffeine, rest, measure again.
 - 🔴 **What to do:** rest, measure again in 5 min, tell the flight surgeon.
 

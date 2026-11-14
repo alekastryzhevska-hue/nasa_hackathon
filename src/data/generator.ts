@@ -16,7 +16,7 @@ export const ASTRONAUTS: Astronaut[] = [
     name: 'Alex Rivera',
     age: 41,
     role: 'Commander',
-    baseline: { sleep: 7.6, mood: 4.3, heartRate: 58 },
+    baseline: { sleep: 7.6, mood: 4.3, heartRate: 58, bloodPressure: 118, bloodPressure2: 76 },
     previousMissionsDose: 85,
     scenario: 'healthy',
   },
@@ -25,7 +25,7 @@ export const ASTRONAUTS: Astronaut[] = [
     name: 'Sam Okafor',
     age: 36,
     role: 'Flight engineer',
-    baseline: { sleep: 7.4, mood: 4.2, heartRate: 62 },
+    baseline: { sleep: 7.4, mood: 4.2, heartRate: 62, bloodPressure: 121, bloodPressure2: 78 },
     previousMissionsDose: 40,
     scenario: 'sleep-deficit',
   },
@@ -68,10 +68,22 @@ export function generateReadings(astronaut: Astronaut, now = new Date()): Readin
     const sleep = astronaut.baseline.sleep - 0.4 + noise(0.5) - problem * 2.6
     const heartRate = astronaut.baseline.heartRate + 2 + noise(3) + problem * 13
     const mood = astronaut.baseline.mood + noise(0.5) - problem * 2.4
+    // Stress and poor sleep push blood pressure up a little.
+    const systolic = astronaut.baseline.bloodPressure + 2 + noise(4) + problem * 10
+    const diastolic = astronaut.baseline.bloodPressure2 + 1 + noise(3) + problem * 6
 
     readings.push(
       { ...base, metric: 'sleep', value: round(clamp(sleep, 3, 10)), unit: 'h', time: dayTime(now, daysAgo, 7), source: 'wristband' },
       { ...base, metric: 'heartRate', value: Math.round(heartRate), unit: 'bpm', time: dayTime(now, daysAgo, 7), source: 'wristband' },
+      {
+        ...base,
+        metric: 'bloodPressure',
+        value: Math.round(systolic),
+        value2: Math.round(diastolic),
+        unit: 'mmHg',
+        time: dayTime(now, daysAgo, 7),
+        source: 'cuff',
+      },
       { ...base, metric: 'mood', value: Math.round(clamp(mood, 1, 5)), unit: '1–5', time: dayTime(now, daysAgo, 9), source: 'check-in' },
       {
         ...base,

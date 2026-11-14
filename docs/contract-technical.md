@@ -58,6 +58,8 @@ Always pair the color with a text label (color-blind users, bad screens).
   "baseline": 7.4,
   "history": [{ "date": "2026-11-01", "value": 7.2 }, { "date": "2026-11-02", "value": 7.5 }],
   "stale": false,
+  "live": { "value": 84, "updatedAt": "2026-11-14T16:40:05Z", "source": "wristband", "label": "Live heart rate" },
+  "dailyLabel": "Resting, this morning",
   "explain": {
     "why": "Short sleep leads to mistakes, low mood and weaker immunity.",
     "howToMeasure": "Wear the wristband at night. Nothing else to do.",
@@ -69,6 +71,9 @@ Always pair the color with a text label (color-blind users, bad screens).
 - `baseline` = the astronaut's own pre-flight norm (draw as a dashed line on charts).
 - `history` = last 14 days, oldest first. Chart length is up to design.
 - `stale: true` → data is older than expected; status becomes `unknown`.
+- `live` ✅ (heart rate, blood pressure, radiation only) → big number on screen, refreshed
+  every 1–15 s. `status` and `history` still use the daily value named by `dailyLabel`.
+  Blood pressure adds `value2` (diastolic) to `latest` and `live`; show as `128/82`.
 
 ### 1.4 Body regions
 

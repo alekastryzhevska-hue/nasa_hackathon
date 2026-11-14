@@ -18,7 +18,7 @@ export function RadiationAlarm({ doseRate, onAllClear }: Props) {
       <div className="alarm-box">
         <h1>☢ Radiation alarm</h1>
         <p className="alarm-rate">
-          Dose rate {doseRate.toFixed(1)} mSv/day — about {Math.round(doseRate / 1.8)}× normal
+          Dose rate {doseRate.toFixed(1)} mSv/day (live) — about {Math.round(doseRate / 1.8)}× normal
         </p>
         <p>A solar particle event is under way. Follow the checklist.</p>
 

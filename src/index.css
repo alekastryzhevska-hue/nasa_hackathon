@@ -73,3 +73,7 @@ button { font: inherit; cursor: pointer; border-radius: 8px; padding: 10px 14px;
 @media (max-width: 720px) {
   .radiation-bar { grid-template-columns: 1fr; }
 }
+
+.live { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ecf8e; animation: blink 1s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
