@@ -4,6 +4,8 @@
 
 This is the short, plain version. The exact data formats for the code are in
 [docs/contract-technical.md](docs/contract-technical.md) — Claude handles that file.
+Numbers, thresholds and advice texts for every metric are in
+[docs/health-rules.md](docs/health-rules.md).
 
 **One rule:** if design or backend wants to change something on this page, agree first,
 then change this page, then change the code or the mockups.
