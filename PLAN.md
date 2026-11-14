@@ -80,3 +80,5 @@ Update this section at the end of every session.
   app name "Health app" for now, 2D vector figure (no 3D model).
   **Next:** design reviews the running app; public link via Vercel; Sport page;
   data checks and tests.
+- 2026-11-15 (alekastryzhevska-hue): design system WALL-E & EVE (colors, typography) added
+  to `design-system/`. **Next:** backend switches the app to `design-system/tokens.css`.

@@ -7,20 +7,25 @@ Design details live in [design.md](design.md).
 
 ## alekastryzhevska-hue
 
-_Last updated: —_
+_Last updated: 2026-11-15_
 
 ### Done
 - 2026-11-13: Created this repository and the shared workflow (in a test repo first).
 - 2026-11-14: First version of the design (without the data contract).
+- 2026-11-14: Radiation bar mockup with zone values (Normal < 3.6, Elevated 3.6–18, Critical ≥ 18 mSv/day).
+- 2026-11-15: Design system WALL-E & EVE added to `design-system/` (colors, typography).
 
 ### In progress
-- _To be filled in by alekastryzhevska-hue._
+- Reviewing the running app against the mockups.
 
 ### Next
-- Check the design against `CONTRACT.md`; call with zachtrenito to agree contract v1.
+- Spacing, radius and components for the design system.
 
 ### Notes for partner
-- _None._
+- Please switch the app to the design system: import `design-system/tokens.css` once and
+  use its variables (`--gray-*`, `--green-default`, `--orange-default`, `--red-default`, …)
+  and fonts (Fira Sans, Overpass) instead of hard-coded colors. Status mapping is in
+  `design-system/README.md`. Spacing and radius are not defined yet; keep the current ones.
 
 ---
 

@@ -1,0 +1,50 @@
+/* WALL-E & EVE design tokens. Source: design-system/tokens.json (synced 2026-11-15).
+   Dark theme only. See design-system/README.md for the rules. */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@700;900&family=Overpass:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  /* Gray scale: gray-100 is the darkest, gray-0 the lightest */
+  --gray-100: #060c13; /* deepest background, overlay */
+  --gray-90: #0d141e;  /* app background */
+  --gray-80: #151e29;  /* surface 1: cards, panels, navbar */
+  --gray-70: #1f2a38;  /* surface 2: card hover, inputs, nested blocks, popovers */
+  --gray-60: #323e4e;  /* dividers, thin borders, inactive chart tracks */
+  --gray-50: #4b596b;  /* control borders, disabled fills, inactive icons */
+  --gray-40: #6b798a;  /* placeholders, disabled text (4.4:1 on gray-90, not for important text) */
+  --gray-30: #8e99a9;  /* secondary text: captions, labels, timestamps */
+  --gray-20: #b2bbc8;  /* body text */
+  --gray-10: #d6dbe3;  /* headings, key metric numbers */
+  --gray-0: #f2f5f9;   /* accent text, text on colored buttons */
+
+  /* System colors: Default / Pressed / Disabled */
+  --red-default: #df746a;    /* error, critical ("Act now") */
+  --red-pressed: #c15e55;
+  --red-disabled: #59413d;
+  --orange-default: #ee9b58; /* attention ("Attention") */
+  --orange-pressed: #cd8041;
+  --orange-disabled: #564335;
+  --green-default: #79c68a;  /* normal, success ("Normal") */
+  --green-pressed: #60a871;
+  --green-disabled: #3a4d3e;
+  --blue-default: #67b5e1;   /* information, neutral notices */
+  --blue-pressed: #4f98c1;
+  --blue-disabled: #354b58;
+
+  /* Font families */
+  --font-display: "Fira Sans", system-ui, sans-serif; /* headings, big numbers */
+  --font-sans: "Overpass", system-ui, sans-serif;     /* subtitles, body */
+}
+
+/* Text styles */
+.ds-display { font-family: var(--font-display); font-size: 40px; line-height: 44px; font-weight: 900; }
+.ds-h1 { font-family: var(--font-display); font-size: 32px; line-height: 38px; font-weight: 900; }
+.ds-h2 { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 700; }
+.ds-h3 { font-family: var(--font-display); font-size: 20px; line-height: 26px; font-weight: 700; }
+.ds-subtitle { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 700; }
+.ds-subtitle-regular { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 400; }
+.ds-body { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 400; }
+.ds-body-bold { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 700; }
+.ds-body-italic { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 400; font-style: italic; }
+.ds-caption { font-family: var(--font-sans); font-size: 13px; line-height: 18px; font-weight: 400; }
+.ds-label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 700; }
