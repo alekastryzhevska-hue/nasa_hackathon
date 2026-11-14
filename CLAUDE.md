@@ -8,8 +8,8 @@ session.
 
 | GitHub login | Role | Owns |
 |---|---|---|
-| `alekastryzhevska-hue` | Design (Figma, 3D model, UI) | `design.md`, visual components and styles |
-| `zachtrenito` | Backend: data, rules, logic, security | `docs/health-rules.md`, `src/data/`, `src/rules/` |
+| `alekastryzhevska-hue` | Design (Figma / Claude Design mockups) | `design.md`, mockup screenshots in `design/` |
+| `zachtrenito` | Backend + building the UI from the mockups | `docs/health-rules.md`, all of `src/` |
 
 - Identify the current user with `gh api user --jq .login`.
 - **If the login is `chumasov`**, stop: that is an old account of `zachtrenito` with no access.
@@ -41,8 +41,12 @@ Code layout:
 |---|---|---|
 | `src/data/` | Data formats and the mock data generator | Backend |
 | `src/rules/` | Statuses and advice, following `docs/health-rules.md` | Backend |
-| `src/components/`, `src/*.css` | Screens and styling | Design |
-| `src/App.tsx` | Puts everything together | Both — small edits, pull right before |
+| `src/components/`, `src/*.css` | Screens and styling, built from design's screenshots | Backend (zachtrenito) |
+| `src/App.tsx` | Puts everything together | Backend (zachtrenito) |
+| `src/dev/` | Developer test panel (sliders, solar event) | Backend |
+
+Design sends mockups as screenshots; zachtrenito's Claude turns them into code. Design
+changes requests in "Notes for partner" or `design.md`.
 
 Do not edit files owned by the partner. If a change there is needed, write it in
 "Notes for partner" in `STATUS.md`. Design suggestions from backend also go there, not

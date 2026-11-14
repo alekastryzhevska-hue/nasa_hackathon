@@ -1,6 +1,5 @@
 // Health rules table: how each metric is measured, explained and turned into a status.
-// Thresholds are illustrative, not medical. Edit texts and numbers here; the screen
-// picks them up automatically.
+// Follows docs/health-rules.md. Thresholds are illustrative, not medical.
 
 import type { Astronaut, MetricId, Mission, Reading, Status } from '../data/types'
 
@@ -13,7 +12,6 @@ export interface MetricRule {
   id: MetricId
   name: string
   unit: string
-  bodyZone: string
   source: string
   frequency: string
   howToMeasure: string
@@ -21,46 +19,55 @@ export interface MetricRule {
   advice: Record<Status, string>
   // values2: second number of two-part metrics (diastolic blood pressure).
   evaluate: (values: number[], astronaut: Astronaut, mission: Mission, values2: number[]) => Evaluation
-  // How often the screen value changes; 'live' metrics stream continuously.
+  // Label for the live stream, if the big number changes in real time.
   live?: string
-  // Label for the daily value used for the status, when the big number is live.
+  // Label for the daily value the status is based on, when the big number is live.
   dailyLabel?: string
+  // Today's value is still growing (water, training); the status uses full past days.
+  partialToday?: boolean
+  digits?: number
 }
 
-const last = (values: number[], n: number) => values.slice(-n)
-const avg = (values: number[]) => values.reduce((a, b) => a + b, 0) / values.length
+const last = (v: number[], n: number) => v.slice(-n)
+const latest = (v: number[]) => v[v.length - 1]
+const ok = (reason = 'Within normal range'): Evaluation => ({ status: 'green', reason })
+const yellow = (reason: string): Evaluation => ({ status: 'yellow', reason })
+const red = (reason: string): Evaluation => ({ status: 'red', reason })
+const fullDays = (v: number[]) => v.slice(0, -1)
 
 export const RULES: Record<MetricId, MetricRule> = {
-  sleep: {
-    id: 'sleep',
-    name: 'Sleep',
-    unit: 'h',
-    bodyZone: 'Head',
-    source: 'Wristband, automatic',
-    frequency: 'Every night',
-    howToMeasure: 'Wear the wristband at night. Nothing else to do.',
-    why: 'Short sleep leads to mistakes, low mood and weaker immunity. In space there is no day/night cycle, plus noise and stress.',
+  radiation: {
+    id: 'radiation',
+    name: 'Radiation',
+    unit: 'mSv/day',
+    source: 'Ship sensors via onboard network; backup: personal dosimeter',
+    frequency: 'Live, about every minute',
+    live: 'Ship sensor',
+    digits: 2,
+    howToMeasure: 'Nothing to do: ship sensors send data automatically.',
+    why: 'Space radiation raises long-term health risks. A solar particle event is dangerous right away.',
     advice: {
-      green: 'Sleep is on track. Keep your regular schedule.',
-      yellow: 'Darken the sleep station, use earplugs, no screens for an hour before sleep, keep a fixed schedule.',
-      red: 'Postpone complex tasks. Tell the crew and the flight surgeon.',
+      green: 'Background radiation is normal for this mission phase.',
+      yellow: 'Know where the nearest shelter is and keep your personal dosimeter with you.',
+      red: 'Go to the storm shelter now.',
     },
-    evaluate: (v) => {
-      if (last(v, 5).every((x) => x < 5) || v[v.length - 1] < 4)
-        return { status: 'red', reason: 'Under 5 h for 5 nights, or under 4 h last night' }
-      if (last(v, 3).every((x) => x < 6)) return { status: 'yellow', reason: 'Under 6 h for 3 nights in a row' }
-      return { status: 'green', reason: 'Within normal range' }
+    evaluate: (v, _a, m) => {
+      const ratio = latest(v) / m.normalDoseRatePerDay
+      if (ratio >= 10) return red('Dose rate 10× above normal: solar particle event')
+      if (ratio >= 2) return yellow('Dose rate 2× above normal')
+      return ok('Normal background')
     },
   },
+
   heartRate: {
     id: 'heartRate',
     name: 'Heart rate',
     unit: 'bpm',
-    bodyZone: 'Chest',
     source: 'Wristband / smart shirt, automatic',
     frequency: 'Live, every second; status uses the morning resting value',
     live: 'Live heart rate',
     dailyLabel: 'Resting, this morning',
+    digits: 0,
     howToMeasure: 'Wear the wristband. The status uses your resting pulse, measured in the morning while lying down.',
     why: 'An early sign of heart problems, stress, overtraining or infection. Without gravity the heart and blood flow change.',
     advice: {
@@ -69,49 +76,203 @@ export const RULES: Record<MetricId, MetricRule> = {
       red: 'Stop physical activity, lie down. Tell the crew and the flight surgeon.',
     },
     evaluate: (v, a) => {
-      const latest = v[v.length - 1]
-      if (latest > 100 || latest < 40) return { status: 'red', reason: 'Above 100 or below 40 bpm' }
+      if (latest(v) > 100 || latest(v) < 40) return red('Resting pulse above 100 or below 40 bpm')
       if (last(v, 3).every((x) => x > a.baseline.heartRate * 1.15))
-        return { status: 'yellow', reason: `Over 15% above your norm (${a.baseline.heartRate} bpm) for 3 days` }
-      return { status: 'green', reason: 'Close to your pre-flight norm' }
+        return yellow(`Over 15% above your norm (${a.baseline.heartRate} bpm) for 3 days`)
+      return ok('Close to your pre-flight norm')
     },
   },
+
   bloodPressure: {
     id: 'bloodPressure',
     name: 'Blood pressure',
     unit: 'mmHg',
-    bodyZone: 'Chest',
     source: 'Wristband estimate (live) + morning cuff measurement',
     frequency: 'Wristband estimate every 30 min (sped up in the demo); cuff every morning',
     live: 'Wristband estimate',
     dailyLabel: 'Cuff, this morning',
+    digits: 0,
     howToMeasure: 'Morning cuff: seated, after 5 min of rest, arm at heart level. The wristband estimate runs on its own.',
-    why: 'Without gravity, blood shifts towards the head and blood-pressure regulation changes; this affects the heart and vessels.',
+    why: 'Without gravity, blood shifts towards the head and blood-pressure regulation changes.',
     advice: {
       green: 'Blood pressure is within the normal range.',
       yellow: 'Less salt and caffeine, rest, measure again with the cuff.',
       red: 'Rest, measure again in 5 min, tell the flight surgeon.',
     },
     evaluate: (sys, _a, _m, dia) => {
-      const s = sys[sys.length - 1]
-      const d = dia[dia.length - 1]
-      if (s >= 160 || d >= 100) return { status: 'red', reason: 'Cuff reading 160/100 or higher' }
-      const high = (i: number) => sys[i] >= 130 || dia[i] >= 85
       const n = sys.length
-      if (n >= 3 && high(n - 1) && high(n - 2) && high(n - 3))
-        return { status: 'yellow', reason: '130/85 or higher for 3 mornings' }
-      if (s < 90 || d < 60) return { status: 'yellow', reason: 'Below 90/60' }
-      return { status: 'green', reason: 'Within normal range (cuff, this morning)' }
+      if (sys[n - 1] >= 160 || dia[n - 1] >= 100) return red('Cuff reading 160/100 or higher')
+      const high = (i: number) => sys[i] >= 130 || dia[i] >= 85
+      if (n >= 3 && high(n - 1) && high(n - 2) && high(n - 3)) return yellow('130/85 or higher for 3 mornings')
+      if (sys[n - 1] < 90 || dia[n - 1] < 60) return yellow('Below 90/60')
+      return ok('Within normal range (cuff, this morning)')
     },
   },
+
+  temperature: {
+    id: 'temperature',
+    name: 'Body temperature',
+    unit: '°C',
+    source: 'Thermometer, automatic',
+    frequency: 'Every morning and when unwell',
+    digits: 1,
+    howToMeasure: 'Under the tongue, 1 minute. The thermometer sends the result itself.',
+    why: 'Immunity weakens in flight and infections spread easily in a closed cabin. Fever is often the first sign.',
+    advice: {
+      green: 'No fever.',
+      yellow: 'Drink fluids, rest, wear a mask, measure again in 4 hours.',
+      red: 'Tell the flight surgeon. Take a fever reducer from the medical kit.',
+    },
+    evaluate: (v) => {
+      const t = latest(v)
+      if (t > 38 || t < 35.5) return red('Above 38.0 °C or below 35.5 °C')
+      if (t >= 37.3) return yellow('Slightly raised: 37.3–38.0 °C')
+      return ok()
+    },
+  },
+
+  bloodSugar: {
+    id: 'bloodSugar',
+    name: 'Blood sugar',
+    unit: 'mg/dL',
+    source: 'Glucometer, automatic',
+    frequency: 'Weekly, fasting',
+    digits: 0,
+    howToMeasure: 'Before breakfast: prick a finger, put a drop on the strip. The glucometer sends the result.',
+    why: 'In flight the body responds less well to insulin, which can raise blood sugar.',
+    advice: {
+      green: 'Blood sugar is normal.',
+      yellow: 'High: less sugar, more movement. Low: eat 15 g of fast carbs.',
+      red: 'Low: fast carbs and measure again in 15 min. Tell the flight surgeon.',
+    },
+    evaluate: (v) => {
+      const s = latest(v)
+      if (s < 55 || last(v, 2).every((x) => x >= 126)) return red('Below 55, or 126 and above twice')
+      if (s >= 100 || s < 70) return yellow('Outside 70–99 mg/dL (fasting)')
+      return ok()
+    },
+  },
+
+  urineCalcium: {
+    id: 'urineCalcium',
+    name: 'Urine calcium',
+    unit: 'mg/day',
+    source: 'Urine analyzer, automatic',
+    frequency: 'Weekly',
+    digits: 0,
+    howToMeasure: 'Collect urine and run the test on the analyzer. It sends the result itself.',
+    why: 'Bone density can’t be measured in flight. Rising calcium in urine means bones are losing mineral, and raises kidney stone risk.',
+    advice: {
+      green: 'Bone markers are stable. Keep up strength training.',
+      yellow: 'Don’t skip strength training, drink more water.',
+      red: 'Drink at least 2.5 L a day and tell the flight surgeon (kidney stone risk).',
+    },
+    evaluate: (v, a) => {
+      const c = latest(v)
+      if (c > 300) return red('Above 300 mg/day')
+      if (c >= 250 || c >= a.baseline.urineCalcium * 1.2)
+        return yellow(`Rising: 20% or more above your norm (${a.baseline.urineCalcium} mg/day)`)
+      return ok('Close to your pre-flight norm')
+    },
+  },
+
+  trainingMinutes: {
+    id: 'trainingMinutes',
+    name: 'Training',
+    unit: 'min/day',
+    source: 'Exercise machine, automatic',
+    frequency: 'Every session',
+    digits: 0,
+    partialToday: true,
+    howToMeasure: 'Nothing to do: the exercise machine logs each session.',
+    why: 'Without gravity, bones and muscles weaken. Daily resistance and cardio training is the main protection.',
+    advice: {
+      green: 'Training volume is on target.',
+      yellow: 'Get back to your full training plan, add strength exercises.',
+      red: 'Review the training plan with the flight surgeon.',
+    },
+    evaluate: (v) => {
+      const done = fullDays(v)
+      if (last(done, 7).every((x) => x < 60)) return red('Under 60 min every day this week')
+      if (last(done, 3).every((x) => x < 90)) return yellow('Under 90 min for 3 days')
+      return ok('On target (goal 120 min/day)')
+    },
+  },
+
+  gripStrength: {
+    id: 'gripStrength',
+    name: 'Grip strength',
+    unit: 'kg',
+    source: 'Hand dynamometer, manual entry',
+    frequency: 'Weekly',
+    digits: 1,
+    howToMeasure: 'Squeeze the dynamometer as hard as you can 3 times and record the best result.',
+    why: 'A quick check of overall muscle strength, which drops without gravity.',
+    advice: {
+      green: 'Muscle strength is holding.',
+      yellow: 'Restore training volume, add strength exercises.',
+      red: 'Review the training plan with the flight surgeon.',
+    },
+    evaluate: (v, a) => {
+      const drop = 1 - latest(v) / a.baseline.gripStrength
+      if (drop >= 0.2) return red('20% or more below your pre-flight strength')
+      if (drop >= 0.1) return yellow(`10% or more below your pre-flight strength (${a.baseline.gripStrength} kg)`)
+      return ok('Close to your pre-flight strength')
+    },
+  },
+
+  water: {
+    id: 'water',
+    name: 'Water intake',
+    unit: 'ml',
+    source: 'Water dispenser + manual “+250 ml”',
+    frequency: 'Through the day',
+    digits: 0,
+    partialToday: true,
+    howToMeasure: 'Drinks from the dispenser are counted automatically. Add other drinks with “+250 ml”.',
+    why: 'Dehydration raises the risk of kidney stones, which is already higher in flight because of bone loss.',
+    advice: {
+      green: 'Hydration is on track (goal 2.0–2.5 L a day).',
+      yellow: 'Drink more: aim for at least 2 L today.',
+      red: 'Drink at least 2.5 L today and tell the flight surgeon if you have back pain.',
+    },
+    evaluate: (v) => {
+      const done = fullDays(v)
+      if (last(done, 3).every((x) => x < 1500)) return red('Under 1.5 L for 3 days')
+      if (last(done, 2).every((x) => x < 2000)) return yellow('Under 2 L for 2 days')
+      return ok('On target (goal 2.0–2.5 L/day)')
+    },
+  },
+
+  sleep: {
+    id: 'sleep',
+    name: 'Sleep',
+    unit: 'h',
+    source: 'Wristband, automatic',
+    frequency: 'Every night',
+    digits: 1,
+    howToMeasure: 'Wear the wristband at night. Nothing else to do.',
+    why: 'Short sleep leads to mistakes, low mood and weaker immunity. In space there is no day/night cycle, plus noise and stress.',
+    advice: {
+      green: 'Sleep is on track. Keep your regular schedule.',
+      yellow: 'Darken the sleep station, use earplugs, no screens for an hour before sleep, keep a fixed schedule.',
+      red: 'Postpone complex tasks. Tell the crew and the flight surgeon.',
+    },
+    evaluate: (v) => {
+      if (last(v, 5).every((x) => x < 5) || latest(v) < 4) return red('Under 5 h for 5 nights, or under 4 h last night')
+      if (last(v, 3).every((x) => x < 6)) return yellow('Under 6 h for 3 nights in a row')
+      return ok()
+    },
+  },
+
   mood: {
     id: 'mood',
     name: 'Mood',
-    unit: '1–5',
-    bodyZone: 'Head',
+    unit: '/ 5',
     source: 'Daily check-in, manual',
     frequency: 'Every day',
-    howToMeasure: 'Answer three short questions honestly in the daily check-in.',
+    digits: 0,
+    howToMeasure: 'Answer “How do you feel today?” in the daily check-in.',
     why: 'Isolation, confinement and distance from home affect mental health. Early signs are easy to miss in yourself.',
     advice: {
       green: 'Mood is stable. Keep in touch with family and crew.',
@@ -119,37 +280,12 @@ export const RULES: Record<MetricId, MetricRule> = {
       red: 'Book a private session with the psychologist on Earth (replies take up to 20 min each way).',
     },
     evaluate: (v) => {
-      if (last(v, 5).every((x) => x <= 2) || v[v.length - 1] === 1)
-        return { status: 'red', reason: '2 or lower for 5 days, or 1 today' }
-      if (last(v, 2).every((x) => x <= 2)) return { status: 'yellow', reason: '2 or lower for 2 days in a row' }
-      return { status: 'green', reason: 'Stable' }
-    },
-  },
-  radiation: {
-    id: 'radiation',
-    name: 'Radiation',
-    unit: 'mSv/day',
-    bodyZone: 'Whole body',
-    source: 'Ship sensors via onboard network; backup: personal dosimeter',
-    frequency: 'Live, every few seconds',
-    live: 'Ship sensor',
-    howToMeasure: 'Nothing to do: ship sensors send data automatically.',
-    why: 'Accumulated dose raises long-term risk of cancer, cataracts and heart disease. A solar particle event is dangerous right away.',
-    advice: {
-      green: 'Background radiation is normal for this mission phase.',
-      yellow: 'Know where the nearest shelter is and keep your personal dosimeter with you.',
-      red: 'Go to the shelter now and press “I am in shelter”.',
-    },
-    evaluate: (v, _a, m) => {
-      const ratio = v[v.length - 1] / m.normalDoseRatePerDay
-      if (ratio >= 10) return { status: 'red', reason: 'Dose rate 10× above normal: solar particle event' }
-      if (ratio >= 2) return { status: 'yellow', reason: 'Dose rate 2× above normal' }
-      return { status: 'green', reason: 'Normal background' }
+      if (last(v, 5).every((x) => x <= 2) || latest(v) === 1) return red('2 or lower for 5 days, or 1 today')
+      if (last(v, 2).every((x) => x <= 2)) return yellow('2 or lower for 2 days in a row')
+      return ok('Stable')
     },
   },
 }
-
-export const METRIC_ORDER: MetricId[] = ['radiation', 'heartRate', 'bloodPressure', 'sleep', 'mood']
 
 export function valuesFor(readings: Reading[], metric: MetricId) {
   return readings.filter((r) => r.metric === metric).map((r) => r.value)
@@ -159,7 +295,6 @@ export function values2For(readings: Reading[], metric: MetricId) {
   return readings.filter((r) => r.metric === metric).map((r) => r.value2 ?? 0)
 }
 
-// Lifetime career limit, mSv (NASA standard; to verify).
-export const CAREER_LIMIT = 600
-
-export const avgOf = avg
+export const STATUS_RANK: Record<Status, number> = { green: 0, yellow: 1, red: 2 }
+export const worst = (statuses: Status[]): Status =>
+  statuses.reduce<Status>((w, s) => (STATUS_RANK[s] > STATUS_RANK[w] ? s : w), 'green')

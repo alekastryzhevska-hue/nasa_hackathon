@@ -27,6 +27,7 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 | Bones (urine calcium) | mg/day | Urine analyzer | Auto | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
 | Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Training auto; grip manual | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
 | Blood sugar | mg/dL | Glucometer | Auto | Weekly, fasting | 70–99 | 100–125 or 55–69 | ≥ 126 repeatedly, or < 55 |
+| Water intake | ml/day | Water dispenser + "+250 ml" | Auto + manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
 | Urine test strip | negative / trace / + / ++ | Test strip | Manual (pick the color) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
 | Saliva cortisol | own norm | Rapid saliva test *(device in development)* | Manual | Weekly, morning | Own norm | > 50 % above own norm | ≥ 2× own norm two weeks in a row |
 
@@ -52,7 +53,7 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
   - **What to do:** check the sensor; if silent > 2 h, connect the personal dosimeter by USB. Know where the shelter is.
 - 🔴 **Red:** dose rate ≥ 10× normal (solar particle event).
   - **What to do:** go to the storm shelter, take the personal dosimeter, stay until the all-clear (dose rate normal for 1 hour).
-- **Lifetime limit:** 600 mSv career limit *(verify)*. Bar shows previous missions + this mission + forecast at mission end. Forecast ≥ 80 % → yellow, ≥ 100 % → red.
+- **Lifetime limit:** 600 mSv career limit *(verify)*. **Not shown to the astronaut** (design decision 2026-11-14): near the limit there is nothing extra they can do in flight, and it adds stress. The dose history is still recorded and sent to flight surgeons.
 - **2× and 10× are our own illustrative thresholds** *(look for real NASA alert levels)*.
 
 ### Sleep

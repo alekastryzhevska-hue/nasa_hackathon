@@ -1,81 +1,83 @@
-import type { Astronaut, LiveValue, Mission } from '../data/types'
+// Compact card for one metric inside a layer: value, status, reason, 14-day chart vs.
+// the astronaut's own norm, and a short "about" section.
+
+import type { Astronaut, LiveValue, Mission, Status } from '../data/types'
 import type { MetricRule } from '../rules/metrics'
 import { Sparkline } from './Sparkline'
 
-export const STATUS_COLOR = { green: '#3ecf8e', yellow: '#f5c542', red: '#ff5c5c' } as const
-const STATUS_LABEL = { green: 'Normal', yellow: 'Attention', red: 'Act now' } as const
+export const STATUS_COLOR: Record<Status, string> = { green: '#5fcf86', yellow: '#f0a24e', red: '#ef5b5b' }
+export const STATUS_LABEL: Record<Status, string> = { green: 'Normal', yellow: 'Attention', red: 'Act now' }
 
 interface Props {
   rule: MetricRule
   values: number[]
   values2: number[]
+  status: Status
+  reason: string
   astronaut: Astronaut
   mission: Mission
   live?: LiveValue
   now: number
 }
 
-function format(rule: MetricRule, value: number, value2?: number) {
+export function formatValue(rule: MetricRule, value: number, value2?: number) {
   if (rule.id === 'bloodPressure') return `${Math.round(value)}/${Math.round(value2 ?? 0)}`
-  if (rule.id === 'radiation') return value.toFixed(2)
-  if (rule.id === 'heartRate') return String(Math.round(value))
-  return String(value)
+  if (rule.id === 'water') return (value / 1000).toFixed(1)
+  return value.toFixed(rule.digits ?? 1)
 }
+
+const unitOf = (rule: MetricRule) => (rule.id === 'water' ? 'L' : rule.unit)
 
 function ago(ms: number) {
   const s = Math.max(0, Math.round(ms / 1000))
   return s < 60 ? `${s} s ago` : `${Math.round(s / 60)} min ago`
 }
 
-export function MetricCard({ rule, values, values2, astronaut, mission, live, now }: Props) {
-  const { status, reason } = rule.evaluate(values, astronaut, mission, values2)
+export function MetricCard({ rule, values, values2, status, reason, astronaut, mission, live, now }: Props) {
   const color = STATUS_COLOR[status]
   const i = values.length - 1
-  const daily = format(rule, values[i], values2[i])
-  const baseline =
-    rule.id === 'radiation'
-      ? mission.normalDoseRatePerDay
-      : astronaut.baseline[rule.id as keyof Astronaut['baseline']]
+  const daily = formatValue(rule, values[i], values2[i])
+  const baseline = rule.id === 'radiation' ? mission.normalDoseRatePerDay : astronaut.baseline[rule.id]
+  const history = rule.partialToday ? values.slice(-15, -1) : values.slice(-14)
 
   return (
-    <article className={`card status-${status}`}>
-      <header className="card-head">
-        <div>
-          <div className="zone">{rule.bodyZone}</div>
-          <h2>{rule.name}</h2>
-        </div>
-        <span className="pill" style={{ background: color }}>
+    <article className="metric">
+      <header className="metric-head">
+        <h3>{rule.name}</h3>
+        <span className="chip" style={{ color, borderColor: color }}>
           {STATUS_LABEL[status]}
         </span>
       </header>
 
-      <div className="value">
-        {live ? format(rule, live.value, live.value2) : daily}
-        <span className="unit"> {rule.unit}</span>
+      <div className="metric-value">
+        {live ? formatValue(rule, live.value, live.value2) : daily}
+        <span className="unit"> {unitOf(rule)}</span>
+        {rule.partialToday && <span className="unit"> today so far</span>}
       </div>
 
       {live && (
-        <div className="live">
+        <div className="live-line">
           <span className="live-dot" /> {rule.live} · updated {ago(now - live.updatedAt)}
         </div>
       )}
       {live && rule.dailyLabel && (
-        <div className="reason">
+        <div className="muted small">
           {rule.dailyLabel}: <strong>{daily} {rule.unit}</strong>
         </div>
       )}
-      <div className="reason">{reason}</div>
-
-      <Sparkline values={values.slice(-14)} baseline={baseline} color={color} />
-      <div className="legend">
-        Last 14 days{rule.dailyLabel ? ` (${rule.dailyLabel.split(',')[0].toLowerCase()})` : ''} · dashed line =
-        your norm ({baseline} {rule.unit})
+      <div className="metric-reason" style={{ color: status === 'green' ? undefined : color }}>
+        {reason}
       </div>
 
-      <p className="advice">
-        <strong>What to do: </strong>
-        {rule.advice[status]}
-      </p>
+      {history.length > 1 && (
+        <>
+          <Sparkline values={history} baseline={baseline} color={color} />
+          <div className="muted tiny">
+            {history.length > 7 ? 'Last 14 days' : 'Weekly tests'} · dashed = your norm (
+            {rule.id === 'water' ? (baseline / 1000).toFixed(1) : baseline} {unitOf(rule)})
+          </div>
+        </>
+      )}
 
       <details>
         <summary>About this metric</summary>

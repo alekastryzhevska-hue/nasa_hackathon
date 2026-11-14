@@ -172,6 +172,9 @@ Region status = worst status of the metrics that touch that region.
 
 ### 2.4 Radiation bar (bottom) ✅
 
+> **Changed 2026-11-14:** the `lifetime` block is not shown on screen (design decision).
+> Kept here only as data for flight surgeons.
+
 ```json
 {
   "status": "green",

@@ -1,13 +1,30 @@
 // Shared data shapes. Every measurement in the app is a Reading in one format:
 // astronaut · metric · value · unit · time · source.
 
-export type MetricId = 'radiation' | 'sleep' | 'mood' | 'heartRate' | 'bloodPressure'
+export type MetricId =
+  | 'radiation'
+  | 'sleep'
+  | 'mood'
+  | 'heartRate'
+  | 'bloodPressure'
+  | 'temperature'
+  | 'bloodSugar'
+  | 'urineCalcium'
+  | 'trainingMinutes'
+  | 'gripStrength'
+  | 'water'
 
 export type Source =
   | 'ship-sensor'
   | 'personal-dosimeter'
   | 'wristband'
   | 'cuff'
+  | 'thermometer'
+  | 'glucometer'
+  | 'analyzer'
+  | 'exercise-device'
+  | 'dynamometer'
+  | 'water-dispenser'
   | 'check-in'
 
 export interface Reading {
@@ -23,29 +40,24 @@ export interface Reading {
 
 export type Status = 'green' | 'yellow' | 'red'
 
+// Pre-flight personal norm for every metric (radiation uses the mission's normal rate).
+export type Baseline = Record<Exclude<MetricId, 'radiation'>, number> & { bloodPressure2: number }
+
 export interface Astronaut {
   id: string
   name: string
   age: number
   role: string
-  // Pre-flight personal baseline, used instead of population averages.
-  baseline: {
-    sleep: number
-    mood: number
-    heartRate: number
-    bloodPressure: number // systolic
-    bloodPressure2: number // diastolic
-  }
-  // Lifetime radiation dose from earlier missions, mSv.
-  previousMissionsDose: number
+  baseline: Baseline
   // Which problem the mock data shows (for the demo).
-  scenario: 'healthy' | 'sleep-deficit'
+  scenario: 'healthy' | 'sleep-deficit' | 'bone-loss'
 }
 
 export interface Mission {
   name: string
   day: number
   totalDays: number
+  destination: string
   // Normal radiation dose rate for this environment, mSv per day.
   normalDoseRatePerDay: number
 }
@@ -57,3 +69,17 @@ export interface LiveValue {
   updatedAt: number // ms timestamp
   source: Source
 }
+
+// Parts of the body figure that can be colored. Must match CONTRACT.md.
+export type Region =
+  | 'head'
+  | 'eyes'
+  | 'heart'
+  | 'lungs'
+  | 'kidneys'
+  | 'stomach'
+  | 'spine'
+  | 'arms'
+  | 'legs'
+  | 'blood-vessels'
+  | 'whole-body'
