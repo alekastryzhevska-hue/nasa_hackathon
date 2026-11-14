@@ -22,8 +22,8 @@ export function Sparkline({ values, baseline, color }: Props) {
       {baseline !== undefined && (
         <line x1={0} x2={w} y1={y(baseline)} y2={y(baseline)} className="baseline" />
       )}
-      <polyline points={points} fill="none" stroke={color} strokeWidth={2} />
-      <circle cx={x(values.length - 1)} cy={y(values[values.length - 1])} r={3} fill={color} />
+      <polyline points={points} fill="none" style={{ stroke: color }} strokeWidth={2} />
+      <circle cx={x(values.length - 1)} cy={y(values[values.length - 1])} r={3} style={{ fill: color }} />
     </svg>
   )
 }

@@ -5,9 +5,11 @@
 import type { ReactNode } from 'react'
 import type { Region, Status } from '../data/types'
 import type { LayerId } from '../rules/layers'
+import { DS } from '../theme'
 
-export const HOLO = '#62b8ec'
-const COLOR: Record<Status, string> = { green: HOLO, yellow: '#f0a24e', red: '#ef5b5b' }
+// Hologram blue = design-system "information" blue; statuses use the system colors.
+export const HOLO = DS.blue
+const COLOR: Record<Status, string> = { green: HOLO, yellow: DS.orange, red: DS.red }
 
 interface Props {
   layer: LayerId

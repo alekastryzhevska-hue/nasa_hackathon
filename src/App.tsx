@@ -135,8 +135,8 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <svg viewBox="0 0 40 24" width="40" height="24" aria-hidden>
-            <ellipse cx="20" cy="12" rx="17" ry="8" fill="none" stroke="#62b8ec" strokeWidth="2.5" transform="rotate(-15 20 12)" />
-            <circle cx="20" cy="12" r="4" fill="none" stroke="#62b8ec" strokeWidth="2.5" />
+            <ellipse cx="20" cy="12" rx="17" ry="8" fill="none" style={{ stroke: 'var(--blue-default)' }} strokeWidth="2.5" transform="rotate(-15 20 12)" />
+            <circle cx="20" cy="12" r="4" fill="none" style={{ stroke: 'var(--blue-default)' }} strokeWidth="2.5" />
           </svg>
           <span>Health app</span>
         </div>

@@ -3,9 +3,10 @@
 
 import type { Astronaut, LiveValue, Mission, Status } from '../data/types'
 import type { MetricRule } from '../rules/metrics'
+import { STATUS_COLOR } from '../theme'
 import { Sparkline } from './Sparkline'
 
-export const STATUS_COLOR: Record<Status, string> = { green: '#5fcf86', yellow: '#f0a24e', red: '#ef5b5b' }
+export { STATUS_COLOR }
 export const STATUS_LABEL: Record<Status, string> = { green: 'Normal', yellow: 'Attention', red: 'Act now' }
 
 interface Props {
