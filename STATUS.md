@@ -31,7 +31,7 @@ _Last updated: 2026-11-15_
 
 ## zachtrenito
 
-_Last updated: 2026-11-14_
+_Last updated: 2026-11-15_
 
 ### Done
 - 2026-11-14: Web app prototype with live data (heart rate, blood pressure, radiation).
@@ -43,6 +43,9 @@ _Last updated: 2026-11-14_
 - 2026-11-14: All metrics in generator and rules; third astronaut Mia Chen (bone loss).
 - 2026-11-14: Test panel (sliders for every metric, solar event) and ripple rings on
   layers that need attention (trial).
+- 2026-11-15: App switched to the WALL-E & EVE design system: `design-system/tokens.css`
+  imported in `src/main.tsx`; all colors are now design-system variables; Fira Sans for
+  headings and big numbers, Overpass for text.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -56,4 +59,8 @@ _Last updated: 2026-11-14_
 - Please check the ripple animation on tabs and body parts — keep, change or remove?
 - The body figure is my vector drawing in your style. If you have your own SVG with the
   part names from `CONTRACT.md`, send it and I'll swap it in.
+- Design system applied: no hard-coded colors left in `src/`. The hologram figure and the
+  main button use `blue-default`. Note: fonts load from Google Fonts, so without internet
+  the app falls back to the system font. Should we bundle the font files in the repo so it
+  works fully offline on board?
 - Open questions are at the end of `CONTRACT.md` (organs, app name, shelter button…).

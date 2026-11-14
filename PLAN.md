@@ -82,3 +82,5 @@ Update this section at the end of every session.
   data checks and tests.
 - 2026-11-15 (alekastryzhevska-hue): design system WALL-E & EVE (colors, typography) added
   to `design-system/`. **Next:** backend switches the app to `design-system/tokens.css`.
+- 2026-11-15 (zachtrenito): app switched to the WALL-E & EVE design system (colors and
+  fonts). **Next:** design reviews the app; Vercel link; Sport page; data checks.
