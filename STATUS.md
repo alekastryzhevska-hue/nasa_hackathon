@@ -29,21 +29,26 @@ _Last updated: —_
 _Last updated: 2026-11-14_
 
 ### Done
-- 2026-11-14: Web app prototype: mock data for two astronauts (healthy, sleep deficit),
-  rules for radiation, sleep, heart rate and mood, radiation bar and solar event alarm.
-- 2026-11-14: `CONTRACT.md` (plain) + `docs/contract-technical.md` (exact formats).
-- 2026-11-14: `docs/health-rules.md` — thresholds and advice for 11 metrics.
+- 2026-11-14: Web app prototype with live data (heart rate, blood pressure, radiation).
+- 2026-11-14: `CONTRACT.md` v1, `docs/contract-technical.md`, `docs/health-rules.md`.
 - 2026-11-14: Moved `CLAUDE.md`, `PLAN.md`, `STATUS.md`, `design.md` from the test repo.
+- 2026-11-14: Main screen built from the "Hologram" mockups: mission progress (day 94 of
+  180), daily plan, 7 body layers with numbers and charts, vector body figure, hydration
+  +250 ml, mood check-in, radiation scale (no lifetime bar), one-screen layout.
+- 2026-11-14: All metrics in generator and rules; third astronaut Mia Chen (bone loss).
+- 2026-11-14: Test panel (sliders for every metric, solar event) and ripple rings on
+  layers that need attention (trial).
 
 ### In progress
-- Waiting for design review of the contract.
+- Waiting for design feedback on the built screen.
 
 ### Next
-- Add blood pressure, temperature and blood sugar to the generator and rules.
-- Data checks (impossible values, stale data) and automatic tests.
+- Public demo link (Vercel, connected by the repo owner).
+- Sport page; data checks (impossible values, stale data); automatic tests.
 
 ### Notes for partner
-- Please read `CONTRACT.md` and tell me where your design differs. The 3D model's part
-  names must match the list in `CONTRACT.md` so the code can color them.
-- Values for all metrics are in `docs/health-rules.md`.
-- `CLAUDE.md` now lists who owns which files; please check that the split works for you.
+- Run the app: see "Run it locally" in `README.md`, or ask your Claude "run the app".
+- Please check the ripple animation on tabs and body parts — keep, change or remove?
+- The body figure is my vector drawing in your style. If you have your own SVG with the
+  part names from `CONTRACT.md`, send it and I'll swap it in.
+- Open questions are at the end of `CONTRACT.md` (organs, app name, shelter button…).

@@ -74,8 +74,9 @@ color coding, charts, measurement reminders, gamification, and simple explanatio
 
 Update this section at the end of every session.
 
-- 2026-11-14 16:30 (zachtrenito): prototype online in the repo (4 metrics, two mock
-  astronauts, radiation bar and alarm); contract draft v0 and health rules pushed.
-  Design has a first version made without the contract.
-  **Next:** design checks her mockups against `CONTRACT.md`, call to agree contract v1;
-  backend adds blood pressure, temperature and blood sugar.
+- 2026-11-14 ~18:30 (zachtrenito): main screen built from the design mockups with all
+  seven layers, daily plan, live radiation, test panel and ripple rings (trial).
+  Design decisions: no lifetime dose bar, mission = day 94 of 180, no calendar,
+  app name "Health app" for now, 2D vector figure (no 3D model).
+  **Next:** design reviews the running app; public link via Vercel; Sport page;
+  data checks and tests.
