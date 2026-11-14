@@ -138,9 +138,12 @@ summary { cursor: pointer; }
 .rad-track .r { flex: 30; background: var(--red); }
 .rad-ticks { position: relative; height: 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .rad-ticks span { position: absolute; top: 4px; transform: translateX(-50%); }
-.rad-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--muted); }
-.rad-legend span { font-weight: 700; margin-left: 10px; }
-.rad-legend span:first-child { margin-left: 0; }
+.rad-legend { display: flex; gap: 4px; font-size: 13px; color: var(--muted); }
+.rad-legend > div { min-width: 0; text-align: left; }
+.rad-legend .g { flex: 40; }
+.rad-legend .o { flex: 30; }
+.rad-legend .r { flex: 30; }
+.rad-legend b { display: block; font-weight: 700; }
 
 .sport { min-height: 300px; }
 .disclaimer { color: var(--muted); font-size: 12px; padding: 0 24px 18px; }

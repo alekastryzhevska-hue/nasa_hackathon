@@ -134,10 +134,17 @@ export function RadiationPanel(props: { rate: number; normal: number; status: St
           <span style={{ left: '40%' }}>{elevated.toFixed(1)}</span>
           <span style={{ left: '70%' }}>{critical.toFixed(0)}</span>
         </div>
+        {/* Same proportions as the track, so each label sits under its own zone. */}
         <div className="rad-legend">
-          <span style={{ color: STATUS_COLOR.green }}>● Normal</span> &lt; {elevated.toFixed(1)} mSv/day
-          <span style={{ color: STATUS_COLOR.yellow }}>▲ Elevated</span> {elevated.toFixed(1)}–{critical.toFixed(0)}
-          <span style={{ color: STATUS_COLOR.red }}>!!! Critical</span> ≥ {critical.toFixed(0)}
+          <div className="g">
+            <b style={{ color: STATUS_COLOR.green }}>● Normal</b> &lt; {elevated.toFixed(1)} mSv/day
+          </div>
+          <div className="o">
+            <b style={{ color: STATUS_COLOR.yellow }}>▲ Elevated</b> {elevated.toFixed(1)}–{critical.toFixed(0)} mSv/day
+          </div>
+          <div className="r">
+            <b style={{ color: STATUS_COLOR.red }}>!!! Critical</b> ≥ {critical.toFixed(0)} mSv/day
+          </div>
         </div>
       </div>
     </section>
