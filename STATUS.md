@@ -46,6 +46,7 @@ _Last updated: 2026-11-15_
 - 2026-11-15: App switched to the WALL-E & EVE design system: `design-system/tokens.css`
   imported in `src/main.tsx`; all colors are now design-system variables; Fira Sans for
   headings and big numbers, Overpass for text.
+- 2026-11-15: Font files bundled with the app, so fonts work offline.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -60,7 +61,8 @@ _Last updated: 2026-11-15_
 - The body figure is my vector drawing in your style. If you have your own SVG with the
   part names from `CONTRACT.md`, send it and I'll swap it in.
 - Design system applied: no hard-coded colors left in `src/`. The hologram figure and the
-  main button use `blue-default`. Note: fonts load from Google Fonts, so without internet
-  the app falls back to the system font. Should we bundle the font files in the repo so it
-  works fully offline on board?
+  main button use `blue-default`.
+- Fonts are now bundled with the app (npm packages `@fontsource/fira-sans`,
+  `@fontsource/overpass`), so they work without internet. You can remove the Google Fonts
+  `@import` line at the top of `design-system/tokens.css`; it is no longer needed.
 - Open questions are at the end of `CONTRACT.md` (organs, app name, shelter button…).
