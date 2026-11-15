@@ -65,6 +65,9 @@ export default function App() {
   const [moodStep, setMoodStep] = useState(MOOD_DEFAULT_STEP)
   const [moodLabels, setMoodLabels] = useState<string[]>(MOOD_DEFAULT_LABELS)
   const [moodSaved, setMoodSaved] = useState(false)
+  // Readings that devices "sent" today after "Measure now" (demo), and the tasks they close.
+  const [extra, setExtra] = useState<Partial<Record<MetricId, { v: number; v2?: number }[]>>>({})
+  const [measured, setMeasured] = useState<Set<string>>(new Set())
   // Radiation alarm collapsed into a red bar (dose rate at the moment it was collapsed).
   const [collapsedAt, setCollapsedAt] = useState<number | null>(null)
   // Yellow layers the astronaut has already opened: their ripple stops. Keyed by status,
@@ -75,7 +78,8 @@ export default function App() {
   const readings = useMemo(() => generateReadings(astronaut), [astronaut])
 
   // Daily values per metric, with test-panel overrides and today's actions applied.
-  const daily = (id: MetricId) => {
+  // withExtra = false gives the values at the start of the day (sets today's plan).
+  const daily = (id: MetricId, withExtra = true): number[] => {
     const v = valuesFor(readings, id)
     const ov = OVERRIDE_KEY[id] ? overrides[OVERRIDE_KEY[id]!] : undefined
     if (RULES[id].partialToday) {
@@ -84,10 +88,12 @@ export default function App() {
     }
     const out = applyOverride(v, ov)
     if (id === 'mood' && checkIn !== null) return [...out.slice(0, -1), checkIn]
-    return out
+    return withExtra ? [...out, ...(extra[id] ?? []).map((e) => e.v)] : out
   }
-  const daily2 = (id: MetricId) =>
-    id === 'bloodPressure' ? applyOverride(values2For(readings, id), overrides.bpDia) : values2For(readings, id)
+  const daily2 = (id: MetricId, withExtra = true): number[] => {
+    const base = id === 'bloodPressure' ? applyOverride(values2For(readings, id), overrides.bpDia) : values2For(readings, id)
+    return withExtra ? [...base, ...(extra[id] ?? []).map((e) => e.v2 ?? 0)] : base
+  }
 
   // Live stream (heart rate, blood pressure estimate, radiation).
   const resting = daily('heartRate').at(-1)!
@@ -105,6 +111,8 @@ export default function App() {
     setMoodStep(MOOD_DEFAULT_STEP)
     setMoodLabels(MOOD_DEFAULT_LABELS)
     setMoodSaved(false)
+    setExtra({})
+    setMeasured(new Set())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [astronautId])
 
@@ -154,14 +162,35 @@ export default function App() {
   const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
   const testsNeeded = TESTS_NEEDED[moodBefore]
 
+  // Status at the start of the day sets today's extra measurements.
+  const statusBefore = (id: MetricId) => RULES[id].evaluate(daily(id, false), astronaut, MISSION, daily2(id, false)).status
   const tasks = buildChecklist({
     trainingToday: daily('trainingMinutes').at(-1)!,
-    morningCheckDone: true,
+    status: statusBefore,
+    measured,
     waterToday,
     waterReminder,
     checkIns: checkIns.length,
     checkInsNeeded: testsNeeded,
   })
+  // "Measure now" (demo): the device sends a new reading that follows the recent trend,
+  // the task ticks itself and the status is recalculated from the new value.
+  const next = (vals: number[], digits = 0) => {
+    const last = vals.at(-1)!
+    const prev = vals.at(-2) ?? last
+    const f = 10 ** digits
+    return Math.round((last + (last - prev) * 0.5) * f) / f
+  }
+  const measureNow = (t: Task) => {
+    if (!t.metric) return
+    const id = t.metric
+    const v = next(daily(id), RULES[id].digits ?? 0)
+    const v2 = id === 'bloodPressure' ? next(daily2(id)) : undefined
+    setExtra((x) => ({ ...x, [id]: [...(x[id] ?? []), { v, v2 }] }))
+    setMeasured((m) => new Set(m).add(t.id))
+  }
+  const pendingFor = (id: MetricId) => tasks.find((t) => t.metric === id && !t.done)
+
   const openTask = (t: Task) => {
     setView('main')
     openLayer(t.layer)
@@ -260,7 +289,8 @@ export default function App() {
                       }}
                       onSave={() => {
                         setCheckIns((l) => [...l, moodScore(moodStep)])
-                        setMoodSaved(true)
+                        // Saved for good only when today's last test is done.
+                        setMoodSaved(checkIns.length + 1 >= testsNeeded)
                       }}
                       saved={moodSaved}
                       done={checkIns.length}
@@ -268,7 +298,7 @@ export default function App() {
                     />
                   )}
                   {/* Mind: the check-in card replaces the status card, as in the mockup. */}
-                  {layerId !== 'emotions' && (
+                  {(
                     <StatusCard
                       status={summary.status}
                       reason={`${RULES[worstMetric.id].name}: ${worstMetric.reason}`}
@@ -324,6 +354,8 @@ export default function App() {
                           live={liveFor(id)}
                           now={now}
                           scheduleStatus={id === 'mood' ? moodBefore : undefined}
+                          measure={pendingFor(id) ? () => measureNow(pendingFor(id)!) : undefined}
+                          due={pendingFor(id)?.title}
                         />
                       )
                     })}

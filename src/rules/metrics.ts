@@ -97,7 +97,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     frequency: 'Wristband estimate every 30 min (sped up in the demo); cuff every morning',
     schedule: { green: 'Cuff every morning', yellow: 'Cuff morning and evening', red: 'Cuff in 5 min, then every 4 h' },
     live: 'Wristband estimate',
-    dailyLabel: 'Cuff, this morning',
+    dailyLabel: 'Cuff, latest',
     digits: 0,
     howToMeasure: 'Morning cuff: after 5 min of rest, relaxed, feet in foot restraints, arm at heart level. The wristband estimate runs on its own.',
     why: 'Without gravity, blood shifts towards the head and blood-pressure regulation changes.',
@@ -112,7 +112,7 @@ export const RULES: Record<MetricId, MetricRule> = {
       const high = (i: number) => sys[i] >= 130 || dia[i] >= 85
       if (n >= 3 && high(n - 1) && high(n - 2) && high(n - 3)) return yellow('130/85 or higher for 3 mornings')
       if (sys[n - 1] < 90 || dia[n - 1] < 60) return yellow('Below 90/60')
-      return ok('Within normal range (cuff, this morning)')
+      return ok('Within normal range (cuff)')
     },
   },
 

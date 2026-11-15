@@ -12,6 +12,9 @@ export const STATUS_LABEL: Record<Status, string> = { green: 'Normal', yellow: '
 interface Props {
   // Status that sets the measuring schedule, if not the current one (mood: before today's tests).
   scheduleStatus?: Status
+  // A measurement is due today: the button stands in for the device sending data (demo).
+  measure?: () => void
+  due?: string
   rule: MetricRule
   values: number[]
   values2: number[]
@@ -36,7 +39,7 @@ function ago(ms: number) {
   return s < 60 ? `${s} s ago` : `${Math.round(s / 60)} min ago`
 }
 
-export function MetricCard({ rule, values, values2, status, reason, astronaut, mission, live, now, scheduleStatus }: Props) {
+export function MetricCard({ rule, values, values2, status, reason, astronaut, mission, live, now, scheduleStatus, measure, due }: Props) {
   const color = STATUS_COLOR[status]
   const i = values.length - 1
   const daily = formatValue(rule, values[i], values2[i])
@@ -72,6 +75,12 @@ export function MetricCard({ rule, values, values2, status, reason, astronaut, m
         {reason}
       </div>
       <div className={`metric-schedule${status === 'green' ? '' : ' alert'}`}>Measure: {rule.schedule[scheduleStatus ?? status]}</div>
+      {measure && (
+        <div className="measure-due">
+          <span>Due today: {due}</span>
+          <button className="primary" onClick={measure}>Measure now</button>
+        </div>
+      )}
 
       {history.length > 1 && (
         <>
