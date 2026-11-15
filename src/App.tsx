@@ -24,6 +24,17 @@ const OVERRIDE_KEY: Partial<Record<MetricId, keyof Overrides>> = {
   mood: 'mood',
 }
 
+// Drinks logged today in this session: dispenser fills (automatic) and other drinks
+// added by hand. Hand entries can be removed if added by mistake.
+interface Drink {
+  id: number
+  ml: number
+  time: number
+  from: 'dispenser' | 'manual'
+}
+const DRINK_ML = 250
+const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+
 const MOODS = [
   { value: 1, label: 'Very low' },
   { value: 2, label: 'Low' },
@@ -38,7 +49,10 @@ export default function App() {
   const [layerId, setLayerId] = useState<LayerId>('bones')
   const [overrides, setOverrides] = useState<Overrides>({})
   const [eventActive, setEventActive] = useState(false)
-  const [waterAdded, setWaterAdded] = useState(0)
+  const [drinks, setDrinks] = useState<Drink[]>([])
+  const waterAdded = drinks.reduce((sum, d) => sum + d.ml, 0)
+  const addDrink = (from: Drink['from']) =>
+    setDrinks((list) => [...list, { id: Date.now(), ml: DRINK_ML, time: Date.now(), from }])
   const [checkIn, setCheckIn] = useState<number | null>(null)
   // Yellow layers the astronaut has already opened: their ripple stops. Keyed by status,
   // so a layer that gets worse (or a new problem) ripples again. Red always ripples.
@@ -72,7 +86,7 @@ export default function App() {
 
   useEffect(() => {
     setLive(initialLive(resting, bp, MISSION))
-    setWaterAdded(0)
+    setDrinks([])
     setCheckIn(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [astronautId])
@@ -194,12 +208,31 @@ export default function App() {
                   />
 
                   {layerId === 'hydration' && (
-                    <section className="panel action">
+                    <section className="panel action column">
                       <div>
                         <strong>{(waterToday / 1000).toFixed(1)} L</strong>
-                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today</span>
+                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · dispenser counts automatically</span>
                       </div>
-                      <button className="primary" onClick={() => setWaterAdded((w) => w + 250)}>+ 250 ml</button>
+                      <div className="drink-buttons">
+                        <button className="primary" onClick={() => addDrink('manual')}>+ 250 ml other drink</button>
+                        <button className="ghost" onClick={() => addDrink('dispenser')}>Dispenser (demo)</button>
+                      </div>
+                      {drinks.length > 0 && (
+                        <ul className="drink-log">
+                          {[...drinks].reverse().map((d) => (
+                            <li key={d.id}>
+                              <span>{clock(d.time)}</span>
+                              <span>{d.ml} ml</span>
+                              <span className="muted">{d.from === 'dispenser' ? 'Dispenser · auto' : 'Other drink'}</span>
+                              {d.from === 'manual' ? (
+                                <button className="link" onClick={() => setDrinks((l) => l.filter((x) => x.id !== d.id))}>Remove</button>
+                              ) : (
+                                <span />
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </section>
                   )}
 

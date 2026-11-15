@@ -21,7 +21,7 @@ export type Source =
   | 'cuff'
   | 'thermometer'
   | 'glucometer'
-  | 'analyzer'
+  | 'urine-strip'
   | 'exercise-device'
   | 'dynamometer'
   | 'water-dispenser'

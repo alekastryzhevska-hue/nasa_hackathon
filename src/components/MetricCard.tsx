@@ -69,6 +69,7 @@ export function MetricCard({ rule, values, values2, status, reason, astronaut, m
       <div className="metric-reason" style={{ color: status === 'green' ? undefined : color }}>
         {reason}
       </div>
+      <div className={`metric-schedule${status === 'green' ? '' : ' alert'}`}>Measure: {rule.schedule[status]}</div>
 
       {history.length > 1 && (
         <>

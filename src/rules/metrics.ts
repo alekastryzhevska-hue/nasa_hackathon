@@ -14,6 +14,8 @@ export interface MetricRule {
   unit: string
   source: string
   frequency: string
+  // How often to measure in each status (docs/devices.md).
+  schedule: Record<Status, string>
   howToMeasure: string
   why: string
   advice: Record<Status, string>
@@ -33,6 +35,8 @@ const latest = (v: number[]) => v[v.length - 1]
 const ok = (reason = 'Within normal range'): Evaluation => ({ status: 'green', reason })
 const yellow = (reason: string): Evaluation => ({ status: 'yellow', reason })
 const red = (reason: string): Evaluation => ({ status: 'red', reason })
+// Same schedule in every status (automatic devices).
+const always = (s: string): Record<Status, string> => ({ green: s, yellow: s, red: s })
 const fullDays = (v: number[]) => v.slice(0, -1)
 
 export const RULES: Record<MetricId, MetricRule> = {
@@ -42,6 +46,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'mSv/day',
     source: 'Ship sensors via onboard network; backup: personal dosimeter',
     frequency: 'Live, about every minute',
+    schedule: always('Continuous, automatic'),
     live: 'Ship sensor',
     digits: 2,
     howToMeasure: 'Nothing to do: ship sensors send data automatically.',
@@ -65,6 +70,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'bpm',
     source: 'Wristband / smart shirt, automatic',
     frequency: 'Live, every second; status uses the morning resting value',
+    schedule: { green: 'Live; resting value every morning', yellow: 'Resting value morning and evening', red: 'Resting value every 15 min' },
     live: 'Live heart rate',
     dailyLabel: 'Resting, this morning',
     digits: 0,
@@ -89,6 +95,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'mmHg',
     source: 'Wristband estimate (live) + morning cuff measurement',
     frequency: 'Wristband estimate every 30 min (sped up in the demo); cuff every morning',
+    schedule: { green: 'Cuff every morning', yellow: 'Cuff morning and evening', red: 'Cuff in 5 min, then every 4 h' },
     live: 'Wristband estimate',
     dailyLabel: 'Cuff, this morning',
     digits: 0,
@@ -113,10 +120,11 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'temperature',
     name: 'Body temperature',
     unit: '°C',
-    source: 'Thermometer, automatic',
-    frequency: 'Every morning and when unwell',
+    source: 'Wristband skin temperature (trend) + thermometer to confirm',
+    frequency: 'Wristband continuous; thermometer when the trend rises or you feel unwell',
+    schedule: { green: 'Wristband, continuous; thermometer only if needed', yellow: 'Thermometer every 4 h', red: 'Thermometer every 2 h' },
     digits: 1,
-    howToMeasure: 'Under the tongue, 1 minute. The thermometer sends the result itself.',
+    howToMeasure: 'The wristband watches skin temperature on its own. When asked: thermometer under the tongue, 1 minute; it sends the result itself.',
     why: 'Immunity weakens in flight and infections spread easily in a closed cabin. Fever is often the first sign.',
     advice: {
       green: 'No fever.',
@@ -137,6 +145,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'mg/dL',
     source: 'Glucometer, automatic',
     frequency: 'Weekly, fasting',
+    schedule: { green: 'Weekly, fasting', yellow: 'Daily, fasting, for 3 days', red: 'Low: in 15 min · high: daily' },
     digits: 0,
     howToMeasure: 'Before breakfast: prick a finger, put a drop on the strip. The glucometer sends the result.',
     why: 'In flight the body responds less well to insulin, which can raise blood sugar.',
@@ -157,10 +166,11 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'urineCalcium',
     name: 'Urine calcium',
     unit: 'mg/day',
-    source: 'Urine analyzer, automatic',
+    source: 'Urine test strip, read by the tablet camera',
     frequency: 'Weekly',
+    schedule: { green: 'Weekly', yellow: 'Every 2 days', red: 'Daily' },
     digits: 0,
-    howToMeasure: 'Collect urine and run the test on the analyzer. It sends the result itself.',
+    howToMeasure: 'Dip the strip, wait 1–2 minutes, take a photo in the app. The app reads the colors itself.',
     why: 'Bone density can’t be measured in flight. Rising calcium in urine means bones are losing mineral, and raises kidney stone risk.',
     advice: {
       green: 'Bone markers are stable. Keep up strength training.',
@@ -182,6 +192,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'min/day',
     source: 'Exercise machine, automatic',
     frequency: 'Every session',
+    schedule: always('Every workout, automatic'),
     digits: 0,
     partialToday: true,
     howToMeasure: 'Nothing to do: the exercise machine logs each session.',
@@ -203,10 +214,11 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'gripStrength',
     name: 'Grip strength',
     unit: 'kg',
-    source: 'Hand dynamometer, manual entry',
+    source: 'Hand dynamometer, automatic (Bluetooth)',
     frequency: 'Weekly',
+    schedule: { green: 'Weekly', yellow: 'Twice a week', red: 'Twice a week' },
     digits: 1,
-    howToMeasure: 'Squeeze the dynamometer as hard as you can 3 times and record the best result.',
+    howToMeasure: 'Squeeze the dynamometer as hard as you can 3 times. It sends the best result itself.',
     why: 'A quick check of overall muscle strength, which drops without gravity.',
     advice: {
       green: 'Muscle strength is holding.',
@@ -225,11 +237,12 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'water',
     name: 'Water intake',
     unit: 'ml',
-    source: 'Water dispenser + manual “+250 ml”',
+    source: 'Water dispenser (tap your wristband), automatic; other drinks added by hand',
     frequency: 'Through the day',
+    schedule: always('Every dispenser fill, automatic'),
     digits: 0,
     partialToday: true,
-    howToMeasure: 'Drinks from the dispenser are counted automatically. Add other drinks with “+250 ml”.',
+    howToMeasure: 'Tap your wristband on the dispenser: every fill is counted automatically. Add other drinks (juice, coffee) by hand; a wrong entry can be removed.',
     why: 'Dehydration raises the risk of kidney stones, which is already higher in flight because of bone loss.',
     advice: {
       green: 'Hydration is on track (goal 2.0–2.5 L a day).',
@@ -250,6 +263,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'h',
     source: 'Wristband, automatic',
     frequency: 'Every night',
+    schedule: always('Every night, automatic'),
     digits: 1,
     howToMeasure: 'Wear the wristband at night. Nothing else to do.',
     why: 'Short sleep leads to mistakes, low mood and weaker immunity. In space there is no day/night cycle, plus noise and stress.',
@@ -271,6 +285,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: '/ 5',
     source: 'Daily check-in, manual',
     frequency: 'Every day',
+    schedule: { green: 'Daily', yellow: 'Morning and evening', red: 'Morning and evening' },
     digits: 0,
     howToMeasure: 'Answer “How do you feel today?” in the daily check-in.',
     why: 'Isolation, confinement and distance from home affect mental health. Early signs are easy to miss in yourself.',

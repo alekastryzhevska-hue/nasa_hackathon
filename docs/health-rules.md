@@ -11,6 +11,8 @@ Status colors: 🟢 green = normal · 🟡 yellow = act yourself or tell the cre
 
 Data transfer: "Auto" = the device sends data over the ship's network (small devices
 via Bluetooth to a receiver). Manual entry is always available as a backup.
+Devices, who uses them and how often to measure in each status (including extra
+measurements when yellow or red): [devices.md](devices.md).
 
 ---
 
@@ -23,13 +25,12 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 | Mood | scale 1–5 | Check-in in the app | Manual | Daily | 4–5 | ≤ 2 for 2 days | ≤ 2 for 5 days, or 1 |
 | Resting heart rate | bpm | Wristband / smart shirt | Auto | Live every 1 s; status uses the morning resting value | 50–80, or own norm ± 10 % | > 15 % above own norm for 3 days | > 100 or < 40, or chest pain / shortness of breath |
 | Blood pressure | mmHg | Wristband estimate + cuff | Auto | Wristband estimate ~every 30 min; cuff every morning (status uses the cuff) | < 130/85 | ≥ 130/85 for 3 days, or < 90/60 | ≥ 160/100, or headache / blurred vision |
-| Body temperature | °C | Thermometer | Auto | Every morning and when unwell | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
-| Bones (urine calcium) | mg/day | Urine analyzer | Auto | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
-| Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Training auto; grip manual | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
+| Body temperature | °C | Wristband skin temperature (trend) + thermometer to confirm | Auto | Wristband continuous; thermometer when the trend rises or unwell | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
+| Bones (urine calcium) | mg/day | Urine test strip read by the tablet camera | Auto (photo) | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
+| Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Auto | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
 | Blood sugar | mg/dL | Glucometer | Auto | Weekly, fasting | 70–99 | 100–125 or 55–69 | ≥ 126 repeatedly, or < 55 |
-| Water intake | ml/day | Water dispenser + "+250 ml" | Auto + manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
-| Urine test strip | negative / trace / + / ++ | Test strip | Manual (pick the color) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
-| Saliva cortisol | own norm | Rapid saliva test *(device in development)* | Manual | Weekly, morning | Own norm | > 50 % above own norm | ≥ 2× own norm two weeks in a row |
+| Water intake | ml/day | Water dispenser (wristband tap); other drinks by hand | Auto + manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
+| Urine test strip | negative / trace / + / ++ | Same strip as urine calcium, read by the tablet camera | Auto (photo) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
 
 ---
 
@@ -39,8 +40,9 @@ via Bluetooth to a receiver). Manual entry is always available as a backup.
 |---|---|
 | Live (seconds) | Heart rate (1 s), radiation (sensor ~1 min) |
 | Every ~30 min | Blood pressure estimate from the wristband |
-| Once a day | Sleep, mood, resting heart rate, cuff blood pressure, temperature, water |
-| Weekly | Urine calcium, grip strength, blood sugar, urine strip, saliva cortisol |
+| Once a day | Sleep, mood, resting heart rate, cuff blood pressure, water |
+| Continuous | Skin temperature (wristband); thermometer only when needed |
+| Weekly | Urine strip (calcium, protein, ketones, blood), grip strength, blood sugar |
 
 In the demo, live intervals are sped up (blood pressure every 15 s, radiation every 5 s).
 
@@ -81,18 +83,21 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
 - 🔴 **What to do:** rest, measure again in 5 min, tell the flight surgeon.
 
 ### Body temperature
-- **How to measure:** under the tongue, 1 minute.
+- **How to measure:** the wristband tracks skin temperature on its own. When it rises, or
+  the astronaut feels unwell: thermometer under the tongue, 1 minute.
 - 🟡 **What to do:** drink fluids, rest, wear a mask, measure again in 4 h.
 - 🔴 **What to do:** tell the flight surgeon, take a fever reducer from the medical kit.
 
 ### Bones (urine calcium)
-- **How to measure:** collect urine, run the test per device instructions.
+- **How to measure:** dip the test strip, wait 1–2 min, photograph it in the app; the app
+  reads the colors. The calcium value is an estimate (strips are semi-quantitative).
 - **Why:** bone density can't be measured in flight; rising urine calcium is a sign of bone loss and a kidney stone risk.
 - 🟡 **What to do:** don't skip strength training, drink more water.
 - 🔴 **What to do:** drink ≥ 2.5 L of water a day, tell the flight surgeon (kidney stone risk).
 
 ### Muscles
-- **How to measure:** training minutes come from the machines; grip — squeeze the dynamometer 3 times, record the best.
+- **How to measure:** training minutes come from the machines; grip — squeeze the
+  dynamometer 3 times, it sends the best result over Bluetooth.
 - 🟡 **What to do:** restore training volume, add strength exercises.
 - 🔴 **What to do:** review the training plan with the flight surgeon.
 
@@ -102,14 +107,9 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
 - 🔴 **What to do:** low — fast carbs and measure again in 15 min; any red — tell the flight surgeon.
 
 ### Urine test strip
-- **How to measure:** dip the strip, compare colors after 1–2 min.
+- **How to measure:** same strip as urine calcium; the app reads the colors from a photo.
 - 🟡 **What to do:** drink more water, eat normally, test again in 2 days.
 - 🔴 **What to do:** tell the flight surgeon.
-
-### Saliva cortisol (stress hormone)
-- **How to measure:** in the morning before eating or brushing teeth, swab in the mouth for 2 min.
-- 🟡 **What to do:** sleep, rest, reduce workload, call family.
-- 🔴 **What to do:** tell the flight surgeon and the psychologist.
 
 ---
 
@@ -117,4 +117,4 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
 
 - Blood pressure, urine calcium and muscle thresholds — least certain.
 - Radiation: normal rates per environment, career limit, real alert levels.
-- Saliva cortisol test on board — label as "device in development" if no flight device exists.
+- Saliva cortisol removed (2026-11-15): no simple on-board device exists today.

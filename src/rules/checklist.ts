@@ -37,7 +37,7 @@ export function buildChecklist(i: Inputs): Task[] {
     {
       id: 'morning-check',
       title: 'Morning check',
-      detail: 'Cuff blood pressure + temperature · sent by the devices',
+      detail: 'Blood pressure cuff · sends the result itself',
       done: i.morningCheckDone,
       auto: true,
       layer: 'circulation',

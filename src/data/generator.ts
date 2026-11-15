@@ -104,7 +104,7 @@ export function generateReadings(astronaut: Astronaut, now = new Date()): Readin
 
     if (weekly) {
       add('bloodSugar', Math.round(b.bloodSugar + noise(6)), 'mg/dL', daysAgo, 7, 'glucometer')
-      add('urineCalcium', Math.round(b.urineCalcium + 5 + noise(15) + boneProblem * 85), 'mg/day', daysAgo, 8, 'analyzer')
+      add('urineCalcium', Math.round(b.urineCalcium + 5 + noise(15) + boneProblem * 85), 'mg/day', daysAgo, 8, 'urine-strip')
       add('gripStrength', round(b.gripStrength * (1 - 0.02 - boneProblem * 0.09) + noise(0.8)), 'kg', daysAgo, 18, 'dynamometer')
     }
   }
