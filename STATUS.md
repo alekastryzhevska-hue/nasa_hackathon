@@ -100,11 +100,11 @@ _Last updated: 2026-11-15_
   headings and big numbers, Inter for text; bundled in the app, work offline. This differs
   from `design-system/README.md` (Fira Sans + Overpass) — please update the design system
   if you agree, or tell me to switch back.
-- **Mockup v2 applied:** Devices card on each tab and Devices popover on the radiation strip,
-  with your device texts from the mockup (zachtrenito chose them, 2026-11-15); only
-  "tablet" → "laptop". Still to align: `docs/devices.md`, the instructions and the app
-  logic still use the old devices (e.g. water = "+1 pouch" button, not a smart bottle).
-  Not done yet: Workout page, sleep calendar button.
+- **Mockup v2 applied, devices from your mockup everywhere:** Devices cards, `docs/devices.md`,
+  both instruction files, `docs/health-rules.md` and the app now use the smart shirt, wrist
+  sleep tracker, blood & urine analyzer, body mass device, smart water bottle, urine test
+  reader, ultrasound, OCT and eye tonometer. Water is counted by the smart bottle (demo
+  button on the Hydration tab). Not done yet: Workout page, sleep calendar button.
 - Not applied yet, as agreed with zachtrenito: the new status card with a metric list on
   tabs other than Mind, the 4-organ interactive Organs figure and its new metrics, the
   radiation "sensor not updating" state, the Sleep debt block. Mood data is copied from
