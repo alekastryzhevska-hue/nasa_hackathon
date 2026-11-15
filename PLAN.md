@@ -84,3 +84,5 @@ Update this section at the end of every session.
   to `design-system/`. **Next:** backend switches the app to `design-system/tokens.css`.
 - 2026-11-15 (zachtrenito): app switched to the WALL-E & EVE design system (colors and
   fonts). **Next:** design reviews the app; Vercel link; Sport page; data checks.
+- 2026-11-15 (zachtrenito): devices table (`docs/devices.md`) applied to rules and app.
+  **Next:** design OKs the CONTRACT.md updates; Sport page; data checks.
