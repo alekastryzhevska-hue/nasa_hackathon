@@ -2,6 +2,8 @@
 
 import type { Mission, Status } from '../data/types'
 import type { Task } from '../rules/checklist'
+import { DEVICES } from '../rules/devices'
+import { DevicesPopover } from './DeviceCard'
 import type { LayerId } from '../rules/layers'
 import { STATUS_COLOR } from './MetricCard'
 
@@ -110,7 +112,10 @@ export function RadiationPanel(props: { rate: number; normal: number; status: St
   return (
     <section className="panel radiation">
       <div>
-        <h2>Radiation</h2>
+        <div className="rad-head">
+          <h2>Radiation</h2>
+          <DevicesPopover info={DEVICES.radiation!} />
+        </div>
         <div className="live-line">
           <span className="live-dot" style={stale ? { background: STATUS_COLOR.yellow, animation: 'none' } : undefined} />
           {stale ? 'Ship sensor silent — connect your personal dosimeter' : `Live · updated ${props.secondsSinceUpdate} s ago`}

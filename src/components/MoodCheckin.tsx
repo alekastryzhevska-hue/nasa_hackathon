@@ -78,7 +78,7 @@ export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, don
       </div>
 
       <button className="primary" onClick={onSave} disabled={saved}>
-        {saved ? '✓ Check-in saved' : 'Save check-in'}
+        {saved ? '✓ Saved' : 'Save'}
       </button>
     </section>
   )

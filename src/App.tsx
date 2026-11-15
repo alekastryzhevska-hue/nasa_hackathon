@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BodyFigure } from './components/BodyFigure'
+import { DeviceCard } from './components/DeviceCard'
 import { MetricCard } from './components/MetricCard'
 import { MoodCheckin } from './components/MoodCheckin'
 import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components/Panels'
@@ -10,6 +11,7 @@ import { MOOD_DEFAULT_LABELS, MOOD_DEFAULT_STEP, MOOD_STEPS, moodScore } from '.
 import type { MetricId, Status } from './data/types'
 import { TestPanel, applyOverride, type Overrides } from './dev/TestPanel'
 import { WATER_GOAL_ML, buildChecklist, type Task } from './rules/checklist'
+import { DEVICES } from './rules/devices'
 import { LAYERS, summarizeLayer, type LayerId } from './rules/layers'
 import { RULES, valuesFor, values2For } from './rules/metrics'
 
@@ -277,6 +279,8 @@ export default function App() {
                       onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
                     />
                   )}
+
+                  {DEVICES[layerId] && <DeviceCard info={DEVICES[layerId]!} />}
 
                   {layerId === 'hydration' && (
                     <section className="panel action column">

@@ -61,7 +61,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Cards: surface-card fill with a gray-60 outline; the dot grid shows through. */
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
 /* Left panels and the radiation strip: gray-90 at 80 %, no outline, as in the mockup. */
-.left .panel, .radiation { border-radius: 28px; border: none; background: var(--gray-90); opacity: 0.8; }
+.left .panel { border-radius: 28px; border: none; background: var(--gray-90); opacity: 0.8; }
+.radiation { border-radius: 28px; border: none; background: color-mix(in srgb, var(--gray-90) 80%, transparent); }
 .panel h2 { font-size: 24px; line-height: 30px; font-weight: 700; }
 .big { font-family: var(--font-display); font-size: 36px; font-weight: 600; line-height: 1; color: var(--gray-10); }
 .plan .big { font-size: 48px; }
@@ -169,6 +170,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .chips button.on { background: var(--mood); border-color: var(--mood); color: var(--gray-100); font-weight: 700; }
 .chips button.more { background: none; border-style: dashed; color: var(--muted); }
 .primary:disabled { background: var(--blue-disabled); color: var(--gray-40); cursor: default; filter: none; }
+
+/* Devices card (mockup: DeviceCard) */
+.device-card { background: var(--gray-80); border: 1px solid var(--gray-60); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; color: var(--gray-20); }
+.device-card .eyebrow { margin: 0; }
+.device-card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.device-card li { display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 1.45; }
+.device-card li + li { padding-top: 12px; border-top: 1px solid var(--gray-60); }
+.device-name { font-family: var(--font-display); font-size: 17px; font-weight: 600; line-height: 1.3; color: var(--gray-10); }
+.device-card details { margin: 0; color: var(--gray-20); }
+.device-card summary { list-style: none; cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--gray-20); }
+.device-card summary::-webkit-details-marker { display: none; }
+.device-card details[open] .chev { transform: rotate(90deg); }
+.device-card .chev { transition: transform 0.15s; }
+.device-card ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5; }
+.rad-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.rad-head h2 { margin-bottom: 0 !important; }
+.devices-pop { position: relative; }
+.devices-pop > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border: 1px solid var(--gray-50); border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--gray-10); white-space: nowrap; }
+.devices-pop > summary::-webkit-details-marker { display: none; }
+.device-card.pop { position: absolute; left: 0; bottom: calc(100% + 10px); width: 340px; z-index: 50; }
 
 /* Metric cards */
 .metrics { display: grid; gap: 12px; }
