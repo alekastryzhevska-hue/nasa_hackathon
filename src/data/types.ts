@@ -21,10 +21,10 @@ export type Source =
   | 'cuff'
   | 'thermometer'
   | 'glucometer'
-  | 'urine-strip'
+  | 'analyzer'
   | 'exercise-device'
   | 'dynamometer'
-  | 'pouch-log'
+  | 'smart-bottle'
   | 'check-in'
 
 export interface Reading {
