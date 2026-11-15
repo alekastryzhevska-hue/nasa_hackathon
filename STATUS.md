@@ -77,6 +77,12 @@ _Last updated: 2026-11-15_
   Lungs show "No data" (no device yet).
 - 2026-11-15: Workout tab from the mockup: video guide card with a hologram scene, Play / Pause
   with a simulated progress bar (no real video yet), "Lower body strength" title.
+- 2026-11-15: Daily plan now lists every measurement due today, built from `docs/devices.md`
+  and the statuses (e.g. Mia: "Urine test · every 2 days", Sam: "Blood pressure · evening").
+  A task opens its tab; the metric card shows "Due today … Measure now" (stands in for the
+  device sending data). The task ticks itself, the new value goes into the chart and the
+  status is recalculated. Mind keeps the status card (reason, advice, Next: Readiness);
+  the second and third mood tests can be saved.
 
 ### In progress
 - Waiting for design feedback on the built screen.
