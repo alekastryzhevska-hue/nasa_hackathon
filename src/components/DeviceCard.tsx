@@ -17,22 +17,23 @@ export function DeviceCard({ info, className = '' }: { info: DeviceInfo; classNa
             <span>
               <span className="muted">Why:</span> {d.why}
             </span>
+            {/* "How to use" sits right under the device it describes. */}
+            <details>
+              <summary>
+                How to use
+                <svg className="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </summary>
+              <ol>
+                {d.steps.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ol>
+            </details>
           </li>
         ))}
       </ul>
-      <details>
-        <summary>
-          How to use
-          <svg className="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </summary>
-        <ol>
-          {info.steps.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ol>
-      </details>
     </section>
   )
 }
