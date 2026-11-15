@@ -95,3 +95,5 @@ Update this section at the end of every session.
 - 2026-11-15 ~20:00 (zachtrenito): design update applied from the mockups (header, tabs,
   background, cards, Mind check-in). **Next:** design reviews the live site; remaining
   items are listed in STATUS.md notes.
+- 2026-11-15 ~22:50 (zachtrenito): "live the day" demo (07:00 → 23:00) with a timed daily plan.
+  **Next:** final bug pass, demo video, submission.

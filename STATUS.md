@@ -87,6 +87,11 @@ _Last updated: 2026-11-15_
   task (Measure now, +1 pouch, Open workout); "Next" becomes secondary while something is
   left. Water: goal spread over 07:00–23:00 with "next pouch at …", reaching 2 L turns the
   status green for today, one-line log with "Undo last". Organs without data: "Upcoming".
+- 2026-11-15: "Live the day" demo: everyone wakes up at 07:00 with nothing done. The daily
+  plan has a clock and a "Next: HH:MM …" button; every task has its time and its own
+  button (Measure, +1 pouch, Take test, Done). Morning values appear only after "Measure".
+  The tabs on the right show only the status, the reason and advice (no to-do duplicates).
+  Checked by living the full day for Alex, Mia and Sam.
 
 ### In progress
 - Waiting for design feedback on the built screen.
