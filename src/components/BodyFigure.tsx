@@ -243,7 +243,7 @@ function Sleep({ percent }: { percent: number }) {
 function Mind({ mood }: { mood: string }) {
   return (
     <>
-      <ellipse cx={100} cy={200} rx={70} ry={190} fill={mood} fillOpacity={0.07} filter="url(#glowSoft)" />
+      <ellipse className="mind-glow" cx={100} cy={200} rx={70} ry={190} fill={mood} fillOpacity={0.12} filter="url(#glowSoft)" />
       <Body fill={mood} fillOpacity={0.08} stroke={mood} strokeOpacity={0.6} width={1.4} />
       <circle cx={100} cy={34} r={46} fill="none" stroke={mood} strokeOpacity={0.3} strokeDasharray="2 4" />
       <circle cx={100} cy={34} r={62} fill="none" stroke={mood} strokeOpacity={0.15} />

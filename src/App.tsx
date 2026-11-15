@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { BodyFigure } from './components/BodyFigure'
 import { DeviceCard } from './components/DeviceCard'
 import { MetricCard } from './components/MetricCard'
-import { MoodCheckin } from './components/MoodCheckin'
+import { MoodCheckin, type MoodEntry } from './components/MoodCheckin'
 import { DailyPlan, MissionCard, RadiationPanel, StatusCard, type TodoItem } from './components/Panels'
 import { RadiationAlarm } from './components/RadiationAlarm'
 import { WorkoutPage } from './components/WorkoutPage'
@@ -64,6 +64,7 @@ export default function App() {
   const [moodStep, setMoodStep] = useState(MOOD_DEFAULT_STEP)
   const [moodLabels, setMoodLabels] = useState<string[]>(MOOD_DEFAULT_LABELS)
   const [moodSaved, setMoodSaved] = useState(false)
+  const [moodLog, setMoodLog] = useState<MoodEntry[]>([])
   // Readings that devices "sent" today after "Measure now" (demo), and the tasks they close.
   const [extra, setExtra] = useState<Partial<Record<MetricId, { v: number; v2?: number }[]>>>({})
   const [measured, setMeasured] = useState<Set<string>>(new Set())
@@ -110,6 +111,7 @@ export default function App() {
     setMoodStep(MOOD_DEFAULT_STEP)
     setMoodLabels(MOOD_DEFAULT_LABELS)
     setMoodSaved(false)
+    setMoodLog([])
     setExtra({})
     setMeasured(new Set())
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -315,12 +317,15 @@ export default function App() {
                       }}
                       onSave={() => {
                         setCheckIns((l) => [...l, moodScore(moodStep)])
-                        // Saved for good only when today's last test is done.
-                        setMoodSaved(checkIns.length + 1 >= testsNeeded)
+                        setMoodLog((l) => [...l, { time: Date.now(), step: moodStep, labels: moodLabels }])
+                        // The button shows "Saved" until something changes; a new test can
+                        // be saved by moving the slider or picking other feelings.
+                        setMoodSaved(true)
                       }}
                       saved={moodSaved}
                       done={checkIns.length}
                       needed={testsNeeded}
+                      log={moodLog}
                     />
                   )}
                   {/* Mind: the check-in card replaces the status card, as in the mockup. */}
