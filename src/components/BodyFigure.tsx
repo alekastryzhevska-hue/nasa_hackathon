@@ -331,7 +331,7 @@ function Organs({ regions }: { regions: Props['regions'] }) {
 
       {ORGANS.map((g) => {
         const { st, ring } = o[g.id]
-        const text = `${g.name} · ${st ? ORGAN_LABEL[st] : 'No data'}`
+        const text = `${g.name} · ${st ? ORGAN_LABEL[st] : 'Upcoming'}`
         const w = text.length * 5.6 + 30
         const x = g.side === 'left' ? g.label[0] - w : g.label[0]
         return (

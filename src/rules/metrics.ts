@@ -250,6 +250,8 @@ export const RULES: Record<MetricId, MetricRule> = {
       red: 'Goal: 10 pouches today. Headache or dark urine: tell the crew medical officer.',
     },
     evaluate: (v) => {
+      // Reaching today's goal fixes it for today, whatever the past days were.
+      if (latest(v) >= 2000) return ok('Goal reached today')
       const done = fullDays(v)
       if (last(done, 3).every((x) => x < 1500)) return red('Under 1.5 L for 3 days')
       if (last(done, 2).every((x) => x < 2000)) return yellow('Under 2 L for 2 days')

@@ -67,14 +67,25 @@ export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) 
 const HEADLINE: Record<Status, string> = { green: 'All good', yellow: 'Attention', red: 'Act now' }
 const ICON: Record<Status, string> = { green: '✓', yellow: '!', red: '!!' }
 
+export interface TodoItem {
+  id: string
+  title: string
+  detail: string
+  done: boolean
+  action?: { label: string; run: () => void }
+}
+
 export function StatusCard(props: {
   status: Status
   reason: string
   advice: string
   nextLayer: { id: LayerId; name: string }
   onNext: (id: LayerId) => void
+  todo?: TodoItem[]
 }) {
   const color = STATUS_COLOR[props.status]
+  const todo = props.todo ?? []
+  const left = todo.filter((t) => !t.done).length
   return (
     <section className="panel status-card">
       <div className="status-head">
@@ -88,7 +99,31 @@ export function StatusCard(props: {
       <hr />
       {props.status !== 'green' && <p className="status-reason">{props.reason}</p>}
       <p className="status-advice">{props.status === 'green' ? 'Keep up the good work.' : props.advice}</p>
-      <button className="primary" onClick={() => props.onNext(props.nextLayer.id)}>
+
+      {/* What to do today for this part of the body comes before moving on. */}
+      {todo.length > 0 && (
+        <div className="todo">
+          <span className="eyebrow">To do today{left > 0 ? ` · ${left} left` : ' · done'}</span>
+          <ul>
+            {todo.map((t) => (
+              <li key={t.id} className={t.done ? 'done' : ''}>
+                <span className="check">{t.done ? '✓' : ''}</span>
+                <span className="todo-text">
+                  <span className="todo-title">{t.title}</span>
+                  <span className="todo-detail">{t.detail}</span>
+                </span>
+                {!t.done && t.action && (
+                  <button className="primary todo-action" onClick={t.action.run}>
+                    {t.action.label}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button className={left > 0 ? 'ghost next-secondary' : 'primary'} onClick={() => props.onNext(props.nextLayer.id)}>
         Next: {props.nextLayer.name} →
       </button>
     </section>

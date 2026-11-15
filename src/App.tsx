@@ -3,7 +3,7 @@ import { BodyFigure } from './components/BodyFigure'
 import { DeviceCard } from './components/DeviceCard'
 import { MetricCard } from './components/MetricCard'
 import { MoodCheckin } from './components/MoodCheckin'
-import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components/Panels'
+import { DailyPlan, MissionCard, RadiationPanel, StatusCard, type TodoItem } from './components/Panels'
 import { RadiationAlarm } from './components/RadiationAlarm'
 import { WorkoutPage } from './components/WorkoutPage'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
@@ -35,7 +35,6 @@ interface Pouch {
   time: number
 }
 const POUCH_ML = 250
-const POUCHES_GOAL = 8
 // Reminder to drink while hydration is yellow / red (docs/instructions.md).
 const REMINDER_MIN: Record<Status, number | null> = { green: null, yellow: 60, red: 30 }
 // Mood tests per day by status, and their names.
@@ -150,13 +149,24 @@ export default function App() {
   const worstMetric = summary.metrics[0]
 
   const waterToday = daily('water').at(-1)!
-  // Water reminder: every hour (yellow) or 30 min (red) since the last pouch.
+  // Water through the day: the goal is spread over waking hours (07:00–23:00), so nobody
+  // has to drink 2 L at once. The next pouch is due when the pace says so, and no later
+  // than the reminder interval (every hour when yellow, every 30 min when red).
   const waterStatus = evaluate('water').status
   const reminderMin = REMINDER_MIN[waterStatus]
+  const day = new Date(now)
+  const wakeStart = new Date(day).setHours(7, 0, 0, 0)
+  const wakeEnd = new Date(day).setHours(23, 0, 0, 0)
+  const pouchesLeft = Math.max(0, Math.ceil((WATER_GOAL_ML - waterToday) / POUCH_ML))
+  const minutesLeft = Math.max(0, (wakeEnd - Math.max(now, wakeStart)) / 60_000)
+  const aimByNow = Math.round((WATER_GOAL_ML * Math.min(1, Math.max(0, (now - wakeStart) / (wakeEnd - wakeStart)))) / 50) * 50
+  const behind = waterToday + POUCH_ML <= aimByNow
   const lastPouch = pouches.length ? pouches[pouches.length - 1].time : sessionStart
-  const nextPouchAt = reminderMin ? lastPouch + reminderMin * 60_000 : null
+  const gapMin = pouchesLeft ? Math.min(minutesLeft / pouchesLeft, reminderMin ?? 90) : 0
+  const nextPouchAt = pouchesLeft === 0 || minutesLeft === 0 ? null : behind ? now : lastPouch + gapMin * 60_000
   const pouchDue = nextPouchAt !== null && now >= nextPouchAt
-  const waterReminder = nextPouchAt === null ? undefined : pouchDue ? 'time for a pouch' : `next pouch ${clock(nextPouchAt)}`
+  const waterReminder =
+    pouchesLeft === 0 ? undefined : nextPouchAt === null ? 'goal moves to tomorrow' : pouchDue ? 'drink a pouch now' : `next pouch ${clock(nextPouchAt)}`
 
   // How many mood tests today: based on the status before today's tests.
   const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
@@ -190,6 +200,22 @@ export default function App() {
     setMeasured((m) => new Set(m).add(t.id))
   }
   const pendingFor = (id: MetricId) => tasks.find((t) => t.metric === id && !t.done)
+  // Today's tasks for the open tab, with the action that completes each one.
+  const todoFor = (id: LayerId): TodoItem[] => {
+    const metrics = LAYERS.find((l) => l.id === id)!.metrics.map((m) => m.id)
+    return tasks
+      .filter((t) => t.layer === id || (t.metric && metrics.includes(t.metric)))
+      .map((t) => ({
+        ...t,
+        action: t.metric
+          ? { label: 'Measure now', run: () => measureNow(t) }
+          : t.id === 'water'
+            ? { label: '+1 pouch', run: addPouch }
+            : t.id === 'workout'
+              ? { label: 'Open workout', run: () => setView('sport') }
+              : undefined,
+      }))
+  }
 
   const openTask = (t: Task) => {
     setView('main')
@@ -305,6 +331,7 @@ export default function App() {
                       advice={RULES[worstMetric.id].advice[worstMetric.status]}
                       nextLayer={layerIndex === LAYERS.length - 1 ? { id: layerId, name: 'Readiness' } : nextLayer}
                       onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
+                      todo={todoFor(layerId)}
                     />
                   )}
 
@@ -314,25 +341,25 @@ export default function App() {
                     <section className="panel action column">
                       <div>
                         <strong>{(waterToday / 1000).toFixed(1)} L</strong>
-                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · {POUCHES_GOAL} pouches of {POUCH_ML} ml</span>
+                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today</span>
                       </div>
-                      {nextPouchAt !== null && (
-                        <div className={`reminder${pouchDue ? ' due' : ''}`}>
-                          {pouchDue ? '⏰ Time for a pouch' : `Next pouch by ${clock(nextPouchAt)}`} · reminder every {reminderMin} min
-                        </div>
-                      )}
+                      <div className={`reminder${pouchDue ? ' due' : ''}`}>
+                        {pouchesLeft === 0
+                          ? '✓ Goal reached for today'
+                          : nextPouchAt === null
+                            ? 'Day is over: start again tomorrow morning'
+                            : pouchDue
+                              ? `⏰ Drink a pouch now${behind ? ` · aim for ${(aimByNow / 1000).toFixed(1)} L by now` : ''}`
+                              : `Next pouch at ${clock(nextPouchAt)} · ${pouchesLeft} left today`}
+                      </div>
                       <button className="primary" onClick={addPouch}>+1 pouch ({POUCH_ML} ml)</button>
                       {pouches.length > 0 && (
-                        <ul className="drink-log">
-                          {[...pouches].reverse().map((p) => (
-                            <li key={p.id}>
-                              <span>{clock(p.time)}</span>
-                              <span>{POUCH_ML} ml</span>
-                              <span className="muted">Pouch</span>
-                              <button className="link" onClick={() => setPouches((l) => l.filter((x) => x.id !== p.id))}>Remove</button>
-                            </li>
-                          ))}
-                        </ul>
+                        <div className="drink-last">
+                          <span>
+                            Last pouch at {clock(pouches[pouches.length - 1].time)} · {pouches.length} added today
+                          </span>
+                          <button className="link" onClick={() => setPouches((l) => l.slice(0, -1))}>Undo last</button>
+                        </div>
                       )}
                     </section>
                   )}
