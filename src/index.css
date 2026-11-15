@@ -191,6 +191,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .devices-pop > summary::-webkit-details-marker { display: none; }
 .device-card.pop { position: absolute; left: 0; bottom: calc(100% + 10px); width: 340px; z-index: 50; }
 
+/* Workout tab (mockup: Workout.dc.html) */
+.workout { flex: 1; min-height: 0; border-radius: 28px; background: var(--surface-card); padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.video { position: relative; flex: 1; min-height: 320px; border-radius: 20px; overflow: hidden; background: var(--gray-90); border: 1px dashed var(--gray-50); display: grid; place-items: center; }
+.video-tag { position: absolute; top: 16px; left: 16px; margin: 0; }
+.workout-scene { position: absolute; inset: 24px 0 36px; height: calc(100% - 60px); width: 100%; opacity: 0.55; }
+.play { position: relative; width: 88px; height: 88px; border-radius: 50%; border: none; background: var(--holo); display: grid; place-items: center; padding: 0 0 0 6px; box-shadow: 0 0 0 10px color-mix(in srgb, var(--blue-default) 18%, transparent); }
+.play.on { padding: 0; }
+.play:hover { filter: brightness(1.08); }
+.video-bar { position: absolute; left: 16px; right: 96px; bottom: 26px; height: 4px; border-radius: 2px; background: var(--gray-60); }
+.video-bar span { display: block; height: 100%; border-radius: 2px; background: var(--holo); transition: width 1s linear; }
+.video-time { position: absolute; right: 16px; bottom: 16px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--gray-100) 80%, transparent); font-size: 13px; font-weight: 600; color: var(--gray-10); }
+.workout-info { display: flex; flex-direction: column; gap: 4px; padding: 0 8px 8px; }
+.workout-info .eyebrow { margin: 0; }
+.workout-info h2 { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--gray-10); }
+.workout-info > span:last-child { font-size: 15px; color: var(--gray-20); }
+
 /* Metric cards */
 .metrics { display: grid; gap: 12px; }
 .metric { background: var(--gray-80); border: 1px solid var(--gray-60); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }

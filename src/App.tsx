@@ -5,6 +5,7 @@ import { MetricCard } from './components/MetricCard'
 import { MoodCheckin } from './components/MoodCheckin'
 import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components/Panels'
 import { RadiationAlarm } from './components/RadiationAlarm'
+import { WorkoutPage } from './components/WorkoutPage'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
 import { initialLive, tickLive, type LiveState } from './data/live'
 import { MOOD_DEFAULT_LABELS, MOOD_DEFAULT_STEP, MOOD_STEPS, moodScore } from './data/mood'
@@ -221,10 +222,7 @@ export default function App() {
 
         <main className="right">
           {view === 'sport' ? (
-            <section className="panel sport">
-              <h2>Exercise plan</h2>
-              <p className="muted">Today’s exercises with photos and steps — coming soon.</p>
-            </section>
+            <WorkoutPage />
           ) : (
             <>
               <nav className="layer-tabs">
