@@ -300,10 +300,10 @@ export function BodyFigure({ layer, regions, fillPercent = 0, tint, chargePercen
             ))}
           </g>
           <rect x={138} y={18} width={24} height={8} rx={3} fill="none" stroke={HOLO} strokeOpacity={0.7} />
-          <text x={232} y={250} fill={DS.gray0} fontSize={22} fontWeight={700} fontFamily="'Fira Sans', sans-serif">
+          <text x={232} y={250} fill={DS.gray0} fontSize={22} fontWeight={700} fontFamily="'Space Grotesk', sans-serif">
             {Math.round(chargePercent)}%
           </text>
-          <text x={232} y={268} fill={DS.gray30} fontSize={11} fontFamily="'Overpass', sans-serif">
+          <text x={232} y={268} fill={DS.gray30} fontSize={11} fontFamily="'Inter', sans-serif">
             energy charge
           </text>
         </g>
