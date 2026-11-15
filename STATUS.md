@@ -18,6 +18,10 @@ _Last updated: 2026-11-15_
   data (`design/MOOD_CHECKIN_SPEC.md`, `design/mood-data.json`), `mood-*` tokens added.
 
 ### In progress
+- **Applying `design/DESIGN_UPDATE.md` to the app myself** (2026-11-15 evening): header, tabs,
+  cards, figure per tab, Organs, Mind check-in, radiation "sensor silent" state. Files:
+  `src/components/`, `src/index.css`, `src/App.tsx`. zachtrenito: please don't edit these
+  until I push; I won't touch `src/data/` or `src/rules/`.
 - Readiness tab design.
 
 ### Next
