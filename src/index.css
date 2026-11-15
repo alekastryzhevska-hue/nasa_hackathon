@@ -254,7 +254,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Daily plan: demo clock, next step, action per task */
 .plan-head { display: flex; justify-content: space-between; align-items: baseline; }
 .plan-head .eyebrow { margin: 0; }
-.day-clock { font-family: var(--mono); font-size: 14px; color: var(--gray-10); padding: 2px 8px; border-radius: 6px; background: var(--gray-70); }
+.day-clock { font-family: var(--mono); font-size: 14px; color: var(--gray-10); padding: 2px 8px; border-radius: 6px; background: var(--gray-70); border: none; cursor: pointer; }
+.day-clock.paused { color: var(--orange); }
 .day-next { width: 100%; min-height: 36px; margin-bottom: 8px; border-radius: 999px; font-size: 13px; font-weight: 600; text-align: left; padding: 0 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tasks li { display: flex; align-items: center; gap: 8px; }
 .tasks li .task { flex: 1; min-width: 0; }

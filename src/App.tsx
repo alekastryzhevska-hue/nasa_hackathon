@@ -129,6 +129,14 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [astronautId])
 
+  // The day clock ticks: 1 second = 1 minute, so tasks become due on their own.
+  const [paused, setPaused] = useState(false)
+  useEffect(() => {
+    if (paused) return
+    const id = setInterval(() => setDayMin((m) => (m < DAY_END ? m + 1 : m)), 1000)
+    return () => clearInterval(id)
+  }, [paused])
+
   useEffect(() => {
     const id = setInterval(() => {
       const t = Date.now()
@@ -317,6 +325,8 @@ export default function App() {
             dayMin={dayMin}
             nextLabel={nextLabel}
             onNext={goNext}
+            paused={paused}
+            onPause={() => setPaused((p) => !p)}
             onOpen={openTask}
             actionLabel={actionLabel}
             onAction={doTask}
@@ -475,6 +485,8 @@ export default function App() {
         overrides={overrides}
         onChange={setOverrides}
         onSimulateEvent={() => setEventActive(true)}
+        dayMin={dayMin}
+        onDayMin={setDayMin}
         current={{
           radiation: radiationNow,
           heartRate: resting,

@@ -68,8 +68,8 @@ ship's own sensors.
 | Status | Measure | What to do |
 |---|---|---|
 | 🟢 Normal | Wristband all the time; status uses the resting value in the morning | — |
-| 🟡 Yellow: resting HR 15 % above own norm for 3 days | Resting HR **morning and evening**: rest still for 5 min, the wristband records it | Sleep more, drink water, lighter training |
-| 🔴 Red: above 100 or below 40 at rest, or chest pain, or short of breath | Resting HR **every 15 min** | Stop any exercise, strap in and rest. Tell the crew and the crew medical officer now. Tell the flight surgeon |
+| 🟡 Yellow: resting HR 15 % above own norm for 3 days | Wristband, continuous: nothing to do | Sleep more, drink water, lighter training |
+| 🔴 Red: above 100 or below 40 at rest, or chest pain, or short of breath | Wristband, continuous | Stop any exercise, strap in and rest. Tell the crew and the crew medical officer now. Tell the flight surgeon |
 
 **Blood pressure**
 

@@ -51,7 +51,6 @@ const EXTRA: { id: MetricId; at: number; title: string; device: string; layer: L
   { id: 'temperature', at: 11 * 60, title: 'Temperature re-check', device: 'Thermometer', layer: 'organs', when: { yellow: 'every 4 h', red: 'every 2 h' } },
   { id: 'gripStrength', at: 18 * 60, title: 'Grip strength', device: 'Hand dynamometer', layer: 'muscles', when: { yellow: 'twice a week', red: 'twice a week' } },
   { id: 'bloodPressure', at: 20 * 60, title: 'Blood pressure · evening', device: 'Cuff', layer: 'circulation', when: { yellow: 'morning and evening', red: 'every 4 h' } },
-  { id: 'heartRate', at: 20 * 60 + 5, title: 'Resting heart rate · evening', device: 'Wristband, lie still 5 min', layer: 'circulation', when: { yellow: 'morning and evening', red: 'every 15 min' } },
 ]
 
 const MOOD_TIMES: Record<number, { at: number; name: string }[]> = {

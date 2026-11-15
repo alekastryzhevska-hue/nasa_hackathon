@@ -55,6 +55,8 @@ export function DailyPlan(props: {
   actionLabel: (t: Task) => string
   onAction: (t: Task) => void
   onUndoWater?: () => void
+  paused: boolean
+  onPause: () => void
 }) {
   const { tasks } = props
   const done = tasks.filter((t) => t.done).length
@@ -62,7 +64,9 @@ export function DailyPlan(props: {
     <section className="panel plan">
       <div className="plan-head">
         <div className="eyebrow">Daily progress</div>
-        <span className="day-clock" aria-label="Time of day (demo)">{hhmm(props.dayMin)}</span>
+        <button className={`day-clock${props.paused ? ' paused' : ''}`} onClick={props.onPause} title={props.paused ? 'Resume the day' : 'Pause the day'} aria-label={`Time of day ${hhmm(props.dayMin)}, ${props.paused ? 'paused' : 'running'}`}>
+          {props.paused ? '▶' : '⏸'} {hhmm(props.dayMin)}
+        </button>
       </div>
       <div className="plan-count">
         <span className="big">{done}</span>

@@ -58,9 +58,11 @@ interface Props {
   current: Required<Overrides>
   onChange: (o: Overrides) => void
   onSimulateEvent: () => void
+  dayMin: number
+  onDayMin: (min: number) => void
 }
 
-export function TestPanel({ overrides, current, onChange, onSimulateEvent }: Props) {
+export function TestPanel({ overrides, current, onChange, onSimulateEvent, dayMin, onDayMin }: Props) {
   const [open, setOpen] = useState(false)
 
   if (!open)
@@ -79,6 +81,24 @@ export function TestPanel({ overrides, current, onChange, onSimulateEvent }: Pro
       </header>
 
       <button className="ghost" onClick={onSimulateEvent}>☢ Simulate solar event</button>
+
+      <div className="test-row active">
+        <label className="test-label">
+          <span>Time of day</span>
+          <strong>{`${String(Math.floor(dayMin / 60)).padStart(2, '0')}:${String(dayMin % 60).padStart(2, '0')}`}</strong>
+        </label>
+        <input type="range" min={7 * 60} max={23 * 60} step={5} value={dayMin} onChange={(e) => onDayMin(Number(e.target.value))} aria-label="Time of day" />
+        <div className="test-hint">
+          <span>Tasks become due at their time</span>
+          <span>
+            {[7, 9, 12, 20, 21].map((h) => (
+              <button key={h} className="link" style={{ marginLeft: 6 }} onClick={() => onDayMin(h * 60)}>
+                {h}:00
+              </button>
+            ))}
+          </span>
+        </div>
+      </div>
 
       {SLIDERS.map((s) => {
         const value = overrides[s.key] ?? current[s.key]

@@ -70,7 +70,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: 'bpm',
     source: 'Wristband / smart shirt, automatic',
     frequency: 'Live, every second; status uses the morning resting value',
-    schedule: { green: 'Live; resting value every morning', yellow: 'Resting value morning and evening', red: 'Resting value every 15 min' },
+    schedule: always('Wristband, continuous; nothing to do'),
     live: 'Live heart rate',
     dailyLabel: 'Resting, this morning',
     digits: 0,
