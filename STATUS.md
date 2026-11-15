@@ -70,6 +70,11 @@ _Last updated: 2026-11-15_
   cards on the right, Mind check-in (7-step slider, emotion chips, figure in the mood
   color), sleep "battery" on the figure.
 - 2026-11-15: Fonts switched to Space Grotesk + Inter, as in the mockup.
+- 2026-11-15: Mockup code from Claude Design applied: figures for every tab drawn from your
+  SVGs (skeleton, muscles, organs with status labels, cardio with ECG, hydration, sleep
+  battery, mind), exact sizes and colors of header, tabs, cards and radiation strip, IBM Plex
+  Mono captions. Organs: Kidneys = urine calcium, Liver = blood sugar, Brain & eyes and
+  Lungs show "No data" (no device yet).
 
 ### In progress
 - Waiting for design feedback on the built screen.
