@@ -189,6 +189,7 @@ summary { cursor: pointer; }
 .radiation { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 28px; align-items: end; margin-top: auto; }
 .radiation h2 { margin-bottom: 14px; }
 .rad-status { margin-top: 8px; font-weight: 700; }
+.rad-advice { margin-top: 6px; font-size: 13px; line-height: 18px; color: var(--text); max-width: 300px; }
 .rad-scale { position: relative; padding-top: 44px; }
 .rad-current { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; transition: left 0.6s ease; }
 .rad-current span { font-family: var(--font-sans); font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; border: 1px solid var(--gray-50); background: var(--gray-100); border-radius: 6px; padding: 5px 9px; color: var(--heading); }

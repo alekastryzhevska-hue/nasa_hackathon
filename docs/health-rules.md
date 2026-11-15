@@ -52,9 +52,13 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
 - **How to measure:** nothing to do — ship sensors send data automatically.
 - **Normal:** background rate for the environment. Mars transit ≈ 1.8 mSv/day *(verify)*.
 - 🟡 **Yellow:** dose rate ≥ 2× normal, OR ship sensor silent > 30 min, OR solar flare forecast from Earth.
-  - **What to do:** check the sensor; if silent > 2 h, connect the personal dosimeter by USB. Know where the shelter is.
+  - **What to do (dose rate up):** move to the best-shielded part of the ship (sleep stations,
+    near water tanks), postpone work in lightly shielded areas, prepare the storm shelter,
+    keep the personal dosimeter on.
+  - **What to do (flare forecast):** prepare the storm shelter, postpone work in lightly shielded areas.
+  - **What to do (sensor silent):** check the sensor; if silent > 2 h, connect the personal dosimeter. Know the way to the shelter.
 - 🔴 **Red:** dose rate ≥ 10× normal (solar particle event).
-  - **What to do:** go to the storm shelter, take the personal dosimeter, stay until the all-clear (dose rate normal for 1 hour).
+  - **What to do:** go to the storm shelter, stay until the ship gives the all-clear.
 - **Lifetime limit:** 600 mSv career limit *(verify)*. **Not shown to the astronaut** (design decision 2026-11-14): near the limit there is nothing extra they can do in flight, and it adds stress. The dose history is still recorded and sent to flight surgeons.
 - **2× and 10× are our own illustrative thresholds** *(look for real NASA alert levels)*.
 

@@ -343,6 +343,7 @@ export default function App() {
             rate={radiationNow}
             normal={MISSION.normalDoseRatePerDay}
             status={radiation.status}
+            advice={RULES.radiation.advice[radiation.status]}
             secondsSinceUpdate={Math.round((now - live.radiation.updatedAt) / 1000)}
           />
         </main>

@@ -94,7 +94,7 @@ export function StatusCard(props: {
 }
 
 // Radiation scale: green below 2× normal, orange up to 10×, red above.
-export function RadiationPanel(props: { rate: number; normal: number; status: Status; secondsSinceUpdate: number }) {
+export function RadiationPanel(props: { rate: number; normal: number; status: Status; secondsSinceUpdate: number; advice: string }) {
   const elevated = props.normal * 2
   const critical = props.normal * 10
   // Piecewise scale so the small normal range is still readable.
@@ -104,7 +104,7 @@ export function RadiationPanel(props: { rate: number; normal: number; status: St
       : props.rate < critical
         ? 40 + ((props.rate - elevated) / (critical - elevated)) * 30
         : Math.min(100, 70 + ((props.rate - critical) / critical) * 30)
-  const label = { green: 'Within normal range', yellow: 'Elevated: be ready to go to the shelter', red: 'Critical: go to the shelter' }[props.status]
+  const label = { green: 'Within normal range', yellow: 'Elevated: reduce your dose', red: 'Critical: go to the shelter' }[props.status]
   const stale = props.secondsSinceUpdate > 30 * 60
 
   return (
@@ -118,6 +118,7 @@ export function RadiationPanel(props: { rate: number; normal: number; status: St
         <div className="rad-status" style={{ color: STATUS_COLOR[props.status] }}>
           {props.status === 'green' ? '✓' : '⚠'} {label}
         </div>
+        {props.status === 'yellow' && <p className="rad-advice">{props.advice}</p>}
       </div>
 
       <div className="rad-scale">

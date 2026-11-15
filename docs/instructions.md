@@ -120,7 +120,9 @@ scale). The schedule does not change: sensors measure all the time.
 | Status | What to do |
 |---|---|
 | 🟢 Normal | — |
-| 🟡 Yellow: 2× normal | Check where the nearest shelter is, be ready to go. Ship sensor silent for more than 2 h: connect the personal dosimeter to the laptop |
+| 🟡 Yellow: 2–10× normal | Move to the best-shielded part of the ship (sleep stations, near water tanks) and stay there as much as possible. Postpone work in lightly shielded areas and any spacewalks. Prepare the storm shelter (clear the way, check it is ready). Keep the personal dosimeter on you. Watch the screen: red means go to the shelter now |
+| 🟡 Yellow: solar flare forecast from Earth | Prepare the storm shelter. Postpone work in lightly shielded areas |
+| 🟡 Yellow: ship sensor silent for more than 30 min | Check that the sensor is powered on and connected. Silent for more than 2 h: connect the personal dosimeter to the laptop. Know the way to the storm shelter |
 | 🔴 Red: 10× normal (solar storm) | Full-screen alarm. Go to the storm shelter and stay until the ship gives the all-clear |
 
 **Alarm screen:** no "I am in shelter" button — the app already knows the radiation level

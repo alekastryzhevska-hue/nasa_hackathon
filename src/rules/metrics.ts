@@ -53,7 +53,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     why: 'Space radiation raises long-term health risks. A solar particle event is dangerous right away.',
     advice: {
       green: 'Background radiation is normal for this mission phase.',
-      yellow: 'Check where the nearest shelter is and be ready to go. Ship sensor silent for more than 2 h: connect the personal dosimeter to the laptop.',
+      yellow: 'Move to the best-shielded part of the ship (sleep stations, near water tanks). Postpone work in lightly shielded areas. Prepare the storm shelter and keep your dosimeter on you.',
       red: 'Go to the storm shelter and stay until the ship gives the all-clear.',
     },
     evaluate: (v, _a, m) => {
