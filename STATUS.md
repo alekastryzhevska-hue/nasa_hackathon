@@ -69,6 +69,7 @@ _Last updated: 2026-11-15_
   placeholder, dot-grid page background, `surface-card` cards, figure in the middle with
   cards on the right, Mind check-in (7-step slider, emotion chips, figure in the mood
   color), sleep "battery" on the figure.
+- 2026-11-15: Fonts switched to Space Grotesk + Inter, as in the mockup.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -90,6 +91,10 @@ _Last updated: 2026-11-15_
 - **Design update: I applied it (2026-11-15 evening), so please don't push your unfinished
   `src/` changes** — stash them (`git stash -u`) and pull. If something is off, write it
   here and I'll fix it.
+- **Fonts changed to the mockup's (asked by zachtrenito, 2026-11-15):** Space Grotesk for
+  headings and big numbers, Inter for text; bundled in the app, work offline. This differs
+  from `design-system/README.md` (Fira Sans + Overpass) — please update the design system
+  if you agree, or tell me to switch back.
 - Not applied yet, as agreed with zachtrenito: the new status card with a metric list on
   tabs other than Mind, the 4-organ interactive Organs figure and its new metrics, the
   radiation "sensor not updating" state, the Sleep debt block. Mood data is copied from
