@@ -13,7 +13,7 @@ Back to the normal schedule after two normal results in a row.
 
 ---
 
-## Bones
+## Skeleton
 
 **Devices:** urine test strip + laptop camera; exercise machines (send data on their own:
 resistance device with vacuum cylinders or a flywheel, treadmill with a harness, exercise
@@ -59,7 +59,7 @@ ship's own sensors.
 | 🔴 Red, low (below 55) | **Every 15 min** until above 70 | 15 g of fast carbs now. Tell the crew |
 | 🔴 Red, high (126+ repeatedly) | **Daily, fasting** | Tell the flight surgeon |
 
-## Circulation
+## Cardio
 
 **Devices:** wristband (heart rate, automatic); blood pressure cuff (Bluetooth).
 
@@ -101,7 +101,7 @@ measures every night.
 | 🟡 Yellow: under 6 h for 3 nights | Darken the sleep station, earplugs, no screens for an hour before sleep, same bedtime every day |
 | 🔴 Red: under 5 h for 5 nights, or under 4 h in one night | Postpone complex and risky tasks. Tell the commander and the flight surgeon |
 
-## Emotions
+## Mind
 
 **Devices:** none. A short test in the app (designed by design).
 

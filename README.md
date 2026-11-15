@@ -28,8 +28,8 @@ Then open http://localhost:5173 in the browser. Stop it with `Ctrl+C` in the ter
 
 - Switch astronaut (top right): **Alex Rivera** is healthy, **Sam Okafor** sleeps badly,
   **Mia Chen** is losing bone.
-- Click the body layers (Bones, Muscles, Organs…) and the tasks in the daily plan.
-- Hydration: press **+ 250 ml**. Emotions: do the mood check-in.
+- Click the body tabs (Skeleton, Muscles, Organs…) and the tasks in the daily plan.
+- Hydration: press **+1 pouch**. Mind: move the mood slider, pick feelings, save the check-in.
 - **🧪 Test panel** (bottom right): move sliders to make any metric yellow or red, or
   press **Simulate solar event** for the radiation alarm.
 

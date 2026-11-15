@@ -6,6 +6,9 @@ import type { Status } from './data/types'
 export const DS = {
   gray100: '#060c13',
   gray90: '#0d141e',
+  gray60: '#323e4e',
+  gray50: '#4b596b',
+  gray30: '#8e99a9',
   gray0: '#f2f5f9',
   red: '#df746a',
   orange: '#ee9b58',

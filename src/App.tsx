@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BodyFigure } from './components/BodyFigure'
 import { MetricCard } from './components/MetricCard'
+import { MoodCheckin } from './components/MoodCheckin'
 import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components/Panels'
 import { RadiationAlarm } from './components/RadiationAlarm'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
 import { initialLive, tickLive, type LiveState } from './data/live'
+import { MOOD_DEFAULT_LABELS, MOOD_DEFAULT_STEP, MOOD_STEPS, moodScore } from './data/mood'
 import type { MetricId, Status } from './data/types'
 import { TestPanel, applyOverride, type Overrides } from './dev/TestPanel'
 import { WATER_GOAL_ML, buildChecklist, type Task } from './rules/checklist'
@@ -35,21 +37,18 @@ const POUCHES_GOAL = 8
 const REMINDER_MIN: Record<Status, number | null> = { green: null, yellow: 60, red: 30 }
 // Mood tests per day by status, and their names.
 const TESTS_NEEDED: Record<Status, number> = { green: 1, yellow: 2, red: 3 }
-const TEST_SLOTS: Record<number, string[]> = { 1: ['Daily'], 2: ['Morning', 'Evening'], 3: ['Morning', 'Midday', 'Evening'] }
 const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-
-const MOODS = [
-  { value: 1, label: 'Very low' },
-  { value: 2, label: 'Low' },
-  { value: 3, label: 'Okay' },
-  { value: 4, label: 'Good' },
-  { value: 5, label: 'Great' },
-]
 
 export default function App() {
   const [astronautId, setAstronautId] = useState(ASTRONAUTS[0].id)
   const [view, setView] = useState<'main' | 'sport'>('main')
   const [layerId, setLayerId] = useState<LayerId>('bones')
+  // Readiness tab: no design yet, shows a placeholder.
+  const [readiness, setReadiness] = useState(false)
+  const openLayer = (id: LayerId) => {
+    setReadiness(false)
+    setLayerId(id)
+  }
   const [overrides, setOverrides] = useState<Overrides>({})
   const [eventActive, setEventActive] = useState(false)
   const [pouches, setPouches] = useState<Pouch[]>([])
@@ -59,6 +58,10 @@ export default function App() {
   // Mood tests taken today in this session (1–5 each).
   const [checkIns, setCheckIns] = useState<number[]>([])
   const checkIn = checkIns.length ? checkIns[checkIns.length - 1] : null
+  // Mood check-in card: slider step, chosen emotion chips, and whether it is saved.
+  const [moodStep, setMoodStep] = useState(MOOD_DEFAULT_STEP)
+  const [moodLabels, setMoodLabels] = useState<string[]>(MOOD_DEFAULT_LABELS)
+  const [moodSaved, setMoodSaved] = useState(false)
   // Radiation alarm collapsed into a red bar (dose rate at the moment it was collapsed).
   const [collapsedAt, setCollapsedAt] = useState<number | null>(null)
   // Yellow layers the astronaut has already opened: their ripple stops. Keyed by status,
@@ -96,6 +99,9 @@ export default function App() {
     setPouches([])
     setSessionStart(Date.now())
     setCheckIns([])
+    setMoodStep(MOOD_DEFAULT_STEP)
+    setMoodLabels(MOOD_DEFAULT_LABELS)
+    setMoodSaved(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [astronautId])
 
@@ -144,7 +150,6 @@ export default function App() {
   // How many mood tests today: based on the status before today's tests.
   const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
   const testsNeeded = TESTS_NEEDED[moodBefore]
-  const slots = TEST_SLOTS[testsNeeded]
 
   const tasks = buildChecklist({
     trainingToday: daily('trainingMinutes').at(-1)!,
@@ -156,7 +161,7 @@ export default function App() {
   })
   const openTask = (t: Task) => {
     setView('main')
-    setLayerId(t.layer)
+    openLayer(t.layer)
   }
 
   const endEvent = () => {
@@ -186,16 +191,12 @@ export default function App() {
       )}
       <header className="topbar">
         <div className="brand">
-          <svg viewBox="0 0 40 24" width="40" height="24" aria-hidden>
-            <ellipse cx="20" cy="12" rx="17" ry="8" fill="none" style={{ stroke: 'var(--blue-default)' }} strokeWidth="2.5" transform="rotate(-15 20 12)" />
-            <circle cx="20" cy="12" r="4" fill="none" style={{ stroke: 'var(--blue-default)' }} strokeWidth="2.5" />
-          </svg>
-          <span>Health app</span>
+          <span>WALL-E &amp; EVE :3</span>
         </div>
 
         <nav className="segmented">
-          <button className={view === 'main' ? 'on' : ''} onClick={() => setView('main')}>Main</button>
-          <button className={view === 'sport' ? 'on' : ''} onClick={() => setView('sport')}>Sport</button>
+          <button className={view === 'main' ? 'on' : ''} onClick={() => setView('main')}>Health</button>
+          <button className={view === 'sport' ? 'on' : ''} onClick={() => setView('sport')}>Workout</button>
         </nav>
 
         <label className="astronaut">
@@ -226,23 +227,52 @@ export default function App() {
             <>
               <nav className="layer-tabs">
                 {LAYERS.map((l, i) => (
-                  <button key={l.id} className={l.id === layerId ? 'on' : ''} onClick={() => setLayerId(l.id)}>
+                  <button key={l.id} className={!readiness && l.id === layerId ? 'on' : ''} onClick={() => openLayer(l.id)}>
                     {summaries[i].status !== 'green' && (
                       <span className={`tab-dot ${summaries[i].status}${ripples(i) ? ' ripple' : ''}`} />
                     )}
                     {l.name}
                   </button>
                 ))}
+                <button className={readiness ? 'on' : ''} onClick={() => setReadiness(true)}>Readiness</button>
               </nav>
 
+              {readiness ? (
+                <section className="panel sport">
+                  <h2>Readiness</h2>
+                  <p className="muted">Your readiness for today’s workout — coming soon.</p>
+                  <button className="primary" onClick={() => setView('sport')}>Go to Workout →</button>
+                </section>
+              ) : (
               <div className="stage">
                 <div className="stage-info">
+                  {layerId === 'emotions' && (
+                    <MoodCheckin
+                      step={moodStep}
+                      labels={moodLabels}
+                      onStep={(v) => {
+                        setMoodStep(v)
+                        setMoodSaved(false)
+                      }}
+                      onLabels={(l) => {
+                        setMoodLabels(l)
+                        setMoodSaved(false)
+                      }}
+                      onSave={() => {
+                        setCheckIns((l) => [...l, moodScore(moodStep)])
+                        setMoodSaved(true)
+                      }}
+                      saved={moodSaved}
+                      done={checkIns.length}
+                      needed={testsNeeded}
+                    />
+                  )}
                   <StatusCard
                     status={summary.status}
                     reason={`${RULES[worstMetric.id].name}: ${worstMetric.reason}`}
                     advice={RULES[worstMetric.id].advice[worstMetric.status]}
-                    nextLayer={nextLayer}
-                    onNext={setLayerId}
+                    nextLayer={layerIndex === LAYERS.length - 1 ? { id: layerId, name: 'Readiness' } : nextLayer}
+                    onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
                   />
 
                   {layerId === 'hydration' && (
@@ -272,27 +302,6 @@ export default function App() {
                     </section>
                   )}
 
-                  {layerId === 'emotions' && (
-                    <section className="panel action column">
-                      <strong>
-                        {checkIns.length >= testsNeeded
-                          ? 'All tests done today — thank you'
-                          : `${slots[checkIns.length]} test${testsNeeded > 1 ? ` (${checkIns.length + 1} of ${testsNeeded})` : ''}: how do you feel?`}
-                      </strong>
-                      {checkIns.length < testsNeeded && (
-                        <div className="moods">
-                          {MOODS.map((m) => (
-                            <button key={m.value} onClick={() => setCheckIns((l) => [...l, m.value])}>
-                              <b>{m.value}</b>
-                              <span>{m.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      <span className="muted small">Placeholder: the real test comes from design.</span>
-                    </section>
-                  )}
-
                   <div className="metrics">
                     {layer.metrics.map(({ id }) => {
                       const e = evaluate(id)
@@ -318,11 +327,15 @@ export default function App() {
                 <div className="stage-figure">
                   <BodyFigure
                     layer={layerId}
-                    regions={summary.regions}
+                    // Mind: the figure takes the mood color, never a status color.
+                    regions={layerId === 'emotions' ? {} : summary.regions}
+                    tint={layerId === 'emotions' ? MOOD_STEPS[moodStep].color : undefined}
+                    chargePercent={layerId === 'sleep' ? Math.min(100, (daily('sleep').at(-1)! / astronaut.baseline.sleep) * 100) : undefined}
                     fillPercent={layerId === 'hydration' ? (waterToday / WATER_GOAL_ML) * 100 : 0}
                   />
                 </div>
               </div>
+              )}
             </>
           )}
 

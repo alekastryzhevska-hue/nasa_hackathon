@@ -32,7 +32,7 @@ export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) 
   const done = tasks.filter((t) => t.done).length
   return (
     <section className="panel plan">
-      <h2>Daily plan</h2>
+      <div className="eyebrow">Daily progress</div>
       <div className="plan-count">
         <span className="big">{done}</span>
         <span className="muted"> / {tasks.length} tasks done</span>

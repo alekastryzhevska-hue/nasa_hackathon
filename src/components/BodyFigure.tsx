@@ -15,6 +15,8 @@ interface Props {
   layer: LayerId
   regions: Partial<Record<Region, Status>>
   fillPercent?: number // hydration level, 0–100
+  tint?: string // Mind tab: mood color for the whole figure
+  chargePercent?: number // Sleep tab: "battery" charge, 0–100
 }
 
 // Body outline, reused as the faint silhouette and as the hydration mask.
@@ -172,6 +174,32 @@ function Head({ regions }: { regions: Props['regions'] }) {
   )
 }
 
+// Mind tab: brain and a nerve network (lines and nodes from the brain down the body),
+// all in the mood color.
+function Mind({ color }: { color: string }) {
+  const nodes: [number, number][] = [[150, 112], [124, 150], [176, 150], [150, 190], [104, 196], [196, 196], [136, 236], [164, 236]]
+  return (
+    <g stroke={color} fill={color} strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)">
+      <circle cx={150} cy={62} r={44} fill="none" strokeOpacity={0.25} />
+      <circle cx={150} cy={62} r={56} fill="none" strokeOpacity={0.15} strokeDasharray="2 6" />
+      <g fillOpacity={0.14} strokeWidth={2}>
+        <path d="M148 40 Q128 38 126 56 Q122 70 134 78 Q142 84 148 78 Z" />
+        <path d="M152 40 Q172 38 174 56 Q178 70 166 78 Q158 84 152 78 Z" />
+        <path d="M134 54 q6 4 0 10 M140 66 q4 -4 6 2 M166 54 q-6 4 0 10 M160 66 q-4 -4 -6 2" fill="none" />
+      </g>
+      <path
+        d="M150 84 L150 112 L124 150 L104 196 M150 112 L176 150 L196 196 M150 112 L150 190 L136 236 M150 190 L164 236"
+        fill="none"
+        strokeWidth={1.2}
+        strokeOpacity={0.8}
+      />
+      {nodes.map(([x, y]) => (
+        <circle key={`${x}${y}`} cx={x} cy={y} r={3} stroke="none" />
+      ))}
+    </g>
+  )
+}
+
 // Where ripples start for each region (both sides for paired limbs and organs).
 const ANCHORS: Record<Region, [number, number][]> = {
   head: [[150, 60]],
@@ -206,8 +234,12 @@ function Ripples({ regions }: { regions: Props['regions'] }) {
   )
 }
 
-export function BodyFigure({ layer, regions, fillPercent = 0 }: Props) {
+export function BodyFigure({ layer, regions, fillPercent = 0, tint, chargePercent }: Props) {
   const fillY = 540 - (540 - 32) * (Math.min(100, fillPercent) / 100)
+  const line = tint ?? HOLO
+  // Sleep "battery": 10 bars from the feet up, filled by the charge.
+  const bars = Array.from({ length: 10 }, (_, i) => i)
+  const filled = Math.round((chargePercent ?? 0) / 10)
   return (
     <svg viewBox="0 0 300 580" className="body-figure" role="img" aria-label={`Body figure, ${layer} layer`}>
       <defs>
@@ -218,30 +250,73 @@ export function BodyFigure({ layer, regions, fillPercent = 0 }: Props) {
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="14" />
+        </filter>
         <mask id="body-mask">
           <Silhouette stroke="#fff" fill="#fff" width={0} />
         </mask>
       </defs>
 
-      <circle cx={150} cy={300} r={210} fill="none" stroke={HOLO} strokeOpacity={0.18} />
-      <circle cx={150} cy={300} r={170} fill="none" stroke={HOLO} strokeOpacity={0.12} strokeDasharray="2 6" />
-      <ellipse cx={150} cy={548} rx={70} ry={10} fill="none" stroke={HOLO} strokeOpacity={0.4} />
-      <ellipse cx={150} cy={548} rx={46} ry={6} fill="none" stroke={HOLO} strokeOpacity={0.6} />
+      {/* Rings and tick marks behind the figure, pedestal under the feet. */}
+      <circle cx={150} cy={300} r={210} fill="none" stroke={DS.gray60} />
+      <circle cx={150} cy={300} r={170} fill="none" stroke={DS.gray60} strokeDasharray="2 6" />
+      <path d="M-58 300 h18 M340 300 h18" stroke={DS.gray50} strokeWidth={1.5} fill="none" />
+      <ellipse cx={150} cy={548} rx={70} ry={10} fill="none" stroke={line} strokeOpacity={0.4} />
+      <ellipse cx={150} cy={548} rx={46} ry={6} fill="none" stroke={line} strokeOpacity={0.6} />
+
+      {tint && (
+        <g opacity={0.22} filter="url(#soft)">
+          <Silhouette stroke={tint} fill={tint} width={0} />
+        </g>
+      )}
 
       {layer === 'hydration' && (
         <g data-region="whole-body">
           <rect x={0} y={fillY} width={300} height={540 - fillY} fill={COLOR[regions['whole-body'] ?? 'green']} opacity={0.35} mask="url(#body-mask)" />
-          <line x1={60} x2={240} y1={fillY} y2={fillY} stroke={COLOR[regions['whole-body'] ?? 'green']} strokeDasharray="4 4" />
+          <path
+            d={`M60 ${fillY} q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0`}
+            fill="none"
+            stroke={COLOR[regions['whole-body'] ?? 'green']}
+            strokeWidth={1.5}
+          />
+          <path d={`M44 ${fillY - 4} q-7 -9 0 -18 q7 9 0 18 Z`} fill={HOLO} fillOpacity={0.3} stroke={HOLO} />
         </g>
       )}
 
-      <Silhouette stroke={HOLO} fill="none" />
+      {layer === 'sleep' && chargePercent !== undefined && (
+        <g>
+          <g mask="url(#body-mask)">
+            {bars.map((i) => (
+              <rect
+                key={i}
+                x={0}
+                y={540 - (i + 1) * 50.8 + 3}
+                width={300}
+                height={44.8}
+                fill={i < filled ? HOLO : DS.gray60}
+                opacity={i < filled ? 0.26 : 0.1}
+              />
+            ))}
+          </g>
+          <rect x={138} y={18} width={24} height={8} rx={3} fill="none" stroke={HOLO} strokeOpacity={0.7} />
+          <text x={232} y={250} fill={DS.gray0} fontSize={22} fontWeight={700} fontFamily="'Fira Sans', sans-serif">
+            {Math.round(chargePercent)}%
+          </text>
+          <text x={232} y={268} fill={DS.gray30} fontSize={11} fontFamily="'Overpass', sans-serif">
+            energy charge
+          </text>
+        </g>
+      )}
+
+      <Silhouette stroke={line} fill="none" />
 
       {layer === 'bones' && <Skeleton regions={regions} />}
       {layer === 'muscles' && <Muscles regions={regions} />}
       {(layer === 'organs' || layer === 'hydration') && <Organs regions={regions} />}
       {layer === 'circulation' && <Circulation regions={regions} />}
-      {(layer === 'sleep' || layer === 'emotions') && <Head regions={regions} />}
+      {layer === 'sleep' && <Head regions={regions} />}
+      {layer === 'emotions' && <Mind color={line} />}
 
       <Ripples regions={regions} />
     </svg>

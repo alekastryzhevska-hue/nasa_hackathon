@@ -15,7 +15,7 @@ export interface LayerDef {
 export const LAYERS: LayerDef[] = [
   {
     id: 'bones',
-    name: 'Bones',
+    name: 'Skeleton',
     metrics: [
       { id: 'urineCalcium', regions: ['spine', 'legs', 'arms', 'kidneys'] },
       { id: 'trainingMinutes', regions: ['spine', 'legs', 'arms'] },
@@ -39,7 +39,7 @@ export const LAYERS: LayerDef[] = [
   },
   {
     id: 'circulation',
-    name: 'Circulation',
+    name: 'Cardio',
     metrics: [
       { id: 'heartRate', regions: ['heart'] },
       { id: 'bloodPressure', regions: ['heart', 'blood-vessels'] },
@@ -57,7 +57,7 @@ export const LAYERS: LayerDef[] = [
   },
   {
     id: 'emotions',
-    name: 'Emotions',
+    name: 'Mind',
     metrics: [{ id: 'mood', regions: ['head'] }],
   },
 ]
