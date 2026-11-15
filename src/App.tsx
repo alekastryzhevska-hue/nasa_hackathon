@@ -28,12 +28,13 @@ const OVERRIDE_KEY: Partial<Record<MetricId, keyof Overrides>> = {
   mood: 'mood',
 }
 
-// Sips logged today by the smart water bottle (automatic; the demo button stands in for it).
-interface Sip {
+// Water pouches logged today in this session. A wrong entry can be removed.
+interface Pouch {
   id: number
   time: number
 }
-const SIP_ML = 250
+const POUCH_ML = 250
+const POUCHES_GOAL = 8
 // Reminder to drink while hydration is yellow / red (docs/instructions.md).
 const REMINDER_MIN: Record<Status, number | null> = { green: null, yellow: 60, red: 30 }
 // Mood tests per day by status, and their names.
@@ -52,10 +53,10 @@ export default function App() {
   }
   const [overrides, setOverrides] = useState<Overrides>({})
   const [eventActive, setEventActive] = useState(false)
-  const [sips, setSips] = useState<Sip[]>([])
+  const [pouches, setPouches] = useState<Pouch[]>([])
   const [sessionStart, setSessionStart] = useState(Date.now())
-  const waterAdded = sips.length * SIP_ML
-  const addSip = () => setSips((list) => [...list, { id: Date.now(), time: Date.now() }])
+  const waterAdded = pouches.length * POUCH_ML
+  const addPouch = () => setPouches((list) => [...list, { id: Date.now(), time: Date.now() }])
   // Mood tests taken today in this session (1–5 each).
   const [checkIns, setCheckIns] = useState<number[]>([])
   const checkIn = checkIns.length ? checkIns[checkIns.length - 1] : null
@@ -97,7 +98,7 @@ export default function App() {
 
   useEffect(() => {
     setLive(initialLive(resting, bp, MISSION))
-    setSips([])
+    setPouches([])
     setSessionStart(Date.now())
     setCheckIns([])
     setMoodStep(MOOD_DEFAULT_STEP)
@@ -140,13 +141,13 @@ export default function App() {
   const worstMetric = summary.metrics[0]
 
   const waterToday = daily('water').at(-1)!
-  // Water reminder: every hour (yellow) or 30 min (red) since the bottle last logged a drink.
+  // Water reminder: every hour (yellow) or 30 min (red) since the last pouch.
   const waterStatus = evaluate('water').status
   const reminderMin = REMINDER_MIN[waterStatus]
-  const lastSip = sips.length ? sips[sips.length - 1].time : sessionStart
-  const nextDrinkAt = reminderMin ? lastSip + reminderMin * 60_000 : null
-  const drinkDue = nextDrinkAt !== null && now >= nextDrinkAt
-  const waterReminder = nextDrinkAt === null ? undefined : drinkDue ? 'time to drink' : `drink by ${clock(nextDrinkAt)}`
+  const lastPouch = pouches.length ? pouches[pouches.length - 1].time : sessionStart
+  const nextPouchAt = reminderMin ? lastPouch + reminderMin * 60_000 : null
+  const pouchDue = nextPouchAt !== null && now >= nextPouchAt
+  const waterReminder = nextPouchAt === null ? undefined : pouchDue ? 'time for a pouch' : `next pouch ${clock(nextPouchAt)}`
 
   // How many mood tests today: based on the status before today's tests.
   const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
@@ -285,22 +286,22 @@ export default function App() {
                     <section className="panel action column">
                       <div>
                         <strong>{(waterToday / 1000).toFixed(1)} L</strong>
-                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · counted by the smart bottle</span>
+                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · {POUCHES_GOAL} pouches of {POUCH_ML} ml</span>
                       </div>
-                      {nextDrinkAt !== null && (
-                        <div className={`reminder${drinkDue ? ' due' : ''}`}>
-                          {drinkDue ? '⏰ Time to drink' : `Drink by ${clock(nextDrinkAt)}`} · reminder every {reminderMin} min
+                      {nextPouchAt !== null && (
+                        <div className={`reminder${pouchDue ? ' due' : ''}`}>
+                          {pouchDue ? '⏰ Time for a pouch' : `Next pouch by ${clock(nextPouchAt)}`} · reminder every {reminderMin} min
                         </div>
                       )}
-                      <button className="ghost" onClick={addSip}>Simulate bottle: +{SIP_ML} ml (demo)</button>
-                      {sips.length > 0 && (
+                      <button className="primary" onClick={addPouch}>+1 pouch ({POUCH_ML} ml)</button>
+                      {pouches.length > 0 && (
                         <ul className="drink-log">
-                          {[...sips].reverse().map((p) => (
+                          {[...pouches].reverse().map((p) => (
                             <li key={p.id}>
                               <span>{clock(p.time)}</span>
-                              <span>{SIP_ML} ml</span>
-                              <span className="muted">Smart bottle · auto</span>
-                              <span />
+                              <span>{POUCH_ML} ml</span>
+                              <span className="muted">Pouch</span>
+                              <button className="link" onClick={() => setPouches((l) => l.filter((x) => x.id !== p.id))}>Remove</button>
                             </li>
                           ))}
                         </ul>

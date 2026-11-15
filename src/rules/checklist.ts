@@ -40,7 +40,7 @@ export function buildChecklist(i: Inputs): Task[] {
     {
       id: 'morning-check',
       title: 'Morning check',
-      detail: 'Blood pressure cuff · sends the result itself',
+      detail: 'Blood pressure cuff + thermometer · send results themselves',
       done: i.morningCheckDone,
       auto: true,
       layer: 'circulation',
@@ -50,7 +50,7 @@ export function buildChecklist(i: Inputs): Task[] {
       title: 'Drink water',
       detail: `${(i.waterToday / 1000).toFixed(1)} / ${(WATER_GOAL_ML / 1000).toFixed(1)} L${i.waterReminder ? ` · ${i.waterReminder}` : ''}`,
       done: i.waterToday >= WATER_GOAL_ML,
-      auto: true,
+      auto: false,
       layer: 'hydration',
     },
     {

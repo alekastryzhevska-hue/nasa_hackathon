@@ -15,21 +15,20 @@ Back to the normal schedule after two normal results in a row.
 
 ## Skeleton
 
-**Devices:** blood & urine analyzer; exercise machines (send data on their own:
+**Devices:** urine test strip + laptop camera; exercise machines (send data on their own:
 resistance device with vacuum cylinders or a flywheel, treadmill with a harness, exercise
 bike).
 
 | Status | Measure | What to do |
 |---|---|---|
-| 🟢 Normal | Analyzer weekly: put the sample on the cartridge, insert it; results in about 10 min | Keep training as planned |
-| 🟡 Yellow: urine calcium above own norm | Analyzer **every 2 days** | Don't skip resistance training. Drink 0.5 L more a day |
-| 🔴 Red: calcium far above norm, or lower back pain | Analyzer **daily** | Drink at least 2.5 L a day: kidney stone risk. Tell the flight surgeon at the next link. Lower back pain: tell the crew medical officer now |
+| 🟢 Normal | Urine strip weekly: dip it, after 1–2 min hold it up to the laptop camera | Keep training as planned |
+| 🟡 Yellow: urine calcium above own norm | Urine strip **every 2 days** | Don't skip resistance training. Drink 2 more pouches a day |
+| 🔴 Red: calcium far above norm, or lower back pain | Urine strip **daily** | Drink at least 10 pouches (2.5 L) a day: kidney stone risk. Tell the flight surgeon at the next link. Lower back pain: tell the crew medical officer now |
 
 ## Muscles
 
-**Devices:** body mass device (seat with straps; it gently rocks you to measure mass,
-scales don't work in zero-g); hand dynamometer (Bluetooth; measures squeeze force, works
-without gravity); exercise machines (automatic).
+**Devices:** hand dynamometer (Bluetooth; measures squeeze force, works without gravity);
+exercise machines (automatic).
 
 | Status | Measure | What to do |
 |---|---|---|
@@ -39,18 +38,16 @@ without gravity); exercise machines (automatic).
 
 ## Organs
 
-**Devices:** smart shirt (body temperature, automatic); glucometer (Bluetooth); portable
-ultrasound (kidneys and liver), eye scanner OCT (optic nerve swelling) and eye tonometer
-(intraocular pressure) — on request of the flight surgeon, no data in the prototype.
-Cabin temperature comes from the ship's own sensors.
+**Devices:** thermometer, glucometer (both Bluetooth). Cabin temperature comes from the
+ship's own sensors.
 
 **Body temperature**
 
 | Status | Measure | What to do |
 |---|---|---|
-| 🟢 Normal (36.1–37.2 °C) | Smart shirt, continuous | — |
-| 🟡 Yellow (37.3–38.0 °C) | Smart shirt, continuous | Drink more, rest, wear a mask, keep distance from the crew |
-| 🔴 Red (above 38.0 or below 35.5 °C) | Smart shirt, continuous | Take a fever reducer from the medical kit. Tell the crew medical officer and the flight surgeon |
+| 🟢 Normal (36.1–37.2 °C) | Thermometer every morning, under the tongue, 1 min | — |
+| 🟡 Yellow (37.3–38.0 °C) | **Every 4 h** | Drink more, rest, wear a mask, keep distance from the crew |
+| 🔴 Red (above 38.0 or below 35.5 °C) | **Every 2 h** | Take a fever reducer from the medical kit. Tell the crew medical officer and the flight surgeon |
 
 **Blood sugar**
 
@@ -64,15 +61,14 @@ Cabin temperature comes from the ship's own sensors.
 
 ## Cardio
 
-**Devices:** smart shirt (heart rate, ECG, SpO₂, breathing; automatic); automatic blood
-pressure cuff (Bluetooth).
+**Devices:** wristband (heart rate, automatic); blood pressure cuff (Bluetooth).
 
 **Heart rate**
 
 | Status | Measure | What to do |
 |---|---|---|
-| 🟢 Normal | Smart shirt all day; status uses the resting value in the morning | — |
-| 🟡 Yellow: resting HR 15 % above own norm for 3 days | Resting HR **morning and evening**: rest still for 5 min, the shirt records it | Sleep more, drink water, lighter training |
+| 🟢 Normal | Wristband all the time; status uses the resting value in the morning | — |
+| 🟡 Yellow: resting HR 15 % above own norm for 3 days | Resting HR **morning and evening**: rest still for 5 min, the wristband records it | Sleep more, drink water, lighter training |
 | 🔴 Red: above 100 or below 40 at rest, or chest pain, or short of breath | Resting HR **every 15 min** | Stop any exercise, strap in and rest. Tell the crew and the crew medical officer now. Tell the flight surgeon |
 
 **Blood pressure**
@@ -85,20 +81,19 @@ pressure cuff (Bluetooth).
 
 ## Hydration
 
-**Devices:** smart water bottle (counts every sip, automatic): drink only from it. Urine
-test reader (urine density and electrolytes; wet a test strip every morning and insert it).
-Goal: 2 L a day.
+**Devices:** none. Water pouches of 250 ml; after each pouch press **"+1 pouch"** in the
+app (a wrong entry can be removed). Goal: 8 pouches = 2 L a day.
 
 | Status | Measure / reminder | What to do |
 |---|---|---|
-| 🟢 Normal | Drink from the smart bottle; it counts by itself | — |
-| 🟡 Yellow: under 2 L for 2 days | Reminder **every hour**: drink | Drink about 250 ml an hour while awake |
-| 🔴 Red: under 1.5 L for 3 days | Reminder **every 30 min** | Goal 2.5 L. Headache or dark urine: tell the crew medical officer |
+| 🟢 Normal | Press "+1 pouch" after each pouch | — |
+| 🟡 Yellow: under 2 L for 2 days | Reminder **every hour**: drink a pouch | Drink 1 pouch an hour while awake |
+| 🔴 Red: under 1.5 L for 3 days | Reminder **every 30 min** | Goal 10 pouches. Headache or dark urine: tell the crew medical officer |
 
 ## Sleep
 
-**Devices:** wrist sleep tracker (automatic; wear it at all times, charge it during the
-workout). The schedule does not change: it already measures every night.
+**Devices:** wristband (automatic, at night). The schedule does not change: it already
+measures every night.
 
 | Status | What to do |
 |---|---|
