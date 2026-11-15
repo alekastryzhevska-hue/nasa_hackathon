@@ -75,6 +75,8 @@ _Last updated: 2026-11-15_
   battery, mind), exact sizes and colors of header, tabs, cards and radiation strip, IBM Plex
   Mono captions. Organs: Kidneys = urine calcium, Liver = blood sugar, Brain & eyes and
   Lungs show "No data" (no device yet).
+- 2026-11-15: Workout tab from the mockup: video guide card with a hologram scene, Play / Pause
+  with a simulated progress bar (no real video yet), "Lower body strength" title.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -107,8 +109,8 @@ _Last updated: 2026-11-15_
   surgeons" (no lifetime limit on screen), "laptop" instead of "tablet". **Decision
   (zachtrenito, 2026-11-15): devices and data stay as in `docs/devices.md` and the
   instructions; the mockup sets only the design.** Please update the mockup's Devices texts
-  to match, or tell me if something there should change. Not done yet: Workout
-  page, sleep calendar button.
+  to match, or tell me if something there should change. Not done yet: sleep
+  calendar button.
 - Not applied yet, as agreed with zachtrenito: the new status card with a metric list on
   tabs other than Mind, the 4-organ interactive Organs figure and its new metrics, the
   radiation "sensor not updating" state, the Sleep debt block. Mood data is copied from
