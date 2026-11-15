@@ -24,7 +24,7 @@ export type Source =
   | 'urine-strip'
   | 'exercise-device'
   | 'dynamometer'
-  | 'water-dispenser'
+  | 'pouch-log'
   | 'check-in'
 
 export interface Reading {

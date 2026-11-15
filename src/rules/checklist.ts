@@ -21,7 +21,10 @@ interface Inputs {
   trainingToday: number
   morningCheckDone: boolean
   waterToday: number
-  checkInDone: boolean
+  // Shown next to the water task when a reminder is due (yellow / red hydration).
+  waterReminder?: string
+  checkIns: number
+  checkInsNeeded: number
 }
 
 export function buildChecklist(i: Inputs): Task[] {
@@ -37,7 +40,7 @@ export function buildChecklist(i: Inputs): Task[] {
     {
       id: 'morning-check',
       title: 'Morning check',
-      detail: 'Blood pressure cuff · sends the result itself',
+      detail: 'Blood pressure cuff + thermometer · send results themselves',
       done: i.morningCheckDone,
       auto: true,
       layer: 'circulation',
@@ -45,16 +48,16 @@ export function buildChecklist(i: Inputs): Task[] {
     {
       id: 'water',
       title: 'Drink water',
-      detail: `${(i.waterToday / 1000).toFixed(1)} / ${(WATER_GOAL_ML / 1000).toFixed(1)} L`,
+      detail: `${(i.waterToday / 1000).toFixed(1)} / ${(WATER_GOAL_ML / 1000).toFixed(1)} L${i.waterReminder ? ` · ${i.waterReminder}` : ''}`,
       done: i.waterToday >= WATER_GOAL_ML,
       auto: false,
       layer: 'hydration',
     },
     {
       id: 'check-in',
-      title: 'Mood check-in',
-      detail: 'How do you feel today?',
-      done: i.checkInDone,
+      title: 'Mood test',
+      detail: `${Math.min(i.checkIns, i.checkInsNeeded)} / ${i.checkInsNeeded} today`,
+      done: i.checkIns >= i.checkInsNeeded,
       auto: false,
       layer: 'emotions',
     },

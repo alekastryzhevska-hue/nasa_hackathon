@@ -5,7 +5,7 @@ import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components
 import { RadiationAlarm } from './components/RadiationAlarm'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
 import { initialLive, tickLive, type LiveState } from './data/live'
-import type { MetricId } from './data/types'
+import type { MetricId, Status } from './data/types'
 import { TestPanel, applyOverride, type Overrides } from './dev/TestPanel'
 import { WATER_GOAL_ML, buildChecklist, type Task } from './rules/checklist'
 import { LAYERS, summarizeLayer, type LayerId } from './rules/layers'
@@ -24,15 +24,18 @@ const OVERRIDE_KEY: Partial<Record<MetricId, keyof Overrides>> = {
   mood: 'mood',
 }
 
-// Drinks logged today in this session: dispenser fills (automatic) and other drinks
-// added by hand. Hand entries can be removed if added by mistake.
-interface Drink {
+// Water pouches logged today in this session. A wrong entry can be removed.
+interface Pouch {
   id: number
-  ml: number
   time: number
-  from: 'dispenser' | 'manual'
 }
-const DRINK_ML = 250
+const POUCH_ML = 250
+const POUCHES_GOAL = 8
+// Reminder to drink while hydration is yellow / red (docs/instructions.md).
+const REMINDER_MIN: Record<Status, number | null> = { green: null, yellow: 60, red: 30 }
+// Mood tests per day by status, and their names.
+const TESTS_NEEDED: Record<Status, number> = { green: 1, yellow: 2, red: 3 }
+const TEST_SLOTS: Record<number, string[]> = { 1: ['Daily'], 2: ['Morning', 'Evening'], 3: ['Morning', 'Midday', 'Evening'] }
 const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
 
 const MOODS = [
@@ -49,11 +52,15 @@ export default function App() {
   const [layerId, setLayerId] = useState<LayerId>('bones')
   const [overrides, setOverrides] = useState<Overrides>({})
   const [eventActive, setEventActive] = useState(false)
-  const [drinks, setDrinks] = useState<Drink[]>([])
-  const waterAdded = drinks.reduce((sum, d) => sum + d.ml, 0)
-  const addDrink = (from: Drink['from']) =>
-    setDrinks((list) => [...list, { id: Date.now(), ml: DRINK_ML, time: Date.now(), from }])
-  const [checkIn, setCheckIn] = useState<number | null>(null)
+  const [pouches, setPouches] = useState<Pouch[]>([])
+  const [sessionStart, setSessionStart] = useState(Date.now())
+  const waterAdded = pouches.length * POUCH_ML
+  const addPouch = () => setPouches((list) => [...list, { id: Date.now(), time: Date.now() }])
+  // Mood tests taken today in this session (1–5 each).
+  const [checkIns, setCheckIns] = useState<number[]>([])
+  const checkIn = checkIns.length ? checkIns[checkIns.length - 1] : null
+  // Radiation alarm collapsed into a red bar (dose rate at the moment it was collapsed).
+  const [collapsedAt, setCollapsedAt] = useState<number | null>(null)
   // Yellow layers the astronaut has already opened: their ripple stops. Keyed by status,
   // so a layer that gets worse (or a new problem) ripples again. Red always ripples.
   const [seen, setSeen] = useState<Set<string>>(new Set())
@@ -86,8 +93,9 @@ export default function App() {
 
   useEffect(() => {
     setLive(initialLive(resting, bp, MISSION))
-    setDrinks([])
-    setCheckIn(null)
+    setPouches([])
+    setSessionStart(Date.now())
+    setCheckIns([])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [astronautId])
 
@@ -125,11 +133,26 @@ export default function App() {
   const worstMetric = summary.metrics[0]
 
   const waterToday = daily('water').at(-1)!
+  // Water reminder: every hour (yellow) or 30 min (red) since the last pouch.
+  const waterStatus = evaluate('water').status
+  const reminderMin = REMINDER_MIN[waterStatus]
+  const lastPouch = pouches.length ? pouches[pouches.length - 1].time : sessionStart
+  const nextPouchAt = reminderMin ? lastPouch + reminderMin * 60_000 : null
+  const pouchDue = nextPouchAt !== null && now >= nextPouchAt
+  const waterReminder = nextPouchAt === null ? undefined : pouchDue ? 'time for a pouch' : `next pouch ${clock(nextPouchAt)}`
+
+  // How many mood tests today: based on the status before today's tests.
+  const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
+  const testsNeeded = TESTS_NEEDED[moodBefore]
+  const slots = TEST_SLOTS[testsNeeded]
+
   const tasks = buildChecklist({
     trainingToday: daily('trainingMinutes').at(-1)!,
     morningCheckDone: true,
     waterToday,
-    checkInDone: checkIn !== null,
+    waterReminder,
+    checkIns: checkIns.length,
+    checkInsNeeded: testsNeeded,
   })
   const openTask = (t: Task) => {
     setView('main')
@@ -142,10 +165,25 @@ export default function App() {
     setLive((s) => ({ ...s, radiation: { ...s.radiation, value: MISSION.normalDoseRatePerDay, updatedAt: Date.now() } }))
   }
 
+  // Alarm: full screen while radiation is red. It can be collapsed into a red bar that
+  // can't be closed; it opens again by itself if the dose rate rises by 25 % or more.
+  const radiationRed = radiation.status === 'red'
+  useEffect(() => {
+    if (!radiationRed) setCollapsedAt(null)
+    else if (collapsedAt !== null && radiationNow >= collapsedAt * 1.25) setCollapsedAt(null)
+  }, [radiationRed, radiationNow, collapsedAt])
+  const alarmCollapsed = radiationRed && collapsedAt !== null
+  const alarmOpen = radiationRed && collapsedAt === null
+
   const initials = (name: string) => name.split(' ').map((p) => p[0]).join('')
 
   return (
     <div className="app">
+      {alarmCollapsed && (
+        <button className="storm-bar" onClick={() => setCollapsedAt(null)}>
+          ☢ Solar storm — stay in the shelter · {radiationNow.toFixed(1)} mSv/day · Open alarm
+        </button>
+      )}
       <header className="topbar">
         <div className="brand">
           <svg viewBox="0 0 40 24" width="40" height="24" aria-hidden>
@@ -211,24 +249,22 @@ export default function App() {
                     <section className="panel action column">
                       <div>
                         <strong>{(waterToday / 1000).toFixed(1)} L</strong>
-                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · dispenser counts automatically</span>
+                        <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today · {POUCHES_GOAL} pouches of {POUCH_ML} ml</span>
                       </div>
-                      <div className="drink-buttons">
-                        <button className="primary" onClick={() => addDrink('manual')}>+ 250 ml other drink</button>
-                        <button className="ghost" onClick={() => addDrink('dispenser')}>Dispenser (demo)</button>
-                      </div>
-                      {drinks.length > 0 && (
+                      {nextPouchAt !== null && (
+                        <div className={`reminder${pouchDue ? ' due' : ''}`}>
+                          {pouchDue ? '⏰ Time for a pouch' : `Next pouch by ${clock(nextPouchAt)}`} · reminder every {reminderMin} min
+                        </div>
+                      )}
+                      <button className="primary" onClick={addPouch}>+1 pouch ({POUCH_ML} ml)</button>
+                      {pouches.length > 0 && (
                         <ul className="drink-log">
-                          {[...drinks].reverse().map((d) => (
-                            <li key={d.id}>
-                              <span>{clock(d.time)}</span>
-                              <span>{d.ml} ml</span>
-                              <span className="muted">{d.from === 'dispenser' ? 'Dispenser · auto' : 'Other drink'}</span>
-                              {d.from === 'manual' ? (
-                                <button className="link" onClick={() => setDrinks((l) => l.filter((x) => x.id !== d.id))}>Remove</button>
-                              ) : (
-                                <span />
-                              )}
+                          {[...pouches].reverse().map((p) => (
+                            <li key={p.id}>
+                              <span>{clock(p.time)}</span>
+                              <span>{POUCH_ML} ml</span>
+                              <span className="muted">Pouch</span>
+                              <button className="link" onClick={() => setPouches((l) => l.filter((x) => x.id !== p.id))}>Remove</button>
                             </li>
                           ))}
                         </ul>
@@ -238,15 +274,22 @@ export default function App() {
 
                   {layerId === 'emotions' && (
                     <section className="panel action column">
-                      <strong>{checkIn === null ? 'How do you feel today?' : 'Check-in saved — thank you'}</strong>
-                      <div className="moods">
-                        {MOODS.map((m) => (
-                          <button key={m.value} className={checkIn === m.value ? 'on' : ''} onClick={() => setCheckIn(m.value)}>
-                            <b>{m.value}</b>
-                            <span>{m.label}</span>
-                          </button>
-                        ))}
-                      </div>
+                      <strong>
+                        {checkIns.length >= testsNeeded
+                          ? 'All tests done today — thank you'
+                          : `${slots[checkIns.length]} test${testsNeeded > 1 ? ` (${checkIns.length + 1} of ${testsNeeded})` : ''}: how do you feel?`}
+                      </strong>
+                      {checkIns.length < testsNeeded && (
+                        <div className="moods">
+                          {MOODS.map((m) => (
+                            <button key={m.value} onClick={() => setCheckIns((l) => [...l, m.value])}>
+                              <b>{m.value}</b>
+                              <span>{m.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <span className="muted small">Placeholder: the real test comes from design.</span>
                     </section>
                   )}
 
@@ -265,6 +308,7 @@ export default function App() {
                           mission={MISSION}
                           live={liveFor(id)}
                           now={now}
+                          scheduleStatus={id === 'mood' ? moodBefore : undefined}
                         />
                       )
                     })}
@@ -316,7 +360,9 @@ export default function App() {
         }}
       />
 
-      {radiation.status === 'red' && <RadiationAlarm doseRate={radiationNow} onAllClear={endEvent} />}
+      {alarmOpen && (
+        <RadiationAlarm doseRate={radiationNow} onCollapse={() => setCollapsedAt(radiationNow)} onAllClear={endEvent} />
+      )}
     </div>
   )
 }

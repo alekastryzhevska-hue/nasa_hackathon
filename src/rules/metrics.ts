@@ -53,8 +53,8 @@ export const RULES: Record<MetricId, MetricRule> = {
     why: 'Space radiation raises long-term health risks. A solar particle event is dangerous right away.',
     advice: {
       green: 'Background radiation is normal for this mission phase.',
-      yellow: 'Know where the nearest shelter is and keep your personal dosimeter with you.',
-      red: 'Go to the storm shelter now.',
+      yellow: 'Check where the nearest shelter is and be ready to go. Ship sensor silent for more than 2 h: connect the personal dosimeter to the laptop.',
+      red: 'Go to the storm shelter and stay until the ship gives the all-clear.',
     },
     evaluate: (v, _a, m) => {
       const ratio = latest(v) / m.normalDoseRatePerDay
@@ -77,9 +77,9 @@ export const RULES: Record<MetricId, MetricRule> = {
     howToMeasure: 'Wear the wristband. The status uses your resting pulse, measured in the morning while lying down.',
     why: 'An early sign of heart problems, stress, overtraining or infection. Without gravity the heart and blood flow change.',
     advice: {
-      green: 'Heart rate is close to your pre-flight norm.',
-      yellow: 'Prioritise sleep, drink enough water, reduce training load for a few days.',
-      red: 'Stop physical activity, lie down. Tell the crew and the flight surgeon.',
+      green: 'Resting heart rate is normal.',
+      yellow: 'Sleep more, drink water, lighter training.',
+      red: 'Stop any exercise, strap in and rest. Tell the crew and the crew medical officer now. Tell the flight surgeon.',
     },
     evaluate: (v, a) => {
       if (latest(v) > 100 || latest(v) < 40) return red('Resting pulse above 100 or below 40 bpm')
@@ -99,12 +99,12 @@ export const RULES: Record<MetricId, MetricRule> = {
     live: 'Wristband estimate',
     dailyLabel: 'Cuff, this morning',
     digits: 0,
-    howToMeasure: 'Morning cuff: seated, after 5 min of rest, arm at heart level. The wristband estimate runs on its own.',
+    howToMeasure: 'Morning cuff: after 5 min of rest, relaxed, feet in foot restraints, arm at heart level. The wristband estimate runs on its own.',
     why: 'Without gravity, blood shifts towards the head and blood-pressure regulation changes.',
     advice: {
-      green: 'Blood pressure is within the normal range.',
-      yellow: 'Less salt and caffeine, rest, measure again with the cuff.',
-      red: 'Rest, measure again in 5 min, tell the flight surgeon.',
+      green: 'Blood pressure is normal.',
+      yellow: 'Less salt and caffeine, more rest.',
+      red: 'Rest, no training. Tell the crew medical officer and the flight surgeon.',
     },
     evaluate: (sys, _a, _m, dia) => {
       const n = sys.length
@@ -120,16 +120,16 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'temperature',
     name: 'Body temperature',
     unit: '°C',
-    source: 'Wristband skin temperature (trend) + thermometer to confirm',
-    frequency: 'Wristband continuous; thermometer when the trend rises or you feel unwell',
-    schedule: { green: 'Wristband, continuous; thermometer only if needed', yellow: 'Thermometer every 4 h', red: 'Thermometer every 2 h' },
+    source: 'Thermometer, automatic (Bluetooth)',
+    frequency: 'Every morning',
+    schedule: { green: 'Every morning', yellow: 'Every 4 h', red: 'Every 2 h' },
     digits: 1,
-    howToMeasure: 'The wristband watches skin temperature on its own. When asked: thermometer under the tongue, 1 minute; it sends the result itself.',
+    howToMeasure: 'Under the tongue, 1 minute. The thermometer sends the result itself. Cabin temperature comes from the ship sensors.',
     why: 'Immunity weakens in flight and infections spread easily in a closed cabin. Fever is often the first sign.',
     advice: {
       green: 'No fever.',
-      yellow: 'Drink fluids, rest, wear a mask, measure again in 4 hours.',
-      red: 'Tell the flight surgeon. Take a fever reducer from the medical kit.',
+      yellow: 'Drink more, rest, wear a mask, keep distance from the crew.',
+      red: 'Take a fever reducer from the medical kit. Tell the crew medical officer and the flight surgeon.',
     },
     evaluate: (v) => {
       const t = latest(v)
@@ -151,8 +151,8 @@ export const RULES: Record<MetricId, MetricRule> = {
     why: 'In flight the body responds less well to insulin, which can raise blood sugar.',
     advice: {
       green: 'Blood sugar is normal.',
-      yellow: 'High: less sugar, more movement. Low: eat 15 g of fast carbs.',
-      red: 'Low: fast carbs and measure again in 15 min. Tell the flight surgeon.',
+      yellow: 'High: fewer sweets, more movement. Low: eat 15 g of fast carbs (juice, candy) now and measure again in 15 min.',
+      red: 'Low: eat 15 g of fast carbs now, measure every 15 min until above 70, tell the crew. High: tell the flight surgeon.',
     },
     evaluate: (v) => {
       const s = latest(v)
@@ -173,9 +173,9 @@ export const RULES: Record<MetricId, MetricRule> = {
     howToMeasure: 'Dip the strip, wait 1–2 minutes, take a photo in the app. The app reads the colors itself.',
     why: 'Bone density can’t be measured in flight. Rising calcium in urine means bones are losing mineral, and raises kidney stone risk.',
     advice: {
-      green: 'Bone markers are stable. Keep up strength training.',
-      yellow: 'Don’t skip strength training, drink more water.',
-      red: 'Drink at least 2.5 L a day and tell the flight surgeon (kidney stone risk).',
+      green: 'Keep training as planned.',
+      yellow: "Don't skip resistance training. Drink 2 more pouches a day.",
+      red: 'Drink at least 10 pouches (2.5 L) a day: kidney stone risk. Tell the flight surgeon at the next link. Lower back pain: tell the crew medical officer now.',
     },
     evaluate: (v, a) => {
       const c = latest(v)
@@ -198,8 +198,8 @@ export const RULES: Record<MetricId, MetricRule> = {
     howToMeasure: 'Nothing to do: the exercise machine logs each session.',
     why: 'Without gravity, bones and muscles weaken. Daily resistance and cardio training is the main protection.',
     advice: {
-      green: 'Training volume is on target.',
-      yellow: 'Get back to your full training plan, add strength exercises.',
+      green: 'Keep training as planned.',
+      yellow: 'Get back to the full training volume, add resistance exercises.',
       red: 'Review the training plan with the flight surgeon.',
     },
     evaluate: (v) => {
@@ -221,8 +221,8 @@ export const RULES: Record<MetricId, MetricRule> = {
     howToMeasure: 'Squeeze the dynamometer as hard as you can 3 times. It sends the best result itself.',
     why: 'A quick check of overall muscle strength, which drops without gravity.',
     advice: {
-      green: 'Muscle strength is holding.',
-      yellow: 'Restore training volume, add strength exercises.',
+      green: 'Keep training as planned.',
+      yellow: 'Get back to the full training volume, add resistance exercises.',
       red: 'Review the training plan with the flight surgeon.',
     },
     evaluate: (v, a) => {
@@ -237,17 +237,17 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'water',
     name: 'Water intake',
     unit: 'ml',
-    source: 'Water dispenser (tap your wristband), automatic; other drinks added by hand',
+    source: '250 ml water pouches, “+1 pouch” in the app',
     frequency: 'Through the day',
-    schedule: always('Every dispenser fill, automatic'),
+    schedule: { green: 'Press “+1 pouch” after each pouch', yellow: 'Reminder every hour', red: 'Reminder every 30 min' },
     digits: 0,
     partialToday: true,
-    howToMeasure: 'Tap your wristband on the dispenser: every fill is counted automatically. Add other drinks (juice, coffee) by hand; a wrong entry can be removed.',
+    howToMeasure: 'Drink from 250 ml pouches and press “+1 pouch” after each one. A wrong entry can be removed. Goal: 8 pouches (2 L) a day.',
     why: 'Dehydration raises the risk of kidney stones, which is already higher in flight because of bone loss.',
     advice: {
-      green: 'Hydration is on track (goal 2.0–2.5 L a day).',
-      yellow: 'Drink more: aim for at least 2 L today.',
-      red: 'Drink at least 2.5 L today and tell the flight surgeon if you have back pain.',
+      green: 'Hydration is on track: 8 pouches (2 L) a day.',
+      yellow: 'Drink 1 pouch an hour while awake.',
+      red: 'Goal: 10 pouches today. Headache or dark urine: tell the crew medical officer.',
     },
     evaluate: (v) => {
       const done = fullDays(v)
@@ -268,9 +268,9 @@ export const RULES: Record<MetricId, MetricRule> = {
     howToMeasure: 'Wear the wristband at night. Nothing else to do.',
     why: 'Short sleep leads to mistakes, low mood and weaker immunity. In space there is no day/night cycle, plus noise and stress.',
     advice: {
-      green: 'Sleep is on track. Keep your regular schedule.',
-      yellow: 'Darken the sleep station, use earplugs, no screens for an hour before sleep, keep a fixed schedule.',
-      red: 'Postpone complex tasks. Tell the crew and the flight surgeon.',
+      green: 'Sleep is on track.',
+      yellow: 'Darken the sleep station, use earplugs, no screens for an hour before sleep, same bedtime every day.',
+      red: 'Postpone complex and risky tasks. Tell the commander and the flight surgeon.',
     },
     evaluate: (v) => {
       if (last(v, 5).every((x) => x < 5) || latest(v) < 4) return red('Under 5 h for 5 nights, or under 4 h last night')
@@ -285,14 +285,14 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: '/ 5',
     source: 'Daily check-in, manual',
     frequency: 'Every day',
-    schedule: { green: 'Daily', yellow: 'Morning and evening', red: 'Morning and evening' },
+    schedule: { green: 'Test once a day', yellow: 'Test morning and evening', red: 'Test morning, midday and evening' },
     digits: 0,
-    howToMeasure: 'Answer “How do you feel today?” in the daily check-in.',
+    howToMeasure: 'Take the short test in the app.',
     why: 'Isolation, confinement and distance from home affect mental health. Early signs are easy to miss in yourself.',
     advice: {
-      green: 'Mood is stable. Keep in touch with family and crew.',
-      yellow: 'Schedule a call with family, take a break, talk to a crewmate.',
-      red: 'Book a private session with the psychologist on Earth (replies take up to 20 min each way).',
+      green: 'Mood is good.',
+      yellow: 'Record a video message to family, rest, talk to a crewmate, do something you enjoy.',
+      red: 'Talk to the commander or a crewmate you trust now. At the next link with Earth, book a private session with the psychologist. Reduce workload.',
     },
     evaluate: (v) => {
       if (last(v, 5).every((x) => x <= 2) || latest(v) === 1) return red('2 or lower for 5 days, or 1 today')

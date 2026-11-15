@@ -25,11 +25,11 @@ measurements when yellow or red): [devices.md](devices.md).
 | Mood | scale 1–5 | Check-in in the app | Manual | Daily | 4–5 | ≤ 2 for 2 days | ≤ 2 for 5 days, or 1 |
 | Resting heart rate | bpm | Wristband / smart shirt | Auto | Live every 1 s; status uses the morning resting value | 50–80, or own norm ± 10 % | > 15 % above own norm for 3 days | > 100 or < 40, or chest pain / shortness of breath |
 | Blood pressure | mmHg | Wristband estimate + cuff | Auto | Wristband estimate ~every 30 min; cuff every morning (status uses the cuff) | < 130/85 | ≥ 130/85 for 3 days, or < 90/60 | ≥ 160/100, or headache / blurred vision |
-| Body temperature | °C | Wristband skin temperature (trend) + thermometer to confirm | Auto | Wristband continuous; thermometer when the trend rises or unwell | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
+| Body temperature | °C | Thermometer | Auto | Every morning | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
 | Bones (urine calcium) | mg/day | Urine test strip read by the laptop camera | Auto (photo) | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
 | Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Auto | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
 | Blood sugar | mg/dL | Glucometer | Auto | Weekly, fasting | 70–99 | 100–125 or 55–69 | ≥ 126 repeatedly, or < 55 |
-| Water intake | ml/day | Water dispenser (wristband tap); other drinks by hand | Auto + manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
+| Water intake | ml/day | 250 ml pouches, "+1 pouch" in the app | Manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
 | Urine test strip | negative / trace / + / ++ | Same strip as urine calcium, read by the laptop camera | Auto (photo) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
 
 ---
@@ -40,8 +40,8 @@ measurements when yellow or red): [devices.md](devices.md).
 |---|---|
 | Live (seconds) | Heart rate (1 s), radiation (sensor ~1 min) |
 | Every ~30 min | Blood pressure estimate from the wristband |
-| Once a day | Sleep, mood, resting heart rate, cuff blood pressure, water |
-| Continuous | Skin temperature (wristband); thermometer only when needed |
+| Once a day | Sleep, mood, resting heart rate, cuff blood pressure, temperature |
+| Through the day | Water (each pouch) |
 | Weekly | Urine strip (calcium, protein, ketones, blood), grip strength, blood sugar |
 
 In the demo, live intervals are sped up (blood pressure every 15 s, radiation every 5 s).
@@ -77,14 +77,13 @@ In the demo, live intervals are sped up (blood pressure every 15 s, radiation ev
 
 ### Blood pressure
 - **How to measure:** the wristband gives a cuffless estimate about every 30 minutes
-  (less accurate, shown as a trend). Every morning a cuff measurement: seated, after 5 min
-  of rest, arm at heart level. **The status uses the cuff value.**
+  (less accurate, shown as a trend). Every morning a cuff measurement: after 5 min
+  of rest, arm at heart level (in weightlessness: relaxed, feet in foot restraints). **The status uses the cuff value.**
 - 🟡 **What to do:** less salt and caffeine, rest, measure again.
 - 🔴 **What to do:** rest, measure again in 5 min, tell the flight surgeon.
 
 ### Body temperature
-- **How to measure:** the wristband tracks skin temperature on its own. When it rises, or
-  the astronaut feels unwell: thermometer under the tongue, 1 minute.
+- **How to measure:** thermometer under the tongue every morning, 1 minute.
 - 🟡 **What to do:** drink fluids, rest, wear a mask, measure again in 4 h.
 - 🔴 **What to do:** tell the flight surgeon, take a fever reducer from the medical kit.
 

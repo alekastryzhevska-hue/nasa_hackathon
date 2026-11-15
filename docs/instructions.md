@@ -123,21 +123,9 @@ scale). The schedule does not change: sensors measure all the time.
 | 🟡 Yellow: 2× normal | Check where the nearest shelter is, be ready to go. Ship sensor silent for more than 2 h: connect the personal dosimeter to the laptop |
 | 🔴 Red: 10× normal (solar storm) | Full-screen alarm. Go to the storm shelter and stay until the ship gives the all-clear |
 
-**Alarm screen (proposal, not built yet):** no "I am in shelter" button — the app already
-knows the radiation level and the alarm ends by itself when the level is back to normal.
-The alarm can be **collapsed** (×) into a red bar at the top: "Solar storm — stay in the
-shelter", so an astronaut who took the laptop to the shelter can use the other sections.
-The bar can't be closed while the level is red; tapping it opens the full alarm again.
-If the level rises further, the full alarm opens again by itself.
-
----
-
-## Not yet in the app
-
-- Temperature still comes from the wristband; should be the thermometer every morning.
-- Water still uses the dispenser + "other drink"; should be "+1 pouch" (250 ml).
-- Red mood schedule: app says morning and evening; should be 3 times a day.
-- Blood pressure text still says "seated".
-- Water reminders (every hour / 30 min) not built.
-- Urine strip is still listed under Organs (kidneys); should be under Bones only.
-- Alarm: "I am in shelter" still there; collapse to a red bar not built.
+**Alarm screen:** no "I am in shelter" button — the app already knows the radiation level
+and the alarm ends by itself when the level is back to normal. The alarm can be
+**collapsed** (×) into a red bar at the top: "Solar storm — stay in the shelter", so an
+astronaut who took the laptop to the shelter can use the other sections. The bar can't be
+closed while the level is red; tapping it opens the full alarm again. If the dose rate
+rises by 25 % or more, the full alarm opens again by itself.

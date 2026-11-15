@@ -99,7 +99,7 @@ export function generateReadings(astronaut: Astronaut, now = new Date()): Readin
     add('trainingMinutes', Math.round(daysAgo === 0 ? training * 0.55 : training), 'min', daysAgo, 20, 'exercise-device')
     const water = b.water + noise(250) - boneProblem * 300
     // Today's water is what has been logged so far (the day is not over).
-    add('water', Math.round(daysAgo === 0 ? water * 0.5 : water), 'ml', daysAgo, 22, 'water-dispenser')
+    add('water', Math.round(daysAgo === 0 ? water * 0.5 : water), 'ml', daysAgo, 22, 'pouch-log')
     add('radiation', round(MISSION.normalDoseRatePerDay + noise(0.15), 2), 'mSv/day', daysAgo, 0, 'ship-sensor')
 
     if (weekly) {
