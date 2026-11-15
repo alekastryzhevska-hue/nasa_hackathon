@@ -38,7 +38,8 @@ const POUCH_ML = 250
 // Reminder to drink while hydration is yellow / red (docs/instructions.md).
 const REMINDER_MIN: Record<Status, number | null> = { green: null, yellow: 60, red: 30 }
 // Mood tests per day by status, and their names.
-const TESTS_NEEDED: Record<Status, number> = { green: 1, yellow: 2, red: 3 }
+// Morning and evening for everyone (useful for the trend); a third one at midday when red.
+const TESTS_NEEDED: Record<Status, number> = { green: 2, yellow: 2, red: 3 }
 const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
 
 export default function App() {
@@ -360,7 +361,7 @@ export default function App() {
                   <button className="primary" onClick={() => setView('sport')}>Go to Workout →</button>
                 </section>
               ) : (
-              <div className="stage">
+              <div className="stage" key={layerId}>
                 <div className="stage-info">
                   {layerId === 'emotions' && (
                     <MoodCheckin

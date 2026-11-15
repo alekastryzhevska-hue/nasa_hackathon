@@ -23,7 +23,7 @@ how often it is used, and who uses it. Thresholds and advice texts are in
 | 8 | Hand dynamometer | Grip strength | kg | Auto (Bluetooth) | Astronaut | Weekly | Twice a week | Twice a week |
 | 9 | Glucometer | Fasting blood glucose (FBG) | mg/dL | Auto (Bluetooth) | Astronaut | Weekly, fasting | Daily, fasting, 3 days | Low: 15 min<br>High: daily |
 | 10 | 250 ml water pouches + "+1 pouch" in the app | Water intake | mL/d | Manual | Astronaut | After each pouch | Reminder every hour | Reminder every 30 min |
-| 11 | None: test in the app | Mood score | 1–5 | Manual | Astronaut | Daily | Morning and evening | Morning, midday and evening |
+| 11 | None: test in the app | Mood score | 1–5 | Manual | Astronaut | Morning and evening | Morning and evening | Morning, midday and evening |
 
 ## By who uses it
 

@@ -107,7 +107,7 @@ measures every night.
 
 | Status | Measure | What to do |
 |---|---|---|
-| 🟢 Normal | Test once a day | — |
+| 🟢 Normal | Test **morning and evening** | — |
 | 🟡 Yellow: low mood for 2 days | Test **morning and evening** | Record a video message to family, rest, talk to a crewmate, do something you enjoy |
 | 🔴 Red: very low mood for 5 days, or the lowest score | Test **3 times a day** (morning, midday, evening) | Talk to the commander or a crewmate you trust now. At the next link with Earth, book a private session with the psychologist. Reduce workload |
 

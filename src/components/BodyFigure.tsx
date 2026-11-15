@@ -303,55 +303,69 @@ function Organs({ regions }: { regions: Props['regions'] }) {
     strokeLinejoin: 'round' as const,
     filter: o[id].st ? 'url(#glow)' : undefined,
   })
-  return (
-    <>
-      <Body strokeOpacity={0.6} width={1.4} />
-      <line x1={100} y1={66} x2={100} y2={232} stroke={HOLO} strokeOpacity={0.18} strokeWidth={3} strokeDasharray="4 3" />
-      <path d="M104 116 Q100 106 108 105 Q116 105 116 114 Q114 127 104 136 Q94 127 94 119 Q94 110 104 116 Z" fill="none" stroke={DS.gray50} strokeWidth={1.25} strokeLinejoin="round" />
-
+  const SHAPES: Record<OrganId, ReactNode> = {
+    brain: (
       <g {...part('brain')} strokeLinecap="round" data-region="head">
         <ellipse cx={100} cy={28} rx={16} ry={13} />
         <path d="M100 16 V40 M91 22 Q96 27 91 33 M109 22 Q104 27 109 33" fill="none" />
         <ellipse cx={91} cy={48} rx={4.6} ry={2.5} />
         <ellipse cx={109} cy={48} rx={4.6} ry={2.5} />
       </g>
+    ),
+    lungs: (
       <g {...part('lungs')} data-region="lungs">
         <Both>
           <path d="M105 92 Q121 88 127 108 Q131 134 123 154 Q111 158 106 148 Q104 120 105 92 Z" />
         </Both>
       </g>
+    ),
+    liver: (
       <g {...part('liver')} data-region="liver">
         <path d="M73 158 Q94 149 116 155 Q118 163 103 169 Q86 175 76 169 Q71 164 73 158 Z" />
       </g>
+    ),
+    kidneys: (
       <g {...part('kidneys')} data-region="kidneys">
         <Both>
           <path d="M115 171 Q123 171 123 182 Q123 194 115 194 Q110 194 111 188 Q114 182 111 177 Q110 171 115 171 Z" />
         </Both>
       </g>
+    ),
+  }
+  return (
+    <>
+      <Body strokeOpacity={0.6} width={1.4} />
+      <line x1={100} y1={66} x2={100} y2={232} stroke={HOLO} strokeOpacity={0.18} strokeWidth={3} strokeDasharray="4 3" />
+      <path d="M104 116 Q100 106 108 105 Q116 105 116 114 Q114 127 104 136 Q94 127 94 119 Q94 110 104 116 Z" fill="none" stroke={DS.gray50} strokeWidth={1.25} strokeLinejoin="round" />
 
-      {ORGANS.map((g) => {
-        const { st, ring } = o[g.id]
-        const text = `${g.name} · ${st ? ORGAN_LABEL[st] : 'Upcoming'}`
-        const w = text.length * 5.6 + 30
-        const x = g.side === 'left' ? g.label[0] - w : g.label[0]
-        return (
-          <g key={g.id}>
-            <path d={g.line} fill="none" stroke={st && st !== 'green' ? ring : DS.gray40} />
-            <g transform={`translate(${g.mark[0]} ${g.mark[1]})`}>
-              <circle r={7} fill={DS.gray90} stroke={ring} strokeWidth={2} />
-              {st === 'green' && <path d="M-3 0 l2 2.2 l4 -4.4" fill="none" stroke={ring} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />}
-              {st && st !== 'green' && <path d="M0 -3.6 L3.6 2.8 H-3.6 Z M0 -1 V0.8" fill="none" stroke={ring} strokeWidth={1.2} strokeLinejoin="round" />}
+      {/* Each organ with its line, status mark and label is one group: hovering any part
+          of it highlights the organ and dims the others (see .organ in index.css). */}
+      <g className="organs">
+        {ORGANS.map((g) => {
+          const { st, ring } = o[g.id]
+          const text = `${g.name} · ${st ? ORGAN_LABEL[st] : 'Upcoming'}`
+          const w = text.length * 5.6 + 30
+          const x = g.side === 'left' ? g.label[0] - w : g.label[0]
+          return (
+            <g key={g.id} className="organ" tabIndex={0} aria-label={text}>
+              <g className="organ-shape">{SHAPES[g.id]}</g>
+              <path d={g.line} fill="none" stroke={st && st !== 'green' ? ring : DS.gray40} />
+              <g transform={`translate(${g.mark[0]} ${g.mark[1]})`}>
+                <circle r={7} fill={DS.gray90} stroke={ring} strokeWidth={2} />
+                {st === 'green' && <path d="M-3 0 l2 2.2 l4 -4.4" fill="none" stroke={ring} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />}
+                {st && st !== 'green' && <path d="M0 -3.6 L3.6 2.8 H-3.6 Z M0 -1 V0.8" fill="none" stroke={ring} strokeWidth={1.2} strokeLinejoin="round" />}
+              </g>
+              <g className="organ-label" transform={`translate(${x} ${g.label[1] - 11})`}>
+                <rect width={w} height={22} rx={11} fill={DS.gray80} stroke={st && st !== 'green' ? ring : DS.gray60} />
+                <text x={w / 2 + 6} y={14.5} textAnchor="middle" fill={DS.gray10} fontFamily="Inter, sans-serif" fontSize={9} fontWeight={600}>
+                  {text}
+                </text>
+                <circle cx={12} cy={11} r={3} fill={ring} />
+              </g>
             </g>
-            <g transform={`translate(${x} ${g.label[1] - 11})`}>
-              <rect width={w} height={22} rx={11} fill={DS.gray80} stroke={st && st !== 'green' ? ring : DS.gray60} />
-              <text x={w / 2 + 6} y={14.5} textAnchor="middle" fill={DS.gray10} fontFamily="Inter, sans-serif" fontSize={9} fontWeight={600}>
-                {text}
-              </text>
-              <circle cx={12} cy={11} r={3} fill={ring} />
-            </g>
-          </g>
-        )
-      })}
+          )
+        })}
+      </g>
     </>
   )
 }

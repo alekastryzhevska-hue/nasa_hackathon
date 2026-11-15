@@ -287,7 +287,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     unit: '/ 5',
     source: 'Daily check-in, manual',
     frequency: 'Every day',
-    schedule: { green: 'Test once a day', yellow: 'Test morning and evening', red: 'Test morning, midday and evening' },
+    schedule: { green: 'Test morning and evening', yellow: 'Test morning and evening', red: 'Test morning, midday and evening' },
     digits: 0,
     howToMeasure: 'Take the short test in the app.',
     why: 'Isolation, confinement and distance from home affect mental health. Early signs are easy to miss in yourself.',
