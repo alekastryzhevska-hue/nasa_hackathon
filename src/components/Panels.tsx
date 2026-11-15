@@ -1,7 +1,7 @@
 // Left column (mission progress, daily plan), layer status card and radiation panel.
 
 import type { Mission, Status } from '../data/types'
-import type { Task } from '../rules/checklist'
+import { hhmm, type Task } from '../rules/checklist'
 import { DEVICES } from '../rules/devices'
 import { DevicesPopover } from './DeviceCard'
 import type { LayerId } from '../rules/layers'
@@ -46,11 +46,24 @@ function Segments({ progress }: { progress: { done: number; total: number } }) {
   )
 }
 
-export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) => void }) {
+export function DailyPlan(props: {
+  tasks: Task[]
+  dayMin: number
+  nextLabel: string // what "Next" jumps to
+  onNext: () => void
+  onOpen: (t: Task) => void
+  actionLabel: (t: Task) => string
+  onAction: (t: Task) => void
+  onUndoWater?: () => void
+}) {
+  const { tasks } = props
   const done = tasks.filter((t) => t.done).length
   return (
     <section className="panel plan">
-      <div className="eyebrow">Daily progress</div>
+      <div className="plan-head">
+        <div className="eyebrow">Daily progress</div>
+        <span className="day-clock" aria-label="Time of day (demo)">{hhmm(props.dayMin)}</span>
+      </div>
       <div className="plan-count">
         <span className="big">{done}</span>
         <span className="muted"> / {tasks.length} tasks done</span>
@@ -60,22 +73,34 @@ export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) 
           <span key={t.id} className={t.done ? 'on' : ''} />
         ))}
       </div>
+      <button className="ghost day-next" onClick={props.onNext}>
+        ⏭ {props.nextLabel}
+      </button>
       <ul className="tasks">
         {tasks.map((t) => (
-          <li key={t.id}>
-            <button className={`task${t.done ? ' done' : ''}${partial(t) ? ' partial' : ''}`} onClick={() => onOpen(t)}>
+          <li key={t.id} className={`${t.done ? 'done' : t.due ? 'due' : 'later'}${partial(t) ? ' partial' : ''}`}>
+            <button className="task" onClick={() => props.onOpen(t)}>
               <span className="check" style={partial(t) ? ringStyle(t) : undefined}>
                 {t.done ? '✓' : ''}
               </span>
               <span className="task-text">
-                <span className="task-title">{t.title}</span>
-                <span className="task-detail">
-                  {t.auto ? 'Auto · ' : ''}
-                  {t.detail}
+                <span className="task-title">
+                  <span className="task-time">{t.kind === 'water' ? 'All day' : hhmm(t.at)}</span> {t.title}
                 </span>
+                <span className="task-detail">{t.detail}</span>
                 {t.progress && !t.done && <Segments progress={t.progress} />}
               </span>
             </button>
+            {!t.done && (t.due || t.kind === 'water') && (
+              <button className="primary task-action" onClick={() => props.onAction(t)}>
+                {props.actionLabel(t)}
+              </button>
+            )}
+            {t.kind === 'water' && props.onUndoWater && t.progress && t.progress.done > 0 && (
+              <button className="link task-undo" onClick={props.onUndoWater}>
+                Undo
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -105,11 +130,6 @@ export function StatusCard(props: {
   todo?: TodoItem[]
 }) {
   const color = STATUS_COLOR[props.status]
-  const todo = props.todo ?? []
-  // A task spread over the day that is not due yet (water) is "in progress", not left.
-  const waiting = (t: TodoItem) => !t.done && !!t.progress && !t.due
-  const left = todo.filter((t) => !t.done && !waiting(t)).length
-  const inProgress = todo.some(waiting)
   return (
     <section className="panel status-card">
       <div className="status-head">
@@ -124,33 +144,7 @@ export function StatusCard(props: {
       {props.status !== 'green' && <p className="status-reason">{props.reason}</p>}
       <p className="status-advice">{props.status === 'green' ? 'Keep up the good work.' : props.advice}</p>
 
-      {/* What to do today for this part of the body comes before moving on. */}
-      {todo.length > 0 && (
-        <div className="todo">
-          <span className="eyebrow">To do today{left > 0 ? ` · ${left} left` : inProgress ? ' · in progress' : ' · done'}</span>
-          <ul>
-            {todo.map((t) => (
-              <li key={t.id} className={t.done ? 'done' : ''}>
-                <span className="check" style={t.progress && t.progress.done > 0 && !t.done ? { background: `conic-gradient(var(--holo) ${(t.progress.done / t.progress.total) * 360}deg, transparent 0)`, borderColor: t.due ? 'var(--orange)' : 'var(--holo)' } : undefined}>
-                  {t.done ? '✓' : ''}
-                </span>
-                <span className="todo-text">
-                  <span className="todo-title">{t.title}</span>
-                  <span className="todo-detail">{t.detail}</span>
-                  {t.progress && !t.done && <Segments progress={t.progress} />}
-                </span>
-                {!t.done && t.action && (
-                  <button className="primary todo-action" onClick={t.action.run}>
-                    {t.action.label}
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <button className={left > 0 ? 'ghost next-secondary' : 'primary'} onClick={() => props.onNext(props.nextLayer.id)}>
+      <button className="primary" onClick={() => props.onNext(props.nextLayer.id)}>
         Next: {props.nextLayer.name} →
       </button>
     </section>

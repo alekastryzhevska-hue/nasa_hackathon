@@ -3,7 +3,7 @@ import { BodyFigure } from './components/BodyFigure'
 import { DeviceCard } from './components/DeviceCard'
 import { MetricCard } from './components/MetricCard'
 import { MoodCheckin, type MoodEntry } from './components/MoodCheckin'
-import { DailyPlan, MissionCard, RadiationPanel, StatusCard, type TodoItem } from './components/Panels'
+import { DailyPlan, MissionCard, RadiationPanel, StatusCard } from './components/Panels'
 import { RadiationAlarm } from './components/RadiationAlarm'
 import { WorkoutPage } from './components/WorkoutPage'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
@@ -11,7 +11,7 @@ import { initialLive, tickLive, type LiveState } from './data/live'
 import { MOOD_DEFAULT_LABELS, MOOD_DEFAULT_STEP, MOOD_STEPS, moodScore } from './data/mood'
 import type { MetricId, Status } from './data/types'
 import { TestPanel, applyOverride, type Overrides } from './dev/TestPanel'
-import { WATER_GOAL_ML, buildChecklist, type Task } from './rules/checklist'
+import { DAY_END, DAY_START, TRAINING_GOAL_MIN, WATER_GOAL_ML, buildChecklist, hhmm, type Task } from './rules/checklist'
 import { DEVICES } from './rules/devices'
 import { LAYERS, summarizeLayer, type LayerId } from './rules/layers'
 import { RULES, valuesFor, values2For } from './rules/metrics'
@@ -53,10 +53,14 @@ export default function App() {
   }
   const [overrides, setOverrides] = useState<Overrides>({})
   const [eventActive, setEventActive] = useState(false)
+  // Demo clock: everyone wakes up at 07:00; "Next" moves the day forward.
+  const [dayMin, setDayMin] = useState(DAY_START)
+  const simTime = (min: number) => new Date().setHours(0, 0, 0, 0) + min * 60_000
+  const simNow = simTime(dayMin)
+  const [workoutDone, setWorkoutDone] = useState(false)
   const [pouches, setPouches] = useState<Pouch[]>([])
-  const [sessionStart, setSessionStart] = useState(Date.now())
   const waterAdded = pouches.length * POUCH_ML
-  const addPouch = () => setPouches((list) => [...list, { id: Date.now(), time: Date.now() }])
+  const addPouch = () => setPouches((list) => [...list, { id: Date.now(), time: simNow }])
   // Mood tests taken today in this session (1–5 each).
   const [checkIns, setCheckIns] = useState<number[]>([])
   const checkIn = checkIns.length ? checkIns[checkIns.length - 1] : null
@@ -77,21 +81,27 @@ export default function App() {
   const astronaut = ASTRONAUTS.find((a) => a.id === astronautId)!
   const readings = useMemo(() => generateReadings(astronaut), [astronaut])
 
+  const MORNING_TASK: Partial<Record<MetricId, string>> = { bloodPressure: 'bp-morning', temperature: 'temp-morning' }
+  const hiddenToday = (id: MetricId) => id === 'mood' || (!!MORNING_TASK[id] && !measured.has(MORNING_TASK[id]!))
   // Daily values per metric, with test-panel overrides and today's actions applied.
   // withExtra = false gives the values at the start of the day (sets today's plan).
   const daily = (id: MetricId, withExtra = true): number[] => {
     const v = valuesFor(readings, id)
     const ov = OVERRIDE_KEY[id] ? overrides[OVERRIDE_KEY[id]!] : undefined
     if (RULES[id].partialToday) {
-      const today = v[v.length - 1] + (id === 'water' ? waterAdded : 0)
+      // The day starts at zero: water from the pouches logged, training once it is done.
+      const today = id === 'water' ? waterAdded : workoutDone ? Math.max(TRAINING_GOAL_MIN + 2, v[v.length - 1]) : 0
       return [...applyOverride(v.slice(0, -1), ov), today]
     }
-    const out = applyOverride(v, ov)
-    if (id === 'mood' && checkIn !== null) return [...out.slice(0, -1), checkIn]
+    let out = applyOverride(v, ov)
+    // Today's morning reading only exists once the astronaut has measured it.
+    if (hiddenToday(id)) out = out.slice(0, -1)
+    if (id === 'mood') out = checkIn !== null ? [...out, checkIn] : out
     return withExtra ? [...out, ...(extra[id] ?? []).map((e) => e.v)] : out
   }
   const daily2 = (id: MetricId, withExtra = true): number[] => {
-    const base = id === 'bloodPressure' ? applyOverride(values2For(readings, id), overrides.bpDia) : values2For(readings, id)
+    let base = id === 'bloodPressure' ? applyOverride(values2For(readings, id), overrides.bpDia) : values2For(readings, id)
+    if (hiddenToday(id)) base = base.slice(0, -1)
     return withExtra ? [...base, ...(extra[id] ?? []).map((e) => e.v2 ?? 0)] : base
   }
 
@@ -106,7 +116,8 @@ export default function App() {
   useEffect(() => {
     setLive(initialLive(resting, bp, MISSION))
     setPouches([])
-    setSessionStart(Date.now())
+    setDayMin(DAY_START)
+    setWorkoutDone(false)
     setCheckIns([])
     setMoodStep(MOOD_DEFAULT_STEP)
     setMoodLabels(MOOD_DEFAULT_LABELS)
@@ -156,12 +167,12 @@ export default function App() {
   // than the reminder interval (every hour when yellow, every 30 min when red).
   const waterStatus = evaluate('water').status
   const reminderMin = REMINDER_MIN[waterStatus]
-  const day = new Date(now)
-  const wakeStart = new Date(day).setHours(7, 0, 0, 0)
-  const wakeEnd = new Date(day).setHours(23, 0, 0, 0)
+  const wakeStart = simTime(DAY_START)
+  const wakeEnd = simTime(DAY_END)
+  const now_ = simNow
   const pouchesLeft = Math.max(0, Math.ceil((WATER_GOAL_ML - waterToday) / POUCH_ML))
-  const minutesLeft = Math.max(0, (wakeEnd - Math.max(now, wakeStart)) / 60_000)
-  const aimByNow = Math.round((WATER_GOAL_ML * Math.min(1, Math.max(0, (now - wakeStart) / (wakeEnd - wakeStart)))) / 50) * 50
+  const minutesLeft = Math.max(0, (wakeEnd - Math.max(now_, wakeStart)) / 60_000)
+  const aimByNow = Math.round((WATER_GOAL_ML * Math.min(1, Math.max(0, (now_ - wakeStart) / (wakeEnd - wakeStart)))) / 50) * 50
   const behind = waterToday + POUCH_ML <= aimByNow
   // After each pouch there is a pause before the next one: 15 min when catching up,
   // otherwise the remaining day split evenly (never longer than the reminder interval).
@@ -173,11 +184,10 @@ export default function App() {
       ? null
       : lastPouch === null
         ? behind
-          ? now
-          : sessionStart + gapMin * 60_000
+          ? now_
+          : wakeStart
         : lastPouch + (behind ? CATCH_UP_MIN : gapMin) * 60_000
-  const pouchDue = nextPouchAt !== null && now >= nextPouchAt
-  const minsToNext = nextPouchAt === null ? 0 : Math.max(1, Math.ceil((nextPouchAt - now) / 60_000))
+  const pouchDue = nextPouchAt !== null && now_ >= nextPouchAt
   const waterReminder =
     pouchesLeft === 0
       ? undefined
@@ -185,20 +195,21 @@ export default function App() {
         ? 'goal moves to tomorrow'
         : pouchDue
           ? 'drink a pouch now'
-          : `next pouch in ${minsToNext} min (${clock(nextPouchAt)})`
+          : `next pouch at ${clock(nextPouchAt)}`
 
   // How many mood tests today: based on the status before today's tests.
-  const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
+  const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood).slice(0, -1), astronaut, MISSION, []).status
   const testsNeeded = TESTS_NEEDED[moodBefore]
 
   // Status at the start of the day sets today's extra measurements.
   const statusBefore = (id: MetricId) => RULES[id].evaluate(daily(id, false), astronaut, MISSION, daily2(id, false)).status
   const tasks = buildChecklist({
-    trainingToday: daily('trainingMinutes').at(-1)!,
+    dayMin,
     status: statusBefore,
     measured,
+    workoutDone,
     waterToday,
-    waterReminder,
+    waterNext: waterReminder,
     waterDue: pouchDue,
     checkIns: checkIns.length,
     checkInsNeeded: testsNeeded,
@@ -219,23 +230,30 @@ export default function App() {
     setExtra((x) => ({ ...x, [id]: [...(x[id] ?? []), { v, v2 }] }))
     setMeasured((m) => new Set(m).add(t.id))
   }
-  const pendingFor = (id: MetricId) => tasks.find((t) => t.metric === id && !t.done)
-  // Today's tasks for the open tab, with the action that completes each one.
-  const todoFor = (id: LayerId): TodoItem[] => {
-    const metrics = LAYERS.find((l) => l.id === id)!.metrics.map((m) => m.id)
-    return tasks
-      .filter((t) => t.layer === id || (t.metric && metrics.includes(t.metric)))
-      .map((t) => ({
-        ...t,
-        action: t.metric
-          ? { label: 'Measure now', run: () => measureNow(t) }
-          : t.id === 'water'
-            ? { label: '+1 pouch', run: addPouch }
-            : t.id === 'workout'
-              ? { label: 'Open workout', run: () => setView('sport') }
-              : undefined,
-      }))
+  // Actions from the plan: each one stands in for the device or the astronaut's action.
+  const actionLabel = (t: Task) =>
+    ({ reveal: 'Measure', measure: 'Measure', water: '+1 pouch', workout: 'Done', mood: 'Take test' })[t.kind]
+  const doTask = (t: Task) => {
+    if (t.kind === 'reveal') setMeasured((m) => new Set(m).add(t.id))
+    else if (t.kind === 'measure') measureNow(t)
+    else if (t.kind === 'water') addPouch()
+    else if (t.kind === 'workout') setWorkoutDone(true)
+    else if (t.kind === 'mood') {
+      setView('main')
+      openLayer('emotions')
+      return
+    }
+    setView('main')
+    openLayer(t.layer)
   }
+  // "Next": jump the clock to the next planned task (or the next pouch, whichever is first).
+  const upcoming = [
+    ...tasks.filter((t) => !t.done && t.kind !== 'water' && t.at > dayMin).map((t) => ({ at: t.at, what: t.title })),
+    ...(nextPouchAt !== null && !pouchDue ? [{ at: Math.round((nextPouchAt - simTime(0)) / 60_000), what: 'Drink water' }] : []),
+  ].sort((a, b) => a.at - b.at)[0]
+  const nextStep = upcoming ?? (dayMin < DAY_END ? { at: DAY_END, what: 'Bedtime' } : null)
+  const goNext = () => nextStep && setDayMin(Math.min(DAY_END, nextStep.at))
+  const nextLabel = nextStep ? `Next: ${hhmm(nextStep.at)} ${nextStep.what}` : 'Day is over'
 
   const openTask = (t: Task) => {
     setView('main')
@@ -292,7 +310,16 @@ export default function App() {
       <div className="layout">
         <aside className="left">
           <MissionCard mission={MISSION} />
-          <DailyPlan tasks={tasks} onOpen={openTask} />
+          <DailyPlan
+            tasks={tasks}
+            dayMin={dayMin}
+            nextLabel={nextLabel}
+            onNext={goNext}
+            onOpen={openTask}
+            actionLabel={actionLabel}
+            onAction={doTask}
+            onUndoWater={() => setPouches((l) => l.slice(0, -1))}
+          />
         </aside>
 
         <main className="right">
@@ -335,7 +362,7 @@ export default function App() {
                       }}
                       onSave={() => {
                         setCheckIns((l) => [...l, moodScore(moodStep)])
-                        setMoodLog((l) => [...l, { time: Date.now(), step: moodStep, labels: moodLabels }])
+                        setMoodLog((l) => [...l, { time: simNow, step: moodStep, labels: moodLabels }])
                         // The button shows "Saved" until something changes; a new test can
                         // be saved by moving the slider or picking other feelings.
                         setMoodSaved(true)
@@ -354,7 +381,6 @@ export default function App() {
                       advice={RULES[worstMetric.id].advice[worstMetric.status]}
                       nextLayer={layerIndex === LAYERS.length - 1 ? { id: layerId, name: 'Readiness' } : nextLayer}
                       onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
-                      todo={todoFor(layerId)}
                     />
                   )}
 
@@ -373,16 +399,12 @@ export default function App() {
                             ? 'Day is over: start again tomorrow morning'
                             : pouchDue
                               ? `⏰ Drink a pouch now${behind ? ` · aim for ${(aimByNow / 1000).toFixed(1)} L by now` : ''}`
-                              : `✓ Pouch logged · next one in ${minsToNext} min (${clock(nextPouchAt)}) · ${pouchesLeft} left today`}
+                              : `Next pouch at ${clock(nextPouchAt)} · ${pouchesLeft} left today`}
                       </div>
-                      <button className="primary" onClick={addPouch}>+1 pouch ({POUCH_ML} ml)</button>
                       {pouches.length > 0 && (
-                        <div className="drink-last">
-                          <span>
-                            Last pouch at {clock(pouches[pouches.length - 1].time)} · {pouches.length} added today
-                          </span>
-                          <button className="link" onClick={() => setPouches((l) => l.slice(0, -1))}>Undo last</button>
-                        </div>
+                        <span className="muted small">
+                          Last pouch at {clock(pouches[pouches.length - 1].time)} · {pouches.length} today · log them in the daily plan
+                        </span>
                       )}
                     </section>
                   )}
@@ -404,8 +426,6 @@ export default function App() {
                           live={liveFor(id)}
                           now={now}
                           scheduleStatus={id === 'mood' ? moodBefore : undefined}
-                          measure={pendingFor(id) ? () => measureNow(pendingFor(id)!) : undefined}
-                          due={pendingFor(id)?.title}
                         />
                       )
                     })}
