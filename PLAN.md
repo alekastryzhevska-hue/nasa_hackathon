@@ -11,8 +11,7 @@ _Last updated: 2026-11-14 by zachtrenito_
 - NASA Space Apps 2026, challenge "Health Monitoring Software for Astronauts".
 - **Saturday 2026-11-14 09:00 → Sunday 2026-11-15 23:59.** Target submission: Sunday 21:00.
 - Team: `alekastryzhevska-hue` (design), `zachtrenito` (backend). Claude writes the code.
-- Repository is **private**; it must be made **public before submission** if the rules
-  require an open link (only the owner, `alekastryzhevska-hue`, can do this).
+- Repository is **public** since 2026-11-15.
 - Still to check in the official rules: submission format, licence, AI-use disclosure.
 
 ## Challenge in one paragraph
@@ -42,8 +41,8 @@ color coding, charts, measurement reminders, gamification, and simple explanatio
 
 - Web app: React + TypeScript + Vite, everything in the browser.
 - Run locally: `npm install`, then `npm run dev`, open http://localhost:5173.
-- Public demo link: Vercel or Netlify connected by the repo owner (GitHub Pages does
-  not work for private repos on the free plan).
+- Public demo link: https://alekastryzhevska-hue.github.io/nasa_hackathon/ (GitHub Pages; published by
+  `.github/workflows/deploy.yml` on every push to `main`, takes 1–2 minutes).
 
 ## Priorities
 
@@ -88,3 +87,5 @@ Update this section at the end of every session.
   **Next:** design OKs the CONTRACT.md updates; Sport page; data checks.
 - 2026-11-15 (zachtrenito): per-section instructions written (EN + RU) and applied in the
   app. **Next:** design's mood test; design OKs CONTRACT.md updates; Sport page.
+- 2026-11-15 (zachtrenito): repo is public; live demo at https://alekastryzhevska-hue.github.io/nasa_hackathon/
+  **Next:** design's mood test; design OKs CONTRACT.md updates; Sport page.

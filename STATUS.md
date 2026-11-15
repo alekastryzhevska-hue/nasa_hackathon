@@ -56,16 +56,17 @@ _Last updated: 2026-11-15_
   as 250 ml pouches with reminders (hourly when yellow, every 30 min when red), 1/2/3 mood
   tests a day by status, advice texts updated, urine strip only in Bones, storm alarm
   without "I am in shelter" and collapsible into a red bar.
+- 2026-11-15: Live demo on GitHub Pages: https://alekastryzhevska-hue.github.io/nasa_hackathon/ (auto-publishes on every push).
 
 ### In progress
 - Waiting for design feedback on the built screen.
 
 ### Next
-- Public demo link (Vercel, connected by the repo owner).
 - Sport page; data checks (impossible values, stale data); automatic tests.
 
 ### Notes for partner
-- Run the app: see "Run it locally" in `README.md`, or ask your Claude "run the app".
+- See the app without installing anything: https://alekastryzhevska-hue.github.io/nasa_hackathon/
+  It shows my latest push after 1–2 minutes; just reload the page.
 - Please check the ripple animation on tabs and body parts — keep, change or remove?
 - The body figure is my vector drawing in your style. If you have your own SVG with the
   part names from `CONTRACT.md`, send it and I'll swap it in.

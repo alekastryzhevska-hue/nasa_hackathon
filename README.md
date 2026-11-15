@@ -7,6 +7,11 @@ send data automatically, the app compares each value with the astronaut's own
 pre-flight norm, shows a green / yellow / red status, explains why and says what to do.
 Everything runs on board, without a link to Earth. Data in this prototype is simulated.
 
+## Live demo
+
+**https://alekastryzhevska-hue.github.io/nasa_hackathon/** — opens in the browser, nothing to install. It updates by itself a minute or
+two after every push to `main`.
+
 ## Run it locally
 
 Needs [Node.js](https://nodejs.org) (LTS) and git.
