@@ -306,9 +306,14 @@ export default function App() {
           <button className={view === 'sport' ? 'on' : ''} onClick={() => setView('sport')}>Workout</button>
         </nav>
 
+        {/* The whole pill opens the list: an invisible select covers it. */}
         <label className="astronaut">
           <span className="avatar">{initials(astronaut.name)}</span>
-          <select value={astronautId} onChange={(e) => setAstronautId(e.target.value)} aria-label="Astronaut">
+          <span className="astronaut-name">{astronaut.name}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-30)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+          <select value={astronautId} onChange={(e) => setAstronautId(e.target.value)} aria-label={`Switch crew member, current: ${astronaut.name}`}>
             {ASTRONAUTS.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
