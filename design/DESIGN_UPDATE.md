@@ -17,7 +17,7 @@ Author: alekastryzhevska-hue (design), 2026-11-15.
 ## 1. Global changes (all screens)
 
 ### Header
-- App name: **"Health app" → "WALL-E & EVE :3"** (Space Grotesk 700, 20px, `gray-10`). Remove the logo icon.
+- App name: **"Health app" → "WALL-E & EVE :3"** (Fira Sans Bold 700, 20px, `gray-10`). Remove the logo icon.
 - Center switch: **"Main / Sport" → "Health / Workout"**.
   - Active button: fill `gray-20` #b2bbc8, text `gray-100` #060c13, weight 700.
   - Inactive: transparent, text `gray-20`, weight 500.
@@ -49,9 +49,13 @@ Rename and add a new one:
 - Status card next to the figure: background `gray-80` #151e29, border `gray-60`, `border-radius: 20px`, padding 24px.
 
 ### Fonts
-- **Space Grotesk** (500/600/700): headings, big numbers, app name.
-- **Inter** (400/500/600): body text.
-- **IBM Plex Mono** (500): small uppercase captions ("MISSION PROGRESS", "DAILY PROGRESS") and values on the radiation scale. Letter-spacing 0.14em, uppercase, 12px, `gray-30`.
+Fonts stay as in the design system (decided 2026-11-15). The mockup uses Space Grotesk,
+Inter and IBM Plex Mono — **do not copy those**; use the design-system fonts below.
+
+- **Fira Sans** (Black 900, Bold 700): headings, big numbers, app name.
+- **Overpass** (Regular 400, Bold 700, Italic): body text.
+- Small uppercase captions ("MISSION PROGRESS", "DAILY PROGRESS") and values on the radiation
+  scale: **Overpass Bold** (`label` style), 12px, uppercase, letter-spacing 0.14em, `gray-30`.
 
 ### 3D figure (shared by all tabs)
 - The same silhouette on every tab, line-art hologram style, color `blue-default` #67b5e1 (strokes at 0.35–0.6 opacity).
@@ -61,7 +65,7 @@ Rename and add a new one:
 - Figure height about 540px, centered, to the left of the status card.
 
 ### Status card (standard for all tabs)
-1. 44px circle icon + 30px Space Grotesk title: "All good" (`green-default` #79c68a) or "Needs attention" (`orange-default` #ee9b58).
+1. 44px circle icon + 30px Fira Sans Bold title: "All good" (`green-default` #79c68a) or "Needs attention" (`orange-default` #ee9b58).
 2. List of 3 metrics: name on the left, status with an icon on the right (✓ Normal / ⚠ Warning).
 3. Advice (18px, `gray-20`).
 4. Button "Next: <next tab> →": `blue-default`, text `gray-100`, height 56px.
@@ -83,7 +87,7 @@ Rename and add a new one:
 
 ### Sleep: "Sleep debt" block
 - Background `gray-70`, `border-radius: 16px`.
-- Title "SLEEP DEBT · THIS WEEK" (Plex Mono), big value "3 h 40 min".
+- Title "SLEEP DEBT · THIS WEEK" (Overpass Bold `label`, uppercase), big value "3 h 40 min".
 - Mini histogram Mon–Sun: `blue-default` bars; days without a deficit are gray (`gray-60`, 4px high).
 - Advice: "Keep your sleep window steady tonight".
 
