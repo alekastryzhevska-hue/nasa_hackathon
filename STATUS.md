@@ -14,18 +14,21 @@ _Last updated: 2026-11-15_
 - 2026-11-14: First version of the design (without the data contract).
 - 2026-11-14: Radiation bar mockup with zone values (Normal < 3.6, Elevated 3.6–18, Critical ≥ 18 mSv/day).
 - 2026-11-15: Design system WALL-E & EVE added to `design-system/` (colors, typography).
+- 2026-11-15: Design update for the site (`design/DESIGN_UPDATE.md`), mood check-in spec and
+  data (`design/MOOD_CHECKIN_SPEC.md`, `design/mood-data.json`), `mood-*` tokens added.
 
 ### In progress
-- Reviewing the running app against the mockups.
+- Readiness tab design.
 
 ### Next
-- Spacing, radius and components for the design system.
+- Readiness tab mockup; review the site after the design update.
 
 ### Notes for partner
-- Please switch the app to the design system: import `design-system/tokens.css` once and
-  use its variables (`--gray-*`, `--green-default`, `--orange-default`, `--red-default`, …)
-  and fonts (Fira Sans, Overpass) instead of hard-coded colors. Status mapping is in
-  `design-system/README.md`. Spacing and radius are not defined yet; keep the current ones.
+- Please apply `design/DESIGN_UPDATE.md` to the site — it has a checklist at the end.
+  Mood check-in logic is in `design/MOOD_CHECKIN_SPEC.md`, data in `design/mood-data.json`.
+- New `mood-*` color tokens are already in `design-system/tokens.css`.
+- Keep what the update marks "DO NOT change" (mission day 94 of 180, daily plan captions,
+  disclaimer, test panel).
 
 ---
 

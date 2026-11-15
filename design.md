@@ -31,7 +31,12 @@ Design system: **WALL-E & EVE** — full rules and tokens in
 - _Not defined yet._
 
 ## Screens / pages
-- _Not defined yet._
+- Mockup of all screens: [Astronaut Health — Main Screen](https://claude.ai/artifact/1uZvkHVUDCeeRWD2ZNrJsp).
+- What has to change on the site: [design/DESIGN_UPDATE.md](design/DESIGN_UPDATE.md)
+  (header, tabs Skeleton → Muscles → Organs → Cardio → Hydration → Sleep → Mind → Readiness,
+  cards, fonts, figure per tab, interactive Organs, radiation "sensor not updating" state).
+- Mind tab mood check-in: [design/MOOD_CHECKIN_SPEC.md](design/MOOD_CHECKIN_SPEC.md) +
+  [design/mood-data.json](design/mood-data.json) (HealthKit State of Mind model).
 
 ## Assets and references
 - _Links to mockups, Figma files, inspiration, icons, etc._
@@ -42,3 +47,5 @@ Design system: **WALL-E & EVE** — full rules and tokens in
 |------|--------|----------|--------|
 | 2026-11-13 | alekastryzhevska-hue | Created this file to keep all design notes in one place. | Keep design separate from progress status. |
 | 2026-11-15 | alekastryzhevska-hue | Added the WALL-E & EVE design system (colors, typography) to `design-system/`. | Backend can use the same tokens in the code. |
+| 2026-11-15 | alekastryzhevska-hue | Design update from Claude Design (`design/DESIGN_UPDATE.md`): renamed tabs + new Readiness tab, app name "WALL-E & EVE :3", Organs reduced to brain & eyes, lungs, liver, kidneys. | Match the final mockup. |
+| 2026-11-15 | alekastryzhevska-hue | Mind tab: 7-step mood check-in with HealthKit labels; 7 new `mood-*` tokens, no orange for mood. | Orange means "attention"; mood must not look like an alert. |

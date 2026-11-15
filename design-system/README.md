@@ -79,6 +79,24 @@ the eyes in the dark. Each has three states: Default, Pressed, Disabled.
 | ⚪ grey | No data | `gray-40` (text/icon), `gray-60` (track) |
 | info (neutral notices) | — | `blue-default` |
 
+## Mood colors
+
+Seven colors for the mood check-in on the Mind tab, one per valence step, ramp
+purple → blue → turquoise → gold. Spec: [design/MOOD_CHECKIN_SPEC.md](../design/MOOD_CHECKIN_SPEC.md).
+
+| Step | Token | HEX |
+|---|---|---|
+| Very Unpleasant | `mood-very-unpleasant` | #9a86e0 |
+| Unpleasant | `mood-unpleasant` | #8d94e6 |
+| Slightly Unpleasant | `mood-slightly-unpleasant` | #7ea7e6 |
+| Neutral | `mood-neutral` | #67b5e1 (= `blue-default`) |
+| Slightly Pleasant | `mood-slightly-pleasant` | #7fc4b8 |
+| Pleasant | `mood-pleasant` | #e2b85e |
+| Very Pleasant | `mood-very-pleasant` | #f2c75c |
+
+- Use them only for mood, never for health statuses.
+- Never use `orange-*` for mood: orange means "attention", and mood must not look like an alert.
+
 ## Typography
 
 Fonts come from the NASA Space Apps brand. Both are free (SIL OFL) and load from Google Fonts.

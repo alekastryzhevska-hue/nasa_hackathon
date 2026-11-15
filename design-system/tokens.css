@@ -31,6 +31,15 @@
   --blue-pressed: #4f98c1;
   --blue-disabled: #354b58;
 
+  /* Mood colors for the Mind tab (7 valence steps). Never use orange for mood. */
+  --mood-very-unpleasant: #9a86e0;
+  --mood-unpleasant: #8d94e6;
+  --mood-slightly-unpleasant: #7ea7e6;
+  --mood-neutral: #67b5e1; /* same as blue-default */
+  --mood-slightly-pleasant: #7fc4b8;
+  --mood-pleasant: #e2b85e;
+  --mood-very-pleasant: #f2c75c;
+
   /* Font families */
   --font-display: "Fira Sans", system-ui, sans-serif; /* headings, big numbers */
   --font-sans: "Overpass", system-ui, sans-serif;     /* subtitles, body */

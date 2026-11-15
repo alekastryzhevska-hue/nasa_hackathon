@@ -89,3 +89,6 @@ Update this section at the end of every session.
   app. **Next:** design's mood test; design OKs CONTRACT.md updates; Sport page.
 - 2026-11-15 (zachtrenito): repo is public; live demo at https://alekastryzhevska-hue.github.io/nasa_hackathon/
   **Next:** design's mood test; design OKs CONTRACT.md updates; Sport page.
+- 2026-11-15 (alekastryzhevska-hue): design update for the site in `design/` (DESIGN_UPDATE.md,
+  mood check-in spec + data), `mood-*` tokens added. **Next:** backend applies
+  `design/DESIGN_UPDATE.md`; design makes the Readiness mockup.

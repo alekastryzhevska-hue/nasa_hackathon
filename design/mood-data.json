@@ -1,0 +1,338 @@
+{
+  "$comment": "Mood check-in data for the 'Mind' tab (formerly 'Emotions'). Scale and labels mirror Apple HealthKit State of Mind (HKStateOfMind). Colors match the Claude Design mockup.",
+  "version": 1,
+  "defaults": {
+    "valenceStep": "pleasant",
+    "selectedLabels": [
+      "happy",
+      "grateful"
+    ]
+  },
+  "valenceSteps": [
+    {
+      "id": "veryUnpleasant",
+      "index": 1,
+      "title": "Very Unpleasant",
+      "titleUk": "Дуже неприємно",
+      "group": "unpleasant",
+      "valence": -1.0,
+      "colorToken": "mood-very-unpleasant",
+      "color": "#9A86E0",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "unpleasant",
+      "index": 2,
+      "title": "Unpleasant",
+      "titleUk": "Неприємно",
+      "group": "unpleasant",
+      "valence": -0.66,
+      "colorToken": "mood-unpleasant",
+      "color": "#8D94E6",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "slightlyUnpleasant",
+      "index": 3,
+      "title": "Slightly Unpleasant",
+      "titleUk": "Трохи неприємно",
+      "group": "unpleasant",
+      "valence": -0.33,
+      "colorToken": "mood-slightly-unpleasant",
+      "color": "#7EA7E6",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "neutral",
+      "index": 4,
+      "title": "Neutral",
+      "titleUk": "Нейтрально",
+      "group": "neutral",
+      "valence": 0.0,
+      "colorToken": "mood-neutral",
+      "color": "#67B5E1",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "slightlyPleasant",
+      "index": 5,
+      "title": "Slightly Pleasant",
+      "titleUk": "Трохи приємно",
+      "group": "pleasant",
+      "valence": 0.33,
+      "colorToken": "mood-slightly-pleasant",
+      "color": "#7FC4B8",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "pleasant",
+      "index": 6,
+      "title": "Pleasant",
+      "titleUk": "Приємно",
+      "group": "pleasant",
+      "valence": 0.66,
+      "colorToken": "mood-pleasant",
+      "color": "#E2B85E",
+      "colorStatus": "final (from Claude Design mockup)"
+    },
+    {
+      "id": "veryPleasant",
+      "index": 7,
+      "title": "Very Pleasant",
+      "titleUk": "Дуже приємно",
+      "group": "pleasant",
+      "valence": 1.0,
+      "colorToken": "mood-very-pleasant",
+      "color": "#F2C75C",
+      "colorStatus": "final (from Claude Design mockup)"
+    }
+  ],
+  "labels": [
+    {
+      "id": "amazed",
+      "title": "Amazed",
+      "titleUk": "Здивування"
+    },
+    {
+      "id": "amused",
+      "title": "Amused",
+      "titleUk": "Утіха"
+    },
+    {
+      "id": "angry",
+      "title": "Angry",
+      "titleUk": "Злість"
+    },
+    {
+      "id": "annoyed",
+      "title": "Annoyed",
+      "titleUk": "Досада"
+    },
+    {
+      "id": "anxious",
+      "title": "Anxious",
+      "titleUk": "Тривога"
+    },
+    {
+      "id": "ashamed",
+      "title": "Ashamed",
+      "titleUk": "Сором"
+    },
+    {
+      "id": "brave",
+      "title": "Brave",
+      "titleUk": "Сміливість"
+    },
+    {
+      "id": "calm",
+      "title": "Calm",
+      "titleUk": "Спокій"
+    },
+    {
+      "id": "confident",
+      "title": "Confident",
+      "titleUk": "Упевненість"
+    },
+    {
+      "id": "content",
+      "title": "Content",
+      "titleUk": "Приємність"
+    },
+    {
+      "id": "disappointed",
+      "title": "Disappointed",
+      "titleUk": "Розчарування"
+    },
+    {
+      "id": "discouraged",
+      "title": "Discouraged",
+      "titleUk": "Зневіра"
+    },
+    {
+      "id": "disgusted",
+      "title": "Disgusted",
+      "titleUk": "Огида"
+    },
+    {
+      "id": "drained",
+      "title": "Drained",
+      "titleUk": "Виснаження"
+    },
+    {
+      "id": "embarrassed",
+      "title": "Embarrassed",
+      "titleUk": "Ніяковість"
+    },
+    {
+      "id": "excited",
+      "title": "Excited",
+      "titleUk": "Піднесення"
+    },
+    {
+      "id": "frustrated",
+      "title": "Frustrated",
+      "titleUk": "Роздратування"
+    },
+    {
+      "id": "grateful",
+      "title": "Grateful",
+      "titleUk": "Вдячність"
+    },
+    {
+      "id": "guilty",
+      "title": "Guilty",
+      "titleUk": "Провина"
+    },
+    {
+      "id": "happy",
+      "title": "Happy",
+      "titleUk": "Щастя"
+    },
+    {
+      "id": "hopeful",
+      "title": "Hopeful",
+      "titleUk": "Надія"
+    },
+    {
+      "id": "hopeless",
+      "title": "Hopeless",
+      "titleUk": "Безнадія"
+    },
+    {
+      "id": "indifferent",
+      "title": "Indifferent",
+      "titleUk": "Байдужість"
+    },
+    {
+      "id": "irritated",
+      "title": "Irritated",
+      "titleUk": "Подразнення"
+    },
+    {
+      "id": "jealous",
+      "title": "Jealous",
+      "titleUk": "Заздрість"
+    },
+    {
+      "id": "joyful",
+      "title": "Joyful",
+      "titleUk": "Радість"
+    },
+    {
+      "id": "lonely",
+      "title": "Lonely",
+      "titleUk": "Самотність"
+    },
+    {
+      "id": "overwhelmed",
+      "title": "Overwhelmed",
+      "titleUk": "Перевантаження"
+    },
+    {
+      "id": "passionate",
+      "title": "Passionate",
+      "titleUk": "Захопленість"
+    },
+    {
+      "id": "peaceful",
+      "title": "Peaceful",
+      "titleUk": "Умиротвореність"
+    },
+    {
+      "id": "proud",
+      "title": "Proud",
+      "titleUk": "Гордість"
+    },
+    {
+      "id": "relieved",
+      "title": "Relieved",
+      "titleUk": "Полегшення"
+    },
+    {
+      "id": "sad",
+      "title": "Sad",
+      "titleUk": "Смуток"
+    },
+    {
+      "id": "satisfied",
+      "title": "Satisfied",
+      "titleUk": "Задоволення"
+    },
+    {
+      "id": "scared",
+      "title": "Scared",
+      "titleUk": "Страх"
+    },
+    {
+      "id": "stressed",
+      "title": "Stressed",
+      "titleUk": "Стрес"
+    },
+    {
+      "id": "surprised",
+      "title": "Surprised",
+      "titleUk": "Приємний подив"
+    },
+    {
+      "id": "worried",
+      "title": "Worried",
+      "titleUk": "Занепокоєння"
+    }
+  ],
+  "labelGroups": {
+    "$comment": "Apple does not publish labels per each of the 7 steps. Steps 1-3 use 'unpleasant', step 4 uses 'neutral', steps 5-7 use 'pleasant'. The neutral set is our own selection based on Apple's examples. Order = display order; the first chips are shown, the rest go under 'More'.",
+    "pleasant": [
+      "happy",
+      "joyful",
+      "grateful",
+      "calm",
+      "peaceful",
+      "content",
+      "satisfied",
+      "proud",
+      "confident",
+      "hopeful",
+      "relieved",
+      "excited",
+      "passionate",
+      "amazed",
+      "amused",
+      "surprised",
+      "brave"
+    ],
+    "unpleasant": [
+      "stressed",
+      "anxious",
+      "worried",
+      "sad",
+      "drained",
+      "overwhelmed",
+      "frustrated",
+      "irritated",
+      "annoyed",
+      "angry",
+      "disappointed",
+      "discouraged",
+      "lonely",
+      "scared",
+      "hopeless",
+      "guilty",
+      "ashamed",
+      "embarrassed",
+      "jealous",
+      "disgusted"
+    ],
+    "neutral": [
+      "indifferent",
+      "calm",
+      "content",
+      "peaceful",
+      "satisfied",
+      "drained",
+      "surprised",
+      "hopeful",
+      "stressed",
+      "worried"
+    ]
+  }
+}
