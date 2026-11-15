@@ -26,11 +26,11 @@ measurements when yellow or red): [devices.md](devices.md).
 | Resting heart rate | bpm | Wristband / smart shirt | Auto | Live every 1 s; status uses the morning resting value | 50–80, or own norm ± 10 % | > 15 % above own norm for 3 days | > 100 or < 40, or chest pain / shortness of breath |
 | Blood pressure | mmHg | Wristband estimate + cuff | Auto | Wristband estimate ~every 30 min; cuff every morning (status uses the cuff) | < 130/85 | ≥ 130/85 for 3 days, or < 90/60 | ≥ 160/100, or headache / blurred vision |
 | Body temperature | °C | Wristband skin temperature (trend) + thermometer to confirm | Auto | Wristband continuous; thermometer when the trend rises or unwell | 36.1–37.2 | 37.3–38.0 | > 38.0 or < 35.5 |
-| Bones (urine calcium) | mg/day | Urine test strip read by the tablet camera | Auto (photo) | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
+| Bones (urine calcium) | mg/day | Urine test strip read by the laptop camera | Auto (photo) | Weekly | < 250 | 250–300, or +20 % vs own norm | > 300, or lower back pain |
 | Muscles | training min/day; grip strength kg | Exercise machine log; hand dynamometer | Auto | Training daily; grip weekly | ≥ 120 min/day; grip within −10 % of pre-flight | < 90 min for 3 days, or grip −10 % | Grip −20 %, or < 60 min all week |
 | Blood sugar | mg/dL | Glucometer | Auto | Weekly, fasting | 70–99 | 100–125 or 55–69 | ≥ 126 repeatedly, or < 55 |
 | Water intake | ml/day | Water dispenser (wristband tap); other drinks by hand | Auto + manual | Through the day | ≥ 2000 | < 2000 for 2 days | < 1500 for 3 days |
-| Urine test strip | negative / trace / + / ++ | Same strip as urine calcium, read by the tablet camera | Auto (photo) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
+| Urine test strip | negative / trace / + / ++ | Same strip as urine calcium, read by the laptop camera | Auto (photo) | Weekly | All negative | Trace of protein or ketones | Blood, or "++" or more |
 
 ---
 

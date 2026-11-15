@@ -166,7 +166,7 @@ export const RULES: Record<MetricId, MetricRule> = {
     id: 'urineCalcium',
     name: 'Urine calcium',
     unit: 'mg/day',
-    source: 'Urine test strip, read by the tablet camera',
+    source: 'Urine test strip, read by the laptop camera',
     frequency: 'Weekly',
     schedule: { green: 'Weekly', yellow: 'Every 2 days', red: 'Daily' },
     digits: 0,
