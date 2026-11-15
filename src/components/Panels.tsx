@@ -30,6 +30,22 @@ export function MissionCard({ mission }: { mission: Mission }) {
   )
 }
 
+// Partly done task (water): the circle fills up and a dashed bar shows each pouch.
+const partial = (t: Task) => !t.done && !!t.progress && t.progress.done > 0
+const ringStyle = (t: Task) => ({
+  background: `conic-gradient(var(--holo) ${(t.progress!.done / t.progress!.total) * 360}deg, transparent 0)`,
+  borderColor: t.due ? 'var(--orange)' : 'var(--holo)',
+})
+function Segments({ progress }: { progress: { done: number; total: number } }) {
+  return (
+    <span className="segments" aria-label={`${progress.done} of ${progress.total}`}>
+      {Array.from({ length: progress.total }, (_, i) => (
+        <span key={i} className={i < progress.done ? 'on' : ''} />
+      ))}
+    </span>
+  )
+}
+
 export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) => void }) {
   const done = tasks.filter((t) => t.done).length
   return (
@@ -47,14 +63,17 @@ export function DailyPlan({ tasks, onOpen }: { tasks: Task[]; onOpen: (t: Task) 
       <ul className="tasks">
         {tasks.map((t) => (
           <li key={t.id}>
-            <button className={`task${t.done ? ' done' : ''}`} onClick={() => onOpen(t)}>
-              <span className="check">{t.done ? '✓' : ''}</span>
+            <button className={`task${t.done ? ' done' : ''}${partial(t) ? ' partial' : ''}`} onClick={() => onOpen(t)}>
+              <span className="check" style={partial(t) ? ringStyle(t) : undefined}>
+                {t.done ? '✓' : ''}
+              </span>
               <span className="task-text">
                 <span className="task-title">{t.title}</span>
                 <span className="task-detail">
                   {t.auto ? 'Auto · ' : ''}
                   {t.detail}
                 </span>
+                {t.progress && !t.done && <Segments progress={t.progress} />}
               </span>
             </button>
           </li>
@@ -72,6 +91,8 @@ export interface TodoItem {
   title: string
   detail: string
   done: boolean
+  progress?: { done: number; total: number }
+  due?: boolean
   action?: { label: string; run: () => void }
 }
 
@@ -85,7 +106,10 @@ export function StatusCard(props: {
 }) {
   const color = STATUS_COLOR[props.status]
   const todo = props.todo ?? []
-  const left = todo.filter((t) => !t.done).length
+  // A task spread over the day that is not due yet (water) is "in progress", not left.
+  const waiting = (t: TodoItem) => !t.done && !!t.progress && !t.due
+  const left = todo.filter((t) => !t.done && !waiting(t)).length
+  const inProgress = todo.some(waiting)
   return (
     <section className="panel status-card">
       <div className="status-head">
@@ -103,14 +127,17 @@ export function StatusCard(props: {
       {/* What to do today for this part of the body comes before moving on. */}
       {todo.length > 0 && (
         <div className="todo">
-          <span className="eyebrow">To do today{left > 0 ? ` · ${left} left` : ' · done'}</span>
+          <span className="eyebrow">To do today{left > 0 ? ` · ${left} left` : inProgress ? ' · in progress' : ' · done'}</span>
           <ul>
             {todo.map((t) => (
               <li key={t.id} className={t.done ? 'done' : ''}>
-                <span className="check">{t.done ? '✓' : ''}</span>
+                <span className="check" style={t.progress && t.progress.done > 0 && !t.done ? { background: `conic-gradient(var(--holo) ${(t.progress.done / t.progress.total) * 360}deg, transparent 0)`, borderColor: t.due ? 'var(--orange)' : 'var(--holo)' } : undefined}>
+                  {t.done ? '✓' : ''}
+                </span>
                 <span className="todo-text">
                   <span className="todo-title">{t.title}</span>
                   <span className="todo-detail">{t.detail}</span>
+                  {t.progress && !t.done && <Segments progress={t.progress} />}
                 </span>
                 {!t.done && t.action && (
                   <button className="primary todo-action" onClick={t.action.run}>

@@ -17,6 +17,9 @@ export interface Task {
   layer: LayerId
   // The metric a device measures for this task (shows "Measure now" on its card).
   metric?: MetricId
+  // Spread over the day (water): how much is done, and whether the next step is due now.
+  progress?: { done: number; total: number }
+  due?: boolean
 }
 
 export const WATER_GOAL_ML = 2000
@@ -27,6 +30,7 @@ interface Inputs {
   waterToday: number
   // Shown next to the water task when a reminder is due (yellow / red hydration).
   waterReminder?: string
+  waterDue?: boolean
   checkIns: number
   checkInsNeeded: number
   // Status of each metric at the start of the day: it sets today's extra measurements.
@@ -98,6 +102,8 @@ export function buildChecklist(i: Inputs): Task[] {
       done: i.waterToday >= WATER_GOAL_ML,
       auto: false,
       layer: 'hydration',
+      progress: { done: Math.min(8, Math.floor(i.waterToday / 250)), total: 8 },
+      due: i.waterDue,
     },
     {
       id: 'check-in',
@@ -109,5 +115,6 @@ export function buildChecklist(i: Inputs): Task[] {
     },
   )
   // What is left to do comes first, so it stays visible on small screens.
-  return [...tasks.filter((t) => !t.done), ...tasks.filter((t) => t.done)]
+  const waiting = (t: Task) => !t.done && t.progress && !t.due
+  return [...tasks.filter((t) => !t.done && !waiting(t)), ...tasks.filter(waiting), ...tasks.filter((t) => t.done)]
 }

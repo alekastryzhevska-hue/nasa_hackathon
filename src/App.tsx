@@ -163,12 +163,29 @@ export default function App() {
   const minutesLeft = Math.max(0, (wakeEnd - Math.max(now, wakeStart)) / 60_000)
   const aimByNow = Math.round((WATER_GOAL_ML * Math.min(1, Math.max(0, (now - wakeStart) / (wakeEnd - wakeStart)))) / 50) * 50
   const behind = waterToday + POUCH_ML <= aimByNow
-  const lastPouch = pouches.length ? pouches[pouches.length - 1].time : sessionStart
+  // After each pouch there is a pause before the next one: 15 min when catching up,
+  // otherwise the remaining day split evenly (never longer than the reminder interval).
+  const CATCH_UP_MIN = 15
+  const lastPouch = pouches.length ? pouches[pouches.length - 1].time : null
   const gapMin = pouchesLeft ? Math.min(minutesLeft / pouchesLeft, reminderMin ?? 90) : 0
-  const nextPouchAt = pouchesLeft === 0 || minutesLeft === 0 ? null : behind ? now : lastPouch + gapMin * 60_000
+  const nextPouchAt =
+    pouchesLeft === 0 || minutesLeft === 0
+      ? null
+      : lastPouch === null
+        ? behind
+          ? now
+          : sessionStart + gapMin * 60_000
+        : lastPouch + (behind ? CATCH_UP_MIN : gapMin) * 60_000
   const pouchDue = nextPouchAt !== null && now >= nextPouchAt
+  const minsToNext = nextPouchAt === null ? 0 : Math.max(1, Math.ceil((nextPouchAt - now) / 60_000))
   const waterReminder =
-    pouchesLeft === 0 ? undefined : nextPouchAt === null ? 'goal moves to tomorrow' : pouchDue ? 'drink a pouch now' : `next pouch ${clock(nextPouchAt)}`
+    pouchesLeft === 0
+      ? undefined
+      : nextPouchAt === null
+        ? 'goal moves to tomorrow'
+        : pouchDue
+          ? 'drink a pouch now'
+          : `next pouch in ${minsToNext} min (${clock(nextPouchAt)})`
 
   // How many mood tests today: based on the status before today's tests.
   const moodBefore = RULES.mood.evaluate(applyOverride(valuesFor(readings, 'mood'), overrides.mood), astronaut, MISSION, []).status
@@ -182,6 +199,7 @@ export default function App() {
     measured,
     waterToday,
     waterReminder,
+    waterDue: pouchDue,
     checkIns: checkIns.length,
     checkInsNeeded: testsNeeded,
   })
@@ -348,14 +366,14 @@ export default function App() {
                         <strong>{(waterToday / 1000).toFixed(1)} L</strong>
                         <span className="muted"> of {(WATER_GOAL_ML / 1000).toFixed(1)} L today</span>
                       </div>
-                      <div className={`reminder${pouchDue ? ' due' : ''}`}>
+                      <div className={`reminder${pouchDue ? ' due' : pouchesLeft > 0 && nextPouchAt !== null ? ' waiting' : ''}`}>
                         {pouchesLeft === 0
                           ? '✓ Goal reached for today'
                           : nextPouchAt === null
                             ? 'Day is over: start again tomorrow morning'
                             : pouchDue
                               ? `⏰ Drink a pouch now${behind ? ` · aim for ${(aimByNow / 1000).toFixed(1)} L by now` : ''}`
-                              : `Next pouch at ${clock(nextPouchAt)} · ${pouchesLeft} left today`}
+                              : `✓ Pouch logged · next one in ${minsToNext} min (${clock(nextPouchAt)}) · ${pouchesLeft} left today`}
                       </div>
                       <button className="primary" onClick={addPouch}>+1 pouch ({POUCH_ML} ml)</button>
                       {pouches.length > 0 && (

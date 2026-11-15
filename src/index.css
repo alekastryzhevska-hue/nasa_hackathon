@@ -244,6 +244,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .mind-glow, .mood-title { animation: none; } }
 
+/* Water spread over the day: dashed progress, one dash per pouch */
+.segments { display: flex; gap: 3px; margin-top: 6px; max-width: 200px; }
+.segments span { flex: 1; height: 4px; border-radius: 2px; border: 1px dashed var(--gray-50); }
+.segments span.on { background: var(--holo); border: 1px solid var(--holo); }
+.task.partial .task-title { color: var(--gray-10); }
+.reminder.waiting { color: var(--holo); }
+
 /* Metric cards */
 .metrics { display: grid; gap: 12px; }
 .metric { background: var(--gray-80); border: 1px solid var(--gray-60); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
