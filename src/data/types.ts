@@ -78,6 +78,7 @@ export type Region =
   | 'lungs'
   | 'kidneys'
   | 'stomach'
+  | 'liver'
   | 'spine'
   | 'arms'
   | 'legs'

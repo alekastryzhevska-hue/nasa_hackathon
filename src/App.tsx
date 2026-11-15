@@ -267,13 +267,16 @@ export default function App() {
                       needed={testsNeeded}
                     />
                   )}
-                  <StatusCard
-                    status={summary.status}
-                    reason={`${RULES[worstMetric.id].name}: ${worstMetric.reason}`}
-                    advice={RULES[worstMetric.id].advice[worstMetric.status]}
-                    nextLayer={layerIndex === LAYERS.length - 1 ? { id: layerId, name: 'Readiness' } : nextLayer}
-                    onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
-                  />
+                  {/* Mind: the check-in card replaces the status card, as in the mockup. */}
+                  {layerId !== 'emotions' && (
+                    <StatusCard
+                      status={summary.status}
+                      reason={`${RULES[worstMetric.id].name}: ${worstMetric.reason}`}
+                      advice={RULES[worstMetric.id].advice[worstMetric.status]}
+                      nextLayer={layerIndex === LAYERS.length - 1 ? { id: layerId, name: 'Readiness' } : nextLayer}
+                      onNext={(id) => (layerIndex === LAYERS.length - 1 ? setReadiness(true) : openLayer(id))}
+                    />
+                  )}
 
                   {layerId === 'hydration' && (
                     <section className="panel action column">
@@ -302,6 +305,7 @@ export default function App() {
                     </section>
                   )}
 
+                  {layerId !== 'emotions' && (
                   <div className="metrics">
                     {layer.metrics.map(({ id }) => {
                       const e = evaluate(id)
@@ -322,6 +326,7 @@ export default function App() {
                       )
                     })}
                   </div>
+                  )}
                 </div>
 
                 <div className="stage-figure">

@@ -33,8 +33,9 @@ export const LAYERS: LayerDef[] = [
     id: 'organs',
     name: 'Organs',
     metrics: [
-      { id: 'temperature', regions: ['lungs', 'head'] },
-      { id: 'bloodSugar', regions: ['stomach'] },
+      { id: 'urineCalcium', regions: ['kidneys'] },
+      { id: 'bloodSugar', regions: ['liver'] },
+      { id: 'temperature', regions: [] },
     ],
   },
   {

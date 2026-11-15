@@ -1,13 +1,13 @@
-// Hologram body figure (vector). Parts are tagged with region ids from CONTRACT.md and
-// colored by status: hologram blue = fine, orange = attention, red = act now.
-// Each layer draws its own anatomy (skeleton, muscles, organs, vessels...).
+// Holographic body figure, drawn from the design mockup (Claude Design, "Astronaut
+// Health — Main Screen"): the same silhouette on every tab, each tab highlights its own
+// system. Highlight color follows the layer status (blue = fine, orange = attention,
+// red = act now); the Mind tab uses the mood color instead.
 
 import type { ReactNode } from 'react'
 import type { Region, Status } from '../data/types'
 import type { LayerId } from '../rules/layers'
 import { DS } from '../theme'
 
-// Hologram blue = design-system "information" blue; statuses use the system colors.
 export const HOLO = DS.blue
 const COLOR: Record<Status, string> = { green: HOLO, yellow: DS.orange, red: DS.red }
 
@@ -19,211 +19,361 @@ interface Props {
   chargePercent?: number // Sleep tab: "battery" charge, 0–100
 }
 
-// Body outline, reused as the faint silhouette and as the hydration mask.
-function Silhouette({ stroke, fill, width = 1.5 }: { stroke: string; fill: string; width?: number }) {
+// Right half of the body outline; the left half is its mirror image.
+const SIL_R =
+  'M108 64 L110 78 Q132 80 146 92 Q152 100 154 120 L160 196 L166 240 Q168 254 160 254 Q155 252 155 240 L146 182 L140 130 L136 168 L134 204 Q140 220 140 236 L138 300 L134 372 L132 410 Q142 422 136 426 L114 426 L114 410 L110 330 L104 250 L100 244'
+const MIRROR = 'translate(200 0) scale(-1 1)'
+
+// Draws the right half and its mirror.
+function Both({ children }: { children: ReactNode }) {
   return (
-    <g stroke={stroke} fill={fill} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx={150} cy={62} r={30} />
-      <path d="M140 90 L160 90 L162 112 L138 112 Z" />
-      <path d="M104 116 Q150 104 196 116 Q210 122 210 140 Q204 220 190 296 Q150 312 110 296 Q96 220 90 140 Q90 122 104 116 Z" />
-      {/* arms and legs: thick rounded strokes */}
-      <g fill="none">
-        <path d="M100 128 L84 228 L74 318" strokeWidth={width === 1.5 ? 1.5 : 26} />
-        <path d="M200 128 L216 228 L226 318" strokeWidth={width === 1.5 ? 1.5 : 26} />
-        <path d="M132 300 L126 424 L126 532" strokeWidth={width === 1.5 ? 1.5 : 34} />
-        <path d="M168 300 L174 424 L174 532" strokeWidth={width === 1.5 ? 1.5 : 34} />
-      </g>
-    </g>
+    <>
+      <g>{children}</g>
+      <g transform={MIRROR}>{children}</g>
+    </>
   )
 }
 
-function Part({ region, regions, children, width = 3 }: { region: Region; regions: Props['regions']; children: ReactNode; width?: number }) {
-  const status = regions[region]
-  const color = status ? COLOR[status] : HOLO
+function Body(props: { fill?: string; fillOpacity?: number; stroke?: string; strokeOpacity?: number; width?: number }) {
   return (
     <g
-      data-region={region}
-      stroke={color}
-      fill={color}
-      fillOpacity={0.12}
-      strokeWidth={width}
-      strokeLinecap="round"
+      fill={props.fill ?? DS.gray90}
+      fillOpacity={props.fillOpacity ?? 0.6}
+      stroke={props.stroke ?? HOLO}
+      strokeOpacity={props.strokeOpacity ?? 0.35}
+      strokeWidth={props.width ?? 1.25}
       strokeLinejoin="round"
-      opacity={status ? 1 : 0.22}
-      filter={status ? 'url(#glow)' : undefined}
     >
-      {children}
+      <circle cx={100} cy={38} r={26} />
+      <Both>
+        <path d={SIL_R} />
+      </Both>
     </g>
   )
 }
 
-function Skeleton({ regions }: { regions: Props['regions'] }) {
-  const ribs = [138, 152, 166, 180, 194]
+function BodyClip({ id }: { id: string }) {
+  return (
+    <clipPath id={id}>
+      <circle cx={100} cy={38} r={26} />
+      <path d={SIL_R} />
+      <path d={SIL_R} transform={MIRROR} />
+    </clipPath>
+  )
+}
+
+// Rings, tick marks and the pedestal under the feet.
+function Stage({ pedestal }: { pedestal: string }) {
   return (
     <>
-      <Part region="head" regions={regions}>
-        <circle cx={150} cy={60} r={26} />
-        <circle cx={140} cy={60} r={6} />
-        <circle cx={160} cy={60} r={6} />
-        <path d="M138 84 Q150 92 162 84" fill="none" />
-      </Part>
-      <Part region="spine" regions={regions}>
-        <path d="M150 92 L150 300" fill="none" strokeDasharray="7 4" strokeWidth={6} />
-        <path d="M150 120 L100 126 M150 120 L200 126" fill="none" />
-        {ribs.map((y) => (
-          <path key={y} d={`M150 ${y} Q118 ${y - 6} 114 ${y + 16} M150 ${y} Q182 ${y - 6} 186 ${y + 16}`} fill="none" />
-        ))}
-        <path d="M118 286 Q150 270 182 286 Q190 312 172 322 L150 312 L128 322 Q110 312 118 286 Z" />
-      </Part>
-      <Part region="arms" regions={regions}>
-        <path d="M100 128 L85 228 L76 316 M200 128 L215 228 L224 316" fill="none" />
-        {[[100, 128], [85, 228], [200, 128], [215, 228]].map(([x, y]) => (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={5} />
-        ))}
-        <path d="M70 318 l-4 18 M76 318 l0 20 M82 318 l4 18 M218 318 l-4 18 M224 318 l0 20 M230 318 l4 18" fill="none" strokeWidth={2} />
-      </Part>
-      <Part region="legs" regions={regions}>
-        <path d="M134 318 L127 424 L127 528 M166 318 L173 424 L173 528" fill="none" />
-        {[[134, 318], [127, 424], [166, 318], [173, 424]].map(([x, y]) => (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={6} />
-        ))}
-        <path d="M127 528 L112 538 M173 528 L188 538" fill="none" />
-      </Part>
+      <circle cx={100} cy={220} r={190} fill="none" stroke={DS.gray60} />
+      <circle cx={100} cy={220} r={150} fill="none" stroke={DS.gray60} strokeDasharray="2 6" />
+      <path d="M-90 220 h20 M270 220 h20 M100 30 v-10 M100 410 v10" stroke={DS.gray50} strokeWidth={1.5} />
+      <ellipse cx={100} cy={428} rx={80} ry={12} fill="none" stroke={pedestal} strokeOpacity={0.3} />
+      <ellipse cx={100} cy={428} rx={54} ry={7} fill="none" stroke={pedestal} strokeOpacity={0.55} strokeWidth={1.25} />
     </>
   )
 }
 
-function Muscles({ regions }: { regions: Props['regions'] }) {
+function Skeleton({ color }: { color: string }) {
   return (
     <>
-      <Part region="spine" regions={regions} width={2}>
-        <ellipse cx={130} cy={150} rx={20} ry={14} />
-        <ellipse cx={170} cy={150} rx={20} ry={14} />
-        {[190, 216, 242].map((y) => (
-          <g key={y}>
-            <rect x={132} y={y} width={16} height={20} rx={5} />
-            <rect x={152} y={y} width={16} height={20} rx={5} />
-          </g>
-        ))}
-      </Part>
-      <Part region="arms" regions={regions} width={2}>
-        <ellipse cx={92} cy={176} rx={11} ry={36} transform="rotate(9 92 176)" />
-        <ellipse cx={208} cy={176} rx={11} ry={36} transform="rotate(-9 208 176)" />
-        <ellipse cx={80} cy={272} rx={9} ry={34} transform="rotate(6 80 272)" />
-        <ellipse cx={220} cy={272} rx={9} ry={34} transform="rotate(-6 220 272)" />
-      </Part>
-      <Part region="legs" regions={regions} width={2}>
-        <ellipse cx={130} cy={366} rx={15} ry={48} transform="rotate(3 130 366)" />
-        <ellipse cx={170} cy={366} rx={15} ry={48} transform="rotate(-3 170 366)" />
-        <ellipse cx={126} cy={476} rx={11} ry={36} />
-        <ellipse cx={174} cy={476} rx={11} ry={36} />
-      </Part>
+      <line x1={-40} y1={150} x2={240} y2={150} stroke={HOLO} strokeOpacity={0.35} />
+      <Body />
+      <g fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round" filter="url(#glow)" data-region="spine">
+        <ellipse cx={100} cy={37} rx={17} ry={20} />
+        <path d="M88 50 Q100 66 112 50" />
+        <circle cx={93} cy={36} r={4} />
+        <circle cx={107} cy={36} r={4} />
+        <line x1={100} y1={62} x2={100} y2={228} strokeWidth={5} strokeDasharray="5 3" strokeLinecap="butt" />
+        <Both>
+          <path d="M103 88 Q122 82 139 86" />
+          <path d="M103 100 Q127 95 130 110" />
+          <path d="M103 112 Q130 107 132 124" />
+          <path d="M103 124 Q130 121 131 138" />
+          <path d="M103 136 Q128 135 128 150" />
+          <path d="M103 148 Q123 149 123 160" />
+          <path d="M101 226 Q122 210 133 222 Q138 240 122 248 Q110 248 104 240" />
+          <line x1={143} y1={93} x2={150} y2={167} />
+          <line x1={148} y1={178} x2={156} y2={234} />
+          <line x1={153} y1={177} x2={162} y2={232} />
+          <path d="M156 240 l-1 11 M160 240 l2 13 M164 238 l4 11" />
+          <line x1={121} y1={253} x2={125} y2={331} />
+          <line x1={123} y1={343} x2={124} y2={408} />
+          <line x1={129} y1={343} x2={130} y2={404} />
+          <path d="M122 416 L138 422" />
+          <circle cx={142} cy={88} r={4} />
+          <circle cx={150} cy={172} r={4} />
+          <circle cx={121} cy={249} r={4} />
+          <circle cx={125} cy={337} r={5} />
+          <circle cx={126} cy={412} r={3} />
+        </Both>
+      </g>
     </>
   )
 }
 
-function Organs({ regions }: { regions: Props['regions'] }) {
+function Muscles({ color }: { color: string }) {
   return (
     <>
-      <Part region="head" regions={regions} width={2}>
-        <path d="M128 58 Q130 36 150 36 Q170 36 172 58 Q172 72 150 74 Q128 72 128 58 Z" />
-        <path d="M150 38 L150 72" fill="none" />
-      </Part>
-      <Part region="lungs" regions={regions} width={2}>
-        <path d="M144 130 Q118 132 114 180 Q114 204 140 206 Q146 170 144 130 Z" />
-        <path d="M156 130 Q182 132 186 180 Q186 204 160 206 Q154 170 156 130 Z" />
-      </Part>
-      <Part region="heart" regions={regions} width={2}>
-        <path d="M156 176 q-10 -12 -18 -2 q-6 10 18 26 q24 -16 18 -26 q-8 -10 -18 2 Z" />
-      </Part>
-      <Part region="stomach" regions={regions} width={2}>
-        <path d="M150 218 Q182 210 182 232 Q180 252 158 248 Q146 244 150 218 Z" />
-      </Part>
-      <Part region="kidneys" regions={regions} width={2}>
-        <ellipse cx={128} cy={258} rx={9} ry={14} />
-        <ellipse cx={172} cy={258} rx={9} ry={14} />
-      </Part>
+      <line x1={-40} y1={290} x2={240} y2={290} stroke={HOLO} strokeOpacity={0.35} />
+      <Body />
+      <g fill={color} fillOpacity={0.16} stroke={color} strokeWidth={1.75} strokeLinejoin="round" filter="url(#glow)" data-region="arms">
+        <Both>
+          <path d="M108 66 Q122 74 134 84 Q122 86 110 82 Z" />
+          <ellipse cx={141} cy={98} rx={9} ry={14} transform="rotate(-25 141 98)" />
+          <path d="M103 92 Q126 86 135 100 Q134 118 117 121 Q104 120 103 108 Z" />
+          <ellipse cx={149} cy={140} rx={6} ry={20} transform="rotate(-6 149 140)" />
+          <ellipse cx={156} cy={205} rx={5.5} ry={24} transform="rotate(-8 156 205)" />
+          <path d="M119 128 Q131 150 133 200 Q124 198 119 182 Z" />
+          <rect x={102} y={128} width={12} height={18} rx={4} />
+          <rect x={102} y={150} width={12} height={18} rx={4} />
+          <rect x={102} y={172} width={12} height={18} rx={4} />
+          <path d="M102 196 L114 196 L110 228 L102 232 Z" />
+          <ellipse cx={121} cy={290} rx={13} ry={40} transform="rotate(-3 121 290)" />
+          <path d="M110 254 Q114 262 113 300 Q110 312 106 300 Q104 270 110 254 Z" />
+          <ellipse cx={127} cy={373} rx={8} ry={26} />
+          <path d="M118 352 Q121 380 119 400 Q116 380 118 352 Z" />
+        </Both>
+      </g>
     </>
   )
 }
 
-function Circulation({ regions }: { regions: Props['regions'] }) {
+function Cardio({ color }: { color: string }) {
   return (
     <>
-      <Part region="blood-vessels" regions={regions} width={2}>
-        <path
-          d="M156 190 L150 96 M150 130 L100 132 L86 228 L76 316 M150 130 L200 132 L214 228 L224 316 M156 200 L150 296 L132 310 L127 424 L127 528 M150 296 L168 310 L173 424 L173 528"
-          fill="none"
-        />
-        <path d="M148 110 L136 66 M152 110 L164 66" fill="none" strokeWidth={1.5} />
-      </Part>
-      <Part region="heart" regions={regions}>
-        <path d="M156 176 q-12 -14 -22 -2 q-7 12 22 32 q29 -20 22 -32 q-10 -12 -22 2 Z" />
-      </Part>
-    </>
-  )
-}
-
-function Head({ regions }: { regions: Props['regions'] }) {
-  return (
-    <Part region="head" regions={regions} width={2}>
-      <circle cx={150} cy={62} r={30} />
-      <path d="M132 58 Q136 44 150 46 Q164 44 168 58 Q170 70 150 72 Q130 70 132 58 Z" />
-      <path d="M140 52 Q146 60 140 66 M160 52 Q154 60 160 66" fill="none" />
-    </Part>
-  )
-}
-
-// Mind tab: brain and a nerve network (lines and nodes from the brain down the body),
-// all in the mood color.
-function Mind({ color }: { color: string }) {
-  const nodes: [number, number][] = [[150, 112], [124, 150], [176, 150], [150, 190], [104, 196], [196, 196], [136, 236], [164, 236]]
-  return (
-    <g stroke={color} fill={color} strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)">
-      <circle cx={150} cy={62} r={44} fill="none" strokeOpacity={0.25} />
-      <circle cx={150} cy={62} r={56} fill="none" strokeOpacity={0.15} strokeDasharray="2 6" />
-      <g fillOpacity={0.14} strokeWidth={2}>
-        <path d="M148 40 Q128 38 126 56 Q122 70 134 78 Q142 84 148 78 Z" />
-        <path d="M152 40 Q172 38 174 56 Q178 70 166 78 Q158 84 152 78 Z" />
-        <path d="M134 54 q6 4 0 10 M140 66 q4 -4 6 2 M166 54 q-6 4 0 10 M160 66 q-4 -4 -6 2" fill="none" />
+      <Body />
+      <path
+        d="M-40 150 H40 L48 150 L54 136 L60 166 L66 142 L70 150 H150 L158 150 L164 136 L170 166 L176 142 L180 150 H240"
+        fill="none"
+        stroke={color}
+        strokeOpacity={0.5}
+        strokeWidth={1.25}
+        strokeLinejoin="round"
+      />
+      <g fill="none" stroke={color} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" data-region="blood-vessels">
+        <Both>
+          <path d="M106 112 Q112 96 108 80 L106 64" />
+          <path d="M110 92 Q128 88 142 96 L150 140 L156 200 L162 240" />
+          <path d="M101 140 L102 222 Q112 236 120 250 L124 330 L127 410" />
+        </Both>
       </g>
       <path
-        d="M150 84 L150 112 L124 150 L104 196 M150 112 L176 150 L196 196 M150 112 L150 190 L136 236 M150 190 L164 236"
-        fill="none"
-        strokeWidth={1.2}
-        strokeOpacity={0.8}
+        data-region="heart"
+        d="M104 116 Q100 106 108 105 Q116 105 116 114 Q114 127 104 136 Q94 127 94 119 Q94 110 104 116 Z"
+        fill={color}
+        fillOpacity={0.35}
+        stroke={color}
+        strokeWidth={2.25}
+        strokeLinejoin="round"
+        filter="url(#glow)"
       />
-      {nodes.map(([x, y]) => (
-        <circle key={`${x}${y}`} cx={x} cy={y} r={3} stroke="none" />
-      ))}
-    </g>
+      <circle cx={105} cy={120} r={22} fill="none" stroke={color} strokeOpacity={0.35} strokeDasharray="2 4" />
+    </>
   )
 }
 
-// Where ripples start for each region (both sides for paired limbs and organs).
-const ANCHORS: Record<Region, [number, number][]> = {
-  head: [[150, 60]],
-  eyes: [[150, 60]],
-  heart: [[156, 186]],
-  lungs: [[130, 168], [170, 168]],
-  kidneys: [[128, 258], [172, 258]],
-  stomach: [[165, 232]],
-  spine: [[150, 200]],
-  arms: [[85, 228], [215, 228]],
-  legs: [[127, 424], [173, 424]],
-  'blood-vessels': [[150, 240]],
-  'whole-body': [[150, 300]],
+function Hydration({ color, percent }: { color: string; percent: number }) {
+  // Water level: from the feet (y 426) up to the top of the head (y 12).
+  const y = 426 - (426 - 12) * (Math.min(100, Math.max(0, percent)) / 100)
+  return (
+    <>
+      <Body />
+      <g clipPath="url(#bodyClip)" data-region="whole-body">
+        <rect x={40} y={y} width={140} height={440 - y} fill="url(#water)" />
+        <path d={`M40 ${y} Q55 ${y - 7} 70 ${y} T100 ${y} T130 ${y} T160 ${y} T190 ${y}`} fill="none" stroke={color} strokeWidth={2} filter="url(#glow)" />
+        {[
+          [88, 210, 2],
+          [112, 260, 1.5],
+          [96, 320, 1.8],
+          [122, 190, 1.4],
+        ]
+          .filter(([, cy]) => cy > y + 6)
+          .map(([cx, cy, r]) => (
+            <circle key={`${cx}${cy}`} cx={cx} cy={cy} r={r} fill={color} fillOpacity={0.6} />
+          ))}
+      </g>
+      <path d={`M-40 ${y} H30 M170 ${y} H240`} stroke={color} strokeOpacity={0.5} strokeDasharray="3 3" />
+      <path
+        d={`M-24 ${y - 22} Q-30 ${y - 12} -30 ${y - 8} A6 6 0 0 0 -18 ${y - 8} Q-18 ${y - 12} -24 ${y - 22} Z`}
+        fill={color}
+        fillOpacity={0.25}
+        stroke={color}
+        strokeWidth={1.25}
+      />
+    </>
+  )
 }
 
-// "Drop in water" rings from parts that need attention. Yellow ripples a few times,
-// red keeps going. Hidden when the system asks for reduced motion (see CSS).
+function Sleep({ percent }: { percent: number }) {
+  // 10 bars from the feet up; the filled ones get brighter towards the top.
+  const filled = Math.round(Math.min(100, Math.max(0, percent)) / 10)
+  const top = 386.1 - (filled - 1) * 41.4
+  const line = filled > 0 ? top - 1.5 : 426
+  return (
+    <>
+      <Body />
+      <g clipPath="url(#bodyClip)">
+        {Array.from({ length: 10 }, (_, i) => (
+          <rect
+            key={i}
+            x={40}
+            y={386.1 - i * 41.4}
+            width={140}
+            height={38.4}
+            fill={i < filled ? HOLO : DS.gray60}
+            fillOpacity={i < filled ? 0.18 + i * 0.03 : 0.25}
+          />
+        ))}
+        <line x1={40} y1={line} x2={180} y2={line} stroke={HOLO} strokeWidth={2} filter="url(#glow)" />
+      </g>
+      <rect x={90} y={2} width={20} height={7} rx={2.5} fill="none" stroke={HOLO} strokeOpacity={0.6} strokeWidth={1.4} />
+      <path d={`M-40 ${line} H40 M160 ${line} H200`} stroke={HOLO} strokeOpacity={0.5} strokeDasharray="3 3" />
+      <text x={206} y={line + 6} fill={DS.gray10} fontFamily="'Space Grotesk', Inter, sans-serif" fontSize={18} fontWeight={600}>
+        {Math.round(percent)}%
+      </text>
+      <text x={206} y={line + 20} fill={DS.gray30} fontFamily="Inter, sans-serif" fontSize={8.5}>
+        energy charge
+      </text>
+    </>
+  )
+}
+
+function Mind({ mood }: { mood: string }) {
+  return (
+    <>
+      <ellipse cx={100} cy={200} rx={70} ry={190} fill={mood} fillOpacity={0.07} filter="url(#glowSoft)" />
+      <Body fill={mood} fillOpacity={0.08} stroke={mood} strokeOpacity={0.6} width={1.4} />
+      <circle cx={100} cy={34} r={46} fill="none" stroke={mood} strokeOpacity={0.3} strokeDasharray="2 4" />
+      <circle cx={100} cy={34} r={62} fill="none" stroke={mood} strokeOpacity={0.15} />
+      <g fill={mood} fillOpacity={0.2} stroke={mood} strokeWidth={1.75} strokeLinejoin="round" strokeLinecap="round" filter="url(#glow)">
+        <path d="M100 14 Q84 12 80 24 Q74 28 78 38 Q78 48 90 48 Q96 52 100 48 Q104 52 110 48 Q122 48 122 38 Q126 28 120 24 Q116 12 100 14 Z" />
+        <path d="M100 15 V48 M86 24 Q92 28 88 34 M84 40 Q92 38 94 44 M114 24 Q108 28 112 34 M116 40 Q108 38 106 44" fill="none" />
+      </g>
+      <path
+        d="M100 48 V70 M100 70 L80 100 M100 70 L120 100 M100 70 V140 M80 100 L60 130 M120 100 L140 130 M100 140 L84 180 M100 140 L116 180"
+        stroke={mood}
+        strokeOpacity={0.55}
+        fill="none"
+      />
+      <g fill={mood} filter="url(#glow)">
+        {[
+          [100, 70, 2.2],
+          [80, 100, 2],
+          [120, 100, 2],
+          [60, 130, 1.8],
+          [140, 130, 1.8],
+          [100, 140, 2],
+          [84, 180, 1.6],
+          [116, 180, 1.6],
+          [88, 26, 1.6],
+          [112, 26, 1.6],
+          [94, 40, 1.6],
+          [106, 40, 1.6],
+        ].map(([cx, cy, r]) => (
+          <circle key={`${cx}${cy}`} cx={cx} cy={cy} r={r} />
+        ))}
+      </g>
+    </>
+  )
+}
+
+// Organs tab: brain & eyes, lungs, liver, kidneys, each with a status mark and a label.
+type OrganId = 'brain' | 'lungs' | 'liver' | 'kidneys'
+const ORGANS: { id: OrganId; name: string; region: Region; mark: [number, number]; line: string; label: [number, number]; side: 'left' | 'right' }[] = [
+  { id: 'brain', name: 'Brain & eyes', region: 'head', mark: [112, 24], line: 'M119 22 L140 12 L160 12', label: [164, 12], side: 'right' },
+  { id: 'lungs', name: 'Lungs', region: 'lungs', mark: [84, 122], line: 'M75 122 L40 100 L18 100', label: [14, 100], side: 'left' },
+  { id: 'liver', name: 'Liver', region: 'liver', mark: [90, 162], line: 'M83 163 L40 180 L18 180', label: [14, 180], side: 'left' },
+  { id: 'kidneys', name: 'Kidneys', region: 'kidneys', mark: [116, 183], line: 'M123 184 L150 200 L178 200', label: [182, 200], side: 'right' },
+]
+const ORGAN_LABEL: Record<Status, string> = { green: 'Normal', yellow: 'Warning', red: 'Critical' }
+
+function Organs({ regions }: { regions: Props['regions'] }) {
+  const look = (r: Region) => {
+    const st = regions[r]
+    return { st, color: st ? (st === 'green' ? HOLO : COLOR[st]) : DS.gray50, ring: st ? (st === 'green' ? DS.green : COLOR[st]) : DS.gray40 }
+  }
+  const o = Object.fromEntries(ORGANS.map((g) => [g.id, look(g.region)])) as Record<OrganId, ReturnType<typeof look>>
+  const part = (id: OrganId) => ({
+    fill: o[id].color,
+    fillOpacity: o[id].st ? 0.16 : 0.06,
+    stroke: o[id].color,
+    strokeWidth: 1.75,
+    strokeLinejoin: 'round' as const,
+    filter: o[id].st ? 'url(#glow)' : undefined,
+  })
+  return (
+    <>
+      <Body strokeOpacity={0.6} width={1.4} />
+      <line x1={100} y1={66} x2={100} y2={232} stroke={HOLO} strokeOpacity={0.18} strokeWidth={3} strokeDasharray="4 3" />
+      <path d="M104 116 Q100 106 108 105 Q116 105 116 114 Q114 127 104 136 Q94 127 94 119 Q94 110 104 116 Z" fill="none" stroke={DS.gray50} strokeWidth={1.25} strokeLinejoin="round" />
+
+      <g {...part('brain')} strokeLinecap="round" data-region="head">
+        <ellipse cx={100} cy={28} rx={16} ry={13} />
+        <path d="M100 16 V40 M91 22 Q96 27 91 33 M109 22 Q104 27 109 33" fill="none" />
+        <ellipse cx={91} cy={48} rx={4.6} ry={2.5} />
+        <ellipse cx={109} cy={48} rx={4.6} ry={2.5} />
+      </g>
+      <g {...part('lungs')} data-region="lungs">
+        <Both>
+          <path d="M105 92 Q121 88 127 108 Q131 134 123 154 Q111 158 106 148 Q104 120 105 92 Z" />
+        </Both>
+      </g>
+      <g {...part('liver')} data-region="liver">
+        <path d="M73 158 Q94 149 116 155 Q118 163 103 169 Q86 175 76 169 Q71 164 73 158 Z" />
+      </g>
+      <g {...part('kidneys')} data-region="kidneys">
+        <Both>
+          <path d="M115 171 Q123 171 123 182 Q123 194 115 194 Q110 194 111 188 Q114 182 111 177 Q110 171 115 171 Z" />
+        </Both>
+      </g>
+
+      {ORGANS.map((g) => {
+        const { st, ring } = o[g.id]
+        const text = `${g.name} · ${st ? ORGAN_LABEL[st] : 'No data'}`
+        const w = text.length * 5.6 + 30
+        const x = g.side === 'left' ? g.label[0] - w : g.label[0]
+        return (
+          <g key={g.id}>
+            <path d={g.line} fill="none" stroke={st && st !== 'green' ? ring : DS.gray40} />
+            <g transform={`translate(${g.mark[0]} ${g.mark[1]})`}>
+              <circle r={7} fill={DS.gray90} stroke={ring} strokeWidth={2} />
+              {st === 'green' && <path d="M-3 0 l2 2.2 l4 -4.4" fill="none" stroke={ring} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />}
+              {st && st !== 'green' && <path d="M0 -3.6 L3.6 2.8 H-3.6 Z M0 -1 V0.8" fill="none" stroke={ring} strokeWidth={1.2} strokeLinejoin="round" />}
+            </g>
+            <g transform={`translate(${x} ${g.label[1] - 11})`}>
+              <rect width={w} height={22} rx={11} fill={DS.gray80} stroke={st && st !== 'green' ? ring : DS.gray60} />
+              <text x={w / 2 + 6} y={14.5} textAnchor="middle" fill={DS.gray10} fontFamily="Inter, sans-serif" fontSize={9} fontWeight={600}>
+                {text}
+              </text>
+              <circle cx={12} cy={11} r={3} fill={ring} />
+            </g>
+          </g>
+        )
+      })}
+    </>
+  )
+}
+
+// "Drop in water" rings from parts that need attention (not on Organs: it has its own marks).
+const ANCHORS: Partial<Record<Region, [number, number][]>> = {
+  spine: [[100, 150]],
+  arms: [[150, 170], [50, 170]],
+  legs: [[124, 340], [76, 340]],
+  heart: [[105, 120]],
+  'blood-vessels': [[100, 200]],
+  'whole-body': [[100, 220]],
+  head: [[100, 38]],
+}
+
 function Ripples({ regions }: { regions: Props['regions'] }) {
   return (
     <g pointerEvents="none">
       {(Object.keys(regions) as Region[])
-        .filter((r) => regions[r] !== 'green')
+        .filter((r) => regions[r] !== 'green' && ANCHORS[r])
         .flatMap((r) =>
-          ANCHORS[r].map(([x, y], i) => (
+          ANCHORS[r]!.map(([x, y], i) => (
             <g key={`${r}${i}`} className={`svg-ripple ${regions[r]}`} stroke={COLOR[regions[r]!]}>
               <circle cx={x} cy={y} r={10} />
               <circle cx={x} cy={y} r={10} />
@@ -235,90 +385,47 @@ function Ripples({ regions }: { regions: Props['regions'] }) {
 }
 
 export function BodyFigure({ layer, regions, fillPercent = 0, tint, chargePercent }: Props) {
-  const fillY = 540 - (540 - 32) * (Math.min(100, fillPercent) / 100)
-  const line = tint ?? HOLO
-  // Sleep "battery": 10 bars from the feet up, filled by the charge.
-  const bars = Array.from({ length: 10 }, (_, i) => i)
-  const filled = Math.round((chargePercent ?? 0) / 10)
+  // Worst status among the layer's body parts sets the highlight color.
+  const sts = Object.values(regions)
+  const worst: Status = sts.includes('red') ? 'red' : sts.includes('yellow') ? 'yellow' : 'green'
+  const color = COLOR[worst]
+  const wide = layer === 'organs'
   return (
-    <svg viewBox="0 0 300 580" className="body-figure" role="img" aria-label={`Body figure, ${layer} layer`}>
+    <svg
+      viewBox={wide ? '-130 -10 460 460' : '-60 -10 320 460'}
+      className="body-figure"
+      role="img"
+      aria-label={`Body figure, ${layer} tab`}
+    >
       <defs>
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" result="b" />
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="3" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="14" />
+        <filter id="glowSoft" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="9" />
         </filter>
-        <mask id="body-mask">
-          <Silhouette stroke="#fff" fill="#fff" width={0} />
-        </mask>
+        <BodyClip id="bodyClip" />
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={layer === 'hydration' ? color : HOLO} stopOpacity={0.45} />
+          <stop offset="1" stopColor={layer === 'hydration' ? color : HOLO} stopOpacity={0.12} />
+        </linearGradient>
       </defs>
 
-      {/* Rings and tick marks behind the figure, pedestal under the feet. */}
-      <circle cx={150} cy={300} r={210} fill="none" stroke={DS.gray60} />
-      <circle cx={150} cy={300} r={170} fill="none" stroke={DS.gray60} strokeDasharray="2 6" />
-      <path d="M-58 300 h18 M340 300 h18" stroke={DS.gray50} strokeWidth={1.5} fill="none" />
-      <ellipse cx={150} cy={548} rx={70} ry={10} fill="none" stroke={line} strokeOpacity={0.4} />
-      <ellipse cx={150} cy={548} rx={46} ry={6} fill="none" stroke={line} strokeOpacity={0.6} />
+      <Stage pedestal={tint ?? HOLO} />
 
-      {tint && (
-        <g opacity={0.22} filter="url(#soft)">
-          <Silhouette stroke={tint} fill={tint} width={0} />
-        </g>
-      )}
+      {layer === 'bones' && <Skeleton color={color} />}
+      {layer === 'muscles' && <Muscles color={color} />}
+      {layer === 'organs' && <Organs regions={regions} />}
+      {layer === 'circulation' && <Cardio color={color} />}
+      {layer === 'hydration' && <Hydration color={color} percent={fillPercent} />}
+      {layer === 'sleep' && <Sleep percent={chargePercent ?? 0} />}
+      {layer === 'emotions' && <Mind mood={tint ?? HOLO} />}
 
-      {layer === 'hydration' && (
-        <g data-region="whole-body">
-          <rect x={0} y={fillY} width={300} height={540 - fillY} fill={COLOR[regions['whole-body'] ?? 'green']} opacity={0.35} mask="url(#body-mask)" />
-          <path
-            d={`M60 ${fillY} q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0`}
-            fill="none"
-            stroke={COLOR[regions['whole-body'] ?? 'green']}
-            strokeWidth={1.5}
-          />
-          <path d={`M44 ${fillY - 4} q-7 -9 0 -18 q7 9 0 18 Z`} fill={HOLO} fillOpacity={0.3} stroke={HOLO} />
-        </g>
-      )}
-
-      {layer === 'sleep' && chargePercent !== undefined && (
-        <g>
-          <g mask="url(#body-mask)">
-            {bars.map((i) => (
-              <rect
-                key={i}
-                x={0}
-                y={540 - (i + 1) * 50.8 + 3}
-                width={300}
-                height={44.8}
-                fill={i < filled ? HOLO : DS.gray60}
-                opacity={i < filled ? 0.26 : 0.1}
-              />
-            ))}
-          </g>
-          <rect x={138} y={18} width={24} height={8} rx={3} fill="none" stroke={HOLO} strokeOpacity={0.7} />
-          <text x={232} y={250} fill={DS.gray0} fontSize={22} fontWeight={700} fontFamily="'Space Grotesk', sans-serif">
-            {Math.round(chargePercent)}%
-          </text>
-          <text x={232} y={268} fill={DS.gray30} fontSize={11} fontFamily="'Inter', sans-serif">
-            energy charge
-          </text>
-        </g>
-      )}
-
-      <Silhouette stroke={line} fill="none" />
-
-      {layer === 'bones' && <Skeleton regions={regions} />}
-      {layer === 'muscles' && <Muscles regions={regions} />}
-      {(layer === 'organs' || layer === 'hydration') && <Organs regions={regions} />}
-      {layer === 'circulation' && <Circulation regions={regions} />}
-      {layer === 'sleep' && <Head regions={regions} />}
-      {layer === 'emotions' && <Mind color={line} />}
-
-      <Ripples regions={regions} />
+      {layer !== 'organs' && <Ripples regions={regions} />}
     </svg>
   )
 }
