@@ -74,7 +74,7 @@ _Last updated: 2026-11-15_
   SVGs (skeleton, muscles, organs with status labels, cardio with ECG, hydration, sleep
   battery, mind), exact sizes and colors of header, tabs, cards and radiation strip, IBM Plex
   Mono captions. Organs: Kidneys = urine calcium, Liver = blood sugar, Brain & eyes and
-  Lungs show "No data" (no device yet).
+  Lungs show "Upcoming" (no device yet).
 - 2026-11-15: Workout tab from the mockup: video guide card with a hologram scene, Play / Pause
   with a simulated progress bar (no real video yet), "Lower body strength" title.
 - 2026-11-15: Daily plan now lists every measurement due today, built from `docs/devices.md`
@@ -83,6 +83,10 @@ _Last updated: 2026-11-15_
   device sending data). The task ticks itself, the new value goes into the chart and the
   status is recalculated. Mind keeps the status card (reason, advice, Next: Readiness);
   the second and third mood tests can be saved.
+- 2026-11-15: Status card shows "To do today" for its part of the body with an action per
+  task (Measure now, +1 pouch, Open workout); "Next" becomes secondary while something is
+  left. Water: goal spread over 07:00–23:00 with "next pouch at …", reaching 2 L turns the
+  status green for today, one-line log with "Undo last". Organs without data: "Upcoming".
 
 ### In progress
 - Waiting for design feedback on the built screen.
