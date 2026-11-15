@@ -86,3 +86,5 @@ Update this section at the end of every session.
   fonts). **Next:** design reviews the app; Vercel link; Sport page; data checks.
 - 2026-11-15 (zachtrenito): devices table (`docs/devices.md`) applied to rules and app.
   **Next:** design OKs the CONTRACT.md updates; Sport page; data checks.
+- 2026-11-15 (zachtrenito): per-section instructions written (EN + RU) and applied in the
+  app. **Next:** design's mood test; design OKs CONTRACT.md updates; Sport page.

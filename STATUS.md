@@ -51,6 +51,11 @@ _Last updated: 2026-11-15_
   it, schedule when normal / yellow / red). App and `docs/health-rules.md` follow it:
   each metric card shows "Measure: …", water log with dispenser fills and removable
   other drinks, urine strip read by camera, saliva cortisol removed.
+- 2026-11-15: `docs/instructions.md` (+ Russian copy `docs/instructions-ru.md`): devices,
+  schedule and what to do per section. App follows it: thermometer every morning, water
+  as 250 ml pouches with reminders (hourly when yellow, every 30 min when red), 1/2/3 mood
+  tests a day by status, advice texts updated, urine strip only in Bones, storm alarm
+  without "I am in shelter" and collapsible into a red bar.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -69,6 +74,9 @@ _Last updated: 2026-11-15_
 - Fonts are now bundled with the app (npm packages `@fontsource/fira-sans`,
   `@fontsource/overpass`), so they work without internet. You can remove the Google Fonts
   `@import` line at the top of `design-system/tokens.css`; it is no longer needed.
+- Russian version of the instructions for you: `docs/instructions-ru.md` (exception to the
+  English-only rule, asked by zachtrenito; the English file is the main one).
+- Mood: the 1–5 buttons are a placeholder until your test design is ready.
 - `CONTRACT.md` needs your OK for small updates from `docs/devices.md`: Morning check =
   cuff only (temperature comes from the wristband); Hydration source = dispenser (wristband
   tap) + "other drink" button with a removable log; Organs = no saliva cortisol, urine strip
