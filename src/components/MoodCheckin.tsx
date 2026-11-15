@@ -2,7 +2,7 @@
 // emotion chips for the step's group, and "Save check-in". Mood colors only; orange is
 // never used here because it means "attention" in this app.
 
-import { useState, type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 import { MOOD_LABELS, MOOD_LABEL_GROUPS, MOOD_STEPS } from '../data/mood'
 
 export interface MoodEntry {
@@ -12,7 +12,7 @@ export interface MoodEntry {
 }
 
 interface Props {
-  step: number // index into MOOD_STEPS
+  step: number | null // index into MOOD_STEPS; null = not chosen yet for this test
   labels: string[]
   onStep: (step: number) => void
   onLabels: (labels: string[]) => void
@@ -21,29 +21,31 @@ interface Props {
   done: number
   needed: number
   log: MoodEntry[] // check-ins saved today
+  asked: boolean // a mood test is due now: show a gentle prompt
 }
 
-const FIRST_CHIPS = 10
 const clock = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
 
-export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, done, needed, log }: Props) {
-  const [more, setMore] = useState(false)
-  const current = MOOD_STEPS[step]
-  const all = MOOD_LABEL_GROUPS[current.group]
-  const chips = more ? all : all.slice(0, FIRST_CHIPS)
+export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, done, needed, log, asked }: Props) {
+  // Until the astronaut moves the slider, nothing is chosen and Save stays off.
+  const chosen = step !== null
+  const current = MOOD_STEPS[step ?? 3]
+  const chips = MOOD_LABEL_GROUPS[current.group]
 
   const move = (next: number) => {
     // Moving into another group replaces the chip list and clears the selection.
-    if (MOOD_STEPS[next].group !== current.group) {
-      onLabels([])
-      setMore(false)
-    }
+    if (!chosen || MOOD_STEPS[next].group !== current.group) onLabels([])
     onStep(next)
   }
   const toggle = (id: string) => onLabels(labels.includes(id) ? labels.filter((l) => l !== id) : [...labels, id])
 
   return (
-    <section className="panel mood" style={{ '--mood': current.token } as CSSProperties}>
+    <section className={`panel mood${chosen ? '' : ' unset'}`} style={{ '--mood': chosen ? current.token : 'var(--gray-40)' } as CSSProperties}>
+      {asked && (
+        <div className="mood-ask" role="status">
+          <span className="ask-dot" /> {done === 0 ? 'Good morning! Take a moment to log how you feel.' : 'Time for your next mood check-in.'}
+        </div>
+      )}
       <div className="mood-head">
         <span>How do you feel right now?</span>
         {needed > 1 && (
@@ -52,8 +54,8 @@ export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, don
           </span>
         )}
       </div>
-      <div className="mood-title" key={current.id}>
-        {current.title}
+      <div className="mood-title" key={chosen ? current.id : 'unset'}>
+        {chosen ? current.title : 'Move the slider'}
       </div>
 
       <input
@@ -62,10 +64,10 @@ export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, don
         min={0}
         max={MOOD_STEPS.length - 1}
         step={1}
-        value={step}
+        value={step ?? 3}
         onChange={(e) => move(Number(e.target.value))}
         aria-label="Mood"
-        aria-valuetext={current.title}
+        aria-valuetext={chosen ? current.title : 'Not chosen yet'}
       />
       {/* One dot per step, in its own color: tap a dot or drag the slider. */}
       <div className="mood-steps" role="group" aria-label="Mood steps">
@@ -73,7 +75,7 @@ export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, don
           <button
             key={m.id}
             type="button"
-            className={i === step ? 'on' : ''}
+            className={chosen && i === step ? 'on' : ''}
             style={{ background: m.token }}
             onClick={() => move(i)}
             aria-label={m.title}
@@ -90,19 +92,14 @@ export function MoodCheckin({ step, labels, onStep, onLabels, onSave, saved, don
       <div className="mood-question">What best describes this feeling?</div>
       <div className="chips">
         {chips.map((id) => (
-          <button key={id} className={labels.includes(id) ? 'on' : ''} aria-pressed={labels.includes(id)} onClick={() => toggle(id)}>
+          <button key={id} className={labels.includes(id) ? 'on' : ''} aria-pressed={labels.includes(id)} disabled={!chosen} onClick={() => toggle(id)}>
             {MOOD_LABELS[id]}
           </button>
         ))}
-        {all.length > FIRST_CHIPS && (
-          <button className="more" onClick={() => setMore(!more)}>
-            {more ? 'Less' : 'More'}
-          </button>
-        )}
       </div>
 
-      <button className={`primary mood-save${saved ? ' saved' : ''}`} onClick={onSave} disabled={saved}>
-        {saved && log.length ? `✓ Saved at ${clock(log[log.length - 1].time)}` : 'Save'}
+      <button className={`primary mood-save${saved ? ' saved' : ''}`} onClick={onSave} disabled={saved || !chosen}>
+        {saved && log.length ? `✓ Saved at ${clock(log[log.length - 1].time)}` : chosen ? 'Save' : 'Move the slider to save'}
       </button>
 
       {log.length > 0 && (

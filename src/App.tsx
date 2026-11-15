@@ -8,7 +8,7 @@ import { RadiationAlarm } from './components/RadiationAlarm'
 import { WorkoutPage } from './components/WorkoutPage'
 import { ASTRONAUTS, MISSION, generateReadings } from './data/generator'
 import { initialLive, tickLive, type LiveState } from './data/live'
-import { MOOD_DEFAULT_LABELS, MOOD_DEFAULT_STEP, MOOD_STEPS, moodScore } from './data/mood'
+import { MOOD_STEPS, moodScore } from './data/mood'
 import type { MetricId, Status } from './data/types'
 import { TestPanel, applyOverride, type Overrides } from './dev/TestPanel'
 import { DAY_END, DAY_START, TRAINING_GOAL_MIN, WATER_GOAL_ML, buildChecklist, hhmm, type Task } from './rules/checklist'
@@ -65,8 +65,9 @@ export default function App() {
   const [checkIns, setCheckIns] = useState<number[]>([])
   const checkIn = checkIns.length ? checkIns[checkIns.length - 1] : null
   // Mood check-in card: slider step, chosen emotion chips, and whether it is saved.
-  const [moodStep, setMoodStep] = useState(MOOD_DEFAULT_STEP)
-  const [moodLabels, setMoodLabels] = useState<string[]>(MOOD_DEFAULT_LABELS)
+  // null = the slider has not been moved for this test yet (Save stays off).
+  const [moodStep, setMoodStep] = useState<number | null>(null)
+  const [moodLabels, setMoodLabels] = useState<string[]>([])
   const [moodSaved, setMoodSaved] = useState(false)
   const [moodLog, setMoodLog] = useState<MoodEntry[]>([])
   // Readings that devices "sent" today after "Measure now" (demo), and the tasks they close.
@@ -119,8 +120,8 @@ export default function App() {
     setDayMin(DAY_START)
     setWorkoutDone(false)
     setCheckIns([])
-    setMoodStep(MOOD_DEFAULT_STEP)
-    setMoodLabels(MOOD_DEFAULT_LABELS)
+    setMoodStep(null)
+    setMoodLabels([])
     setMoodSaved(false)
     setMoodLog([])
     setExtra({})
@@ -230,6 +231,7 @@ export default function App() {
     setExtra((x) => ({ ...x, [id]: [...(x[id] ?? []), { v, v2 }] }))
     setMeasured((m) => new Set(m).add(t.id))
   }
+  const moodAsked = tasks.some((t) => t.kind === 'mood' && t.due)
   // Actions from the plan: each one stands in for the device or the astronaut's action.
   const actionLabel = (t: Task) =>
     ({ reveal: 'Measure', measure: 'Measure', water: '+1 pouch', workout: 'Done', mood: 'Take test' })[t.kind]
@@ -330,8 +332,10 @@ export default function App() {
               <nav className="layer-tabs">
                 {LAYERS.map((l, i) => (
                   <button key={l.id} className={!readiness && l.id === layerId ? 'on' : ''} onClick={() => openLayer(l.id)}>
-                    {summaries[i].status !== 'green' && (
+                    {summaries[i].status !== 'green' ? (
                       <span className={`tab-dot ${summaries[i].status}${ripples(i) ? ' ripple' : ''}`} />
+                    ) : (
+                      l.id === 'emotions' && moodAsked && <span className="tab-dot ask" title="Mood check-in due" />
                     )}
                     {l.name}
                   </button>
@@ -361,16 +365,20 @@ export default function App() {
                         setMoodSaved(false)
                       }}
                       onSave={() => {
+                        if (moodStep === null) return
                         setCheckIns((l) => [...l, moodScore(moodStep)])
                         setMoodLog((l) => [...l, { time: simNow, step: moodStep, labels: moodLabels }])
                         // The button shows "Saved" until something changes; a new test can
                         // be saved by moving the slider or picking other feelings.
                         setMoodSaved(true)
+                        setMoodStep(null)
+                        setMoodLabels([])
                       }}
                       saved={moodSaved}
                       done={checkIns.length}
                       needed={testsNeeded}
                       log={moodLog}
+                      asked={moodAsked}
                     />
                   )}
                   {/* Mind: the check-in card replaces the status card, as in the mockup. */}
@@ -438,7 +446,7 @@ export default function App() {
                     layer={layerId}
                     // Mind: the figure takes the mood color, never a status color.
                     regions={layerId === 'emotions' ? {} : summary.regions}
-                    tint={layerId === 'emotions' ? MOOD_STEPS[moodStep].color : undefined}
+                    tint={layerId === 'emotions' && (moodStep ?? moodLog.at(-1)?.step) !== undefined ? MOOD_STEPS[(moodStep ?? moodLog.at(-1)!.step)].color : undefined}
                     chargePercent={layerId === 'sleep' ? Math.min(100, (daily('sleep').at(-1)! / astronaut.baseline.sleep) * 100) : undefined}
                     fillPercent={layerId === 'hydration' ? (waterToday / WATER_GOAL_ML) * 100 : 0}
                   />
