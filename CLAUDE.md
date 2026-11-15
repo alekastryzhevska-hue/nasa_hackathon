@@ -12,8 +12,8 @@ session.
 | `zachtrenito` | Backend + building the UI from the mockups | `docs/health-rules.md`, all of `src/` |
 
 - Identify the current user with `gh api user --jq .login`.
-- **If the login is `chumasov`**, stop: that is an old account of `zachtrenito` with no access.
-  Ask the user to run `gh auth switch` to `zachtrenito`.
+- If the login is not one of the two above, stop and ask the user to switch with
+  `gh auth switch`.
 - Neither person writes code themselves; Claude does. Explain changes by what they will
   see on screen and how to check it.
 
