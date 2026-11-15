@@ -64,6 +64,11 @@ _Last updated: 2026-11-15_
   tests a day by status, advice texts updated, urine strip only in Bones, storm alarm
   without "I am in shelter" and collapsible into a red bar.
 - 2026-11-15: Live demo on GitHub Pages: https://alekastryzhevska-hue.github.io/nasa_hackathon/ (auto-publishes on every push).
+- 2026-11-15: Design update applied from the mockup screenshots and the full design system:
+  pill header ("WALL-E & EVE :3", Health / Workout), tabs Skeleton … Mind + Readiness
+  placeholder, dot-grid page background, `surface-card` cards, figure in the middle with
+  cards on the right, Mind check-in (7-step slider, emotion chips, figure in the mood
+  color), sleep "battery" on the figure.
 
 ### In progress
 - Waiting for design feedback on the built screen.
@@ -82,6 +87,14 @@ _Last updated: 2026-11-15_
 - Fonts are now bundled with the app (npm packages `@fontsource/fira-sans`,
   `@fontsource/overpass`), so they work without internet. You can remove the Google Fonts
   `@import` line at the top of `design-system/tokens.css`; it is no longer needed.
+- **Design update: I applied it (2026-11-15 evening), so please don't push your unfinished
+  `src/` changes** — stash them (`git stash -u`) and pull. If something is off, write it
+  here and I'll fix it.
+- Not applied yet, as agreed with zachtrenito: the new status card with a metric list on
+  tabs other than Mind, the 4-organ interactive Organs figure and its new metrics, the
+  radiation "sensor not updating" state, the Sleep debt block. Mood data is copied from
+  `design/mood-data.json` into `src/data/mood.ts`; the 7 steps map to the 1–5 score used
+  by the rules.
 - Russian version of the instructions for you: `docs/instructions-ru.md` (exception to the
   English-only rule, asked by zachtrenito; the English file is the main one).
 - Mood: the 1–5 buttons are a placeholder until your test design is ready.

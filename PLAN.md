@@ -92,3 +92,6 @@ Update this section at the end of every session.
 - 2026-11-15 (alekastryzhevska-hue): design update for the site in `design/` (DESIGN_UPDATE.md,
   mood check-in spec + data), `mood-*` tokens added. **Next:** backend applies
   `design/DESIGN_UPDATE.md`; design makes the Readiness mockup.
+- 2026-11-15 ~20:00 (zachtrenito): design update applied from the mockups (header, tabs,
+  background, cards, Mind check-in). **Next:** design reviews the live site; remaining
+  items are listed in STATUS.md notes.
